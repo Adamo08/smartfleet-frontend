@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SmartFleet logo SVG - scalable vector logo for Moroccan car-rental agencies -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="titleDesc">
+  <title id="titleDesc">SmartFleet - car rental system logo</title>
+  <desc>Logo combining a car silhouette, Moroccan-inspired pin/star and the word SmartFleet</desc>
+
+  <!-- Background (transparent) -->
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff5f52" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#c8102e" stop-opacity="0.95"/>
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Icon group -->
+  <g transform="translate(60,40)">
+    <!-- Red rounded badge (Moroccan color) -->
+    <circle cx="140" cy="140" r="120" fill="url(#g1)" filter="url(#shadow)" />
+
+    <!-- Location pin (green) overlapping the badge -->
+    <path d="M220 70
+             C220 40 181 40 181 40
+             C181 40 160 40 160 70
+             C160 100 200 150 200 150
+             C200 150 240 100 240 70
+             C240 40 220 40 220 70 Z"
+          fill="#006233" transform="translate(-30,20) scale(0.9)" />
+    <!-- small white inner circle of pin -->
+    <circle cx="190" cy="95" r="18" fill="#fff" transform="translate(-30,20) scale(0.9)"/>
+
+    <!-- Moroccan star (pentagram) inside white circle -- stylized in green -->
+    <g transform="translate(160,75) scale(0.35)" fill="#006233" stroke="#006233" stroke-width="6">
+      <polygon points="50,0 61.8,35.1 99.5,35.1 68.9,57 80.7,92.1 50,70.2 19.3,92.1 31.1,57 0.5,35.1 38.2,35.1" />
+    </g>
+
+    <!-- Car silhouette (white) centered on badge -->
+    <g transform="translate(40,180) scale(0.9)" fill="#ffffff">
+      <path d="M30 40 L70 40 L90 20 L220 20 L250 40 L320 40 C330 40 338 48 338 58 L338 86 C338 96 330 104 320 104 L310 104 C300 104 292 96 292 86 L292 82 L68 82 L68 86 C68 96 60 104 50 104 L40 104 C30 104 22 96 22 86 L22 58 C22 48 30 40 40 40 Z" />
+      <!-- wheels -->
+      <circle cx="95" cy="110" r="18" fill="#ffffff" />
+      <circle cx="255" cy="110" r="18" fill="#ffffff" />
+      <!-- wheel centers -->
+      <circle cx="95" cy="110" r="6" fill="#c8102e" />
+      <circle cx="255" cy="110" r="6" fill="#c8102e" />
+    </g>
+
+  </g>
+
+  <!-- Wordmark: SmartFleet -->
+  <g transform="translate(360,140)">
+    <text x="0" y="0" font-family="Inter, Arial, Helvetica, sans-serif" font-size="72" font-weight="700" fill="#242424">Smart</text>
+    <text x="0" y="72" font-family="Inter, Arial, Helvetica, sans-serif" font-size="72" font-weight="700" fill="#006233">Fleet</text>
+
+    <!-- tagline small -->
+    <text x="0" y="120" font-family="Inter, Arial, Helvetica, sans-serif" font-size="18" fill="#666">Car rental system for Moroccan agencies</text>
+  </g>
+
+  <!-- optional small favicon mark (repeated) -->
+  <g transform="translate(1050,20) scale(0.5)">
+    <rect x="0" y="0" width="160" height="160" rx="28" fill="#fff" opacity="0" />
+    <circle cx="80" cy="80" r="66" fill="#c8102e" />
+    <path d="M60 80 L80 40 L100 80 L60 80 Z" fill="#fff" opacity="0.95" />
+  </g>
+
+</svg>
