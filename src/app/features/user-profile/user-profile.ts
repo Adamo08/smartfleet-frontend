@@ -35,11 +35,6 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
-    
-    // Test toast functionality
-    setTimeout(() => {
-      this.toastr.info('Profile page loaded successfully!', 'Info');
-    }, 1000);
   }
 
   logout(): void {
@@ -98,7 +93,7 @@ export class UserProfileComponent implements OnInit {
         this.user = updatedUser;
         this.isEditing = false;
         this.saving = false;
-        
+
         console.log('Showing success toast...');
         this.toastr.success('Profile updated successfully!', 'Success');
 
@@ -113,7 +108,7 @@ export class UserProfileComponent implements OnInit {
       error: (error) => {
         console.error('Error updating profile:', error);
         this.saving = false;
-        
+
         console.log('Showing error toast...');
         this.toastr.error(error.error?.message || 'Failed to update profile', 'Error');
       }

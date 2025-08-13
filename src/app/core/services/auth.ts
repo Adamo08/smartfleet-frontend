@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, throwError, catchError, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, throwError, catchError, switchMap, of, delay, retry, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   User,
@@ -22,6 +22,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private isRefreshing = false;
+  private isInitializing = false;
 
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();
@@ -61,7 +62,47 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getCurrentUser() && !!localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
+    
+    // Check if token is expired
+    if (this.isTokenExpired(token)) {
+      this.logout();
+      return false;
+    }
+    
+    return !!this.getCurrentUser();
+  }
+
+  // New method for async authentication check
+  isAuthenticatedAsync(): Observable<boolean> {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      return of(false);
+    }
+    
+    // Check if token is expired
+    if (this.isTokenExpired(token)) {
+      this.logout();
+      return of(false);
+    }
+    
+    // If we have a user, return true immediately
+    if (this.getCurrentUser()) {
+      return of(true);
+    }
+    
+    // If no user but token exists, validate it
+    return this.validateToken().pipe(
+      map(user => {
+        this.currentUserSubject.next(user);
+        return true;
+      }),
+      catchError(() => {
+        this.logout();
+        return of(false);
+      })
+    );
   }
 
   isAdmin(): boolean {
@@ -218,20 +259,69 @@ export class AuthService {
   }
 
   private loadUserFromStorage(): void {
+    if (this.isInitializing) return;
+    
+    this.isInitializing = true;
     const token = localStorage.getItem('accessToken');
+    
     if (token) {
-      this.validateToken().subscribe({
+      // Check if token is expired before making the request
+      if (this.isTokenExpired(token)) {
+        console.log('Token expired, logging out');
+        this.logout();
+        this.isInitializing = false;
+        return;
+      }
+      
+      this.validateToken().pipe(
+        retry({ count: 2, delay: 1000 }), // Retry up to 2 times with 1 second delay
+        catchError((error) => {
+          console.warn('Token validation failed, attempting refresh:', error);
+          // Try to refresh the token instead of immediately logging out
+          return this.refreshToken().pipe(
+            switchMap((refreshResponse) => {
+              // After refresh, validate the new token to get user data
+              return this.validateToken();
+            }),
+            catchError((refreshError) => {
+              console.error('Token refresh failed, logging out:', refreshError);
+              this.logout();
+              return throwError(() => refreshError);
+            })
+          );
+        })
+      ).subscribe({
         next: (user) => {
+          console.log('User loaded from storage:', user);
           this.currentUserSubject.next(user);
+          this.isInitializing = false;
         },
-        error: () => {
-          this.logout();
+        error: (error) => {
+          console.error('Failed to load user from storage:', error);
+          this.isInitializing = false;
         }
       });
+    } else {
+      this.isInitializing = false;
     }
   }
 
   private validateToken(): Observable<User> {
     return this.http.get<User>(`${environment.apiUrl}/auth/me`);
+  }
+
+  // New method to check if JWT token is expired
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expirationTime = payload.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      
+      // Add 5 minute buffer to prevent edge cases
+      return currentTime >= (expirationTime - (5 * 60 * 1000));
+    } catch (error) {
+      console.error('Error parsing token:', error);
+      return true; // Consider invalid tokens as expired
+    }
   }
 }
