@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
+import { ApiService } from './api';
 import { Vehicle } from '../models/vehicle.interface';
 import { Observable } from 'rxjs';
 

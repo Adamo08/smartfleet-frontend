@@ -1,1 +1,54 @@
-<p>oauth-callback works!</p>
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  @if (loading) {
+    <div class="space-y-6">
+      <div class="text-center">
+        <h2 class="text-3xl font-extrabold text-gray-900">
+          Processing OAuth Login
+        </h2>
+        <p class="mt-2 text-sm text-gray-600">
+          Please wait while we complete your authentication...
+        </p>
+      </div>
+      <div class="flex justify-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    </div>
+  } @else if (error) {
+    <div class="space-y-6">
+      <div class="text-center">
+        <h2 class="text-3xl font-extrabold text-red-900">
+          Authentication Failed
+        </h2>
+        <p class="mt-2 text-sm text-gray-600">
+          There was an error during the OAuth authentication process.
+        </p>
+      </div>
+      <div class="text-center">
+        <p class="text-red-600 text-sm">{{ error }}</p>
+      </div>
+      <div class="text-center">
+        <a routerLink="/auth/login" class="font-medium text-primary-600 hover:text-primary-500">
+          Try again
+        </a>
+      </div>
+    </div>
+  } @else {
+    <div class="space-y-6">
+      <div class="text-center">
+        <h2 class="text-3xl font-extrabold text-green-900">
+          Authentication Successful
+        </h2>
+        <p class="mt-2 text-sm text-gray-600">
+          You have been successfully authenticated. Redirecting...
+        </p>
+      </div>
+      <div class="flex justify-center">
+        <div class="rounded-full h-12 w-12 bg-green-100 flex items-center justify-center">
+          <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  }
+</div>
