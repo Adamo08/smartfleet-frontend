@@ -3,13 +3,12 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  phone?: string;
-  role: UserRole;
-  isActive: boolean;
+  phoneNumber?: string;
+  role: string;
+  authProvider?: string;
+  providerId?: string;
   createdAt: Date;
   updatedAt: Date;
-  oauthProvider?: OAuthProvider;
-  oauthId?: string;
 }
 
 export enum UserRole {
@@ -19,7 +18,8 @@ export enum UserRole {
 
 export enum OAuthProvider {
   GOOGLE = 'GOOGLE',
-  FACEBOOK = 'FACEBOOK'
+  FACEBOOK = 'FACEBOOK',
+  LOCAL = 'LOCAL'
 }
 
 export interface LoginRequest {

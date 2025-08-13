@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { ForgotPasswordRequest } from '../../../core/models/user.interface';
 import { ToastrService } from 'ngx-toastr';
@@ -21,7 +21,6 @@ export class ForgotPasswordComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private toastr: ToastrService
   ) {}
 
@@ -53,9 +52,5 @@ export class ForgotPasswordComponent {
         this.error = error.error?.message || 'Failed to send reset email. Please try again.';
       }
     });
-  }
-
-  backToLogin(): void {
-    this.router.navigate(['/auth/login']);
   }
 }

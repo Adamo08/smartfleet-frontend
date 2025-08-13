@@ -105,8 +105,8 @@ export class AuthService {
       );
   }
 
-  forgotPassword(request: ForgotPasswordRequest): Observable<void> {
-    return this.http.post<void>(`${environment.apiUrl}/auth/forgot-password`, request);
+  forgotPassword(request: ForgotPasswordRequest): Observable<any> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/forgot-password`, request, { responseType: 'text' as 'json' });
   }
 
   resetPassword(request: ResetPasswordRequest): Observable<void> {
@@ -142,30 +142,79 @@ export class AuthService {
   }
 
   setTokens(accessToken: string, refreshToken: string): void {
+    console.log('Setting tokens in localStorage');
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
   }
 
   setCurrentUserEmail(email: string): void {
+    console.log('Setting current user email:', email);
+
     // Create a basic user object with email for OAuth users
     // This will be replaced when the full user data is fetched
     const basicUser: User = {
       id: 0, // Temporary ID
       email: email,
-      firstName: '',
+      firstName: email.split('@')[0], // Use email prefix as first name
       lastName: '',
-      role: 'CUSTOMER' as any,
-      isActive: true,
+      role: 'CUSTOMER',
       createdAt: new Date(),
       updatedAt: new Date()
     };
+
+    console.log('Created basic user object:', basicUser);
     this.currentUserSubject.next(basicUser);
+
+    // Try to fetch full user data
+    this.validateToken().subscribe({
+      next: (user) => {
+        console.log('Fetched full user data:', user);
+        this.currentUserSubject.next(user);
+      },
+      error: (err) => {
+        console.warn('Could not fetch full user data, keeping basic user:', err);
+        // Keep the basic user object
+      }
+    });
   }
 
   private handleSuccessfulAuth(response: LoginResponse | OAuthLoginResponse): void {
+    console.log('Handling successful authentication:', response);
+
+    // Store tokens
     localStorage.setItem('accessToken', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
-    this.currentUserSubject.next(response.user);
+
+    // Update user state
+    if (response.user) {
+      console.log('Setting current user:', response.user);
+      this.currentUserSubject.next(response.user);
+    } else {
+      console.warn('No user data in response, attempting to fetch user info');
+      // If no user data, try to fetch it
+      this.validateToken().subscribe({
+        next: (user) => {
+          console.log('Fetched user data:', user);
+          this.currentUserSubject.next(user);
+        },
+        error: (err) => {
+          console.error('Failed to fetch user data:', err);
+          // Create a basic user object if we have email
+          if (response.accessToken) {
+            const basicUser: User = {
+              id: 0,
+              email: 'user@example.com', // Placeholder
+              firstName: 'User',
+              lastName: '',
+              role: 'CUSTOMER',
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            this.currentUserSubject.next(basicUser);
+          }
+        }
+      });
+    }
   }
 
   private loadUserFromStorage(): void {

@@ -1,9 +1,8 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
-import { UserRole } from '../models/user.interface';
 
-export const roleGuard = (allowedRoles: UserRole[]) => {
+export const roleGuard = (allowedRoles: string[]) => {
   return () => {
     const authService = inject(AuthService);
     const router = inject(Router);

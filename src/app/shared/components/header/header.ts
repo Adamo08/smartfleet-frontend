@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { User } from '../../../core/models/user.interface';
 
@@ -12,10 +12,14 @@ import { User } from '../../../core/models/user.interface';
   styleUrl: './header.css'
 })
 export class HeaderComponent {
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+  ) {}
 
   logout(): void {
     this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 
   getCurrentUser(): User | null {

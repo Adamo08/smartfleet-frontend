@@ -24,13 +24,19 @@ export class OAuthCallbackComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.handleOAuthCallback();
+    // Add a small delay to ensure the component is fully rendered
+    setTimeout(() => {
+      this.handleOAuthCallback();
+    }, 100);
   }
 
   private handleOAuthCallback(): void {
+    console.log('OAuth callback component initialized');
+    
     // Check for error first
     const error = this.route.snapshot.queryParamMap.get('error');
     if (error) {
+      console.log('OAuth error detected:', error);
       this.handleOAuthError(error);
       return;
     }
@@ -41,7 +47,10 @@ export class OAuthCallbackComponent implements OnInit {
     const provider = this.route.snapshot.queryParamMap.get('provider') ?? '';
     const email = this.route.snapshot.queryParamMap.get('email') ?? '';
 
+    console.log('OAuth callback params:', { accessToken: !!accessToken, refreshToken: !!refreshToken, provider, email });
+
     if (accessToken && refreshToken && provider) {
+      console.log('Processing successful OAuth flow');
       this.handleSuccessfulOAuth(accessToken, refreshToken, provider, email);
       return;
     }
@@ -49,11 +58,13 @@ export class OAuthCallbackComponent implements OnInit {
     // Fallback: check for authorization code (legacy flow)
     const code = this.route.snapshot.queryParamMap.get('code');
     if (code && provider) {
+      console.log('Processing legacy OAuth flow with code');
       this.handleLegacyOAuthFlow(code, provider);
       return;
     }
 
     // No valid parameters found
+    console.log('No valid OAuth parameters found');
     this.error = 'Invalid OAuth callback parameters';
     this.loading = false;
     this.toastr.error('Invalid OAuth callback parameters', 'Error');
@@ -62,7 +73,7 @@ export class OAuthCallbackComponent implements OnInit {
 
   private handleOAuthError(error: string): void {
     let errorMessage = 'OAuth authentication failed';
-
+    
     switch (error) {
       case 'email_not_provided':
         errorMessage = 'Email not provided by OAuth provider';
@@ -76,31 +87,48 @@ export class OAuthCallbackComponent implements OnInit {
 
     this.error = errorMessage;
     this.loading = false;
+    console.log('OAuth error handled:', errorMessage);
     this.toastr.error(errorMessage, 'Error');
     setTimeout(() => this.router.navigate(['/auth/login']), 3000);
   }
 
   private handleSuccessfulOAuth(accessToken: string, refreshToken: string, provider: string, email?: string): void {
-    // Store tokens in the auth service
-    this.authService.setTokens(accessToken, refreshToken);
+    console.log('Handling successful OAuth authentication');
+    
+    try {
+      // Store tokens in the auth service
+      this.authService.setTokens(accessToken, refreshToken);
+      
+      // Set user info if available
+      if (email) {
+        this.authService.setCurrentUserEmail(email);
+      }
 
-    // Set user info if available
-    if (email) {
-      // You might want to fetch full user details here or store basic info
-      this.authService.setCurrentUserEmail(email);
+      this.loading = false;
+      console.log('OAuth authentication successful, showing success message');
+      
+      // Show success message and navigate after a delay
+      this.toastr.success('OAuth authentication successful!', 'Welcome!');
+      
+      setTimeout(() => {
+        console.log('Navigating to home page');
+        this.router.navigate(['/']).then(r => console.log("Navigation result:", r));
+      }, 1500);
+      
+    } catch (err) {
+      console.error('Error in successful OAuth flow:', err);
+      this.error = 'Failed to complete authentication';
+      this.loading = false;
+      this.toastr.error('Failed to complete authentication', 'Error');
     }
-
-    this.loading = false;
-    this.toastr.success('OAuth authentication successful!', 'Welcome!');
-
-    // Navigate to home or dashboard
-    this.router.navigate(['/']).then(r => console.log("Navigating to home..."));
   }
 
   private handleLegacyOAuthFlow(code: string, provider: string): void {
+    console.log('Handling legacy OAuth flow');
+    
     // Legacy flow: exchange code for tokens
     const redirectUri = `${window.location.origin}/auth/oauth-callback`;
-
+    
     let oauthProvider: OAuthProvider;
     if (provider.toLowerCase() === 'google') {
       oauthProvider = OAuthProvider.GOOGLE;
@@ -113,22 +141,26 @@ export class OAuthCallbackComponent implements OnInit {
       setTimeout(() => this.router.navigate(['/auth/login']), 3000);
       return;
     }
-
+    
     this.authService.oauthLogin({
       provider: oauthProvider,
       code: code,
       redirectUri: redirectUri
     }).subscribe({
       next: (response) => {
+        console.log('Legacy OAuth flow successful:', response);
         this.loading = false;
         if (response.isNewUser) {
           this.toastr.success('Account created successfully!', 'Welcome!');
         } else {
           this.toastr.success('Login successful!', 'Welcome back!');
         }
-        this.router.navigate(['/']);
+        setTimeout(() => {
+          this.router.navigate(['/']);
+        }, 1500);
       },
       error: (error) => {
+        console.error('Legacy OAuth flow error:', error);
         this.loading = false;
         this.error = error.error?.message || 'OAuth authentication failed';
         this.toastr.error('OAuth authentication failed', 'Error');

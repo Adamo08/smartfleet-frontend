@@ -2,7 +2,8 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { roleGuard } from './core/guards/role.guard';
-import { UserRole } from './core/models/user.interface';
+
+import { AUTH_ROUTES } from './features/auth/auth.routes';
 import {HomeComponent} from './features/home/home';
 import {VehicleList} from './features/vehicles/vehicle-list/vehicle-list';
 import {VehicleDetail} from './features/vehicles/vehicle-detail/vehicle-detail';
@@ -14,24 +15,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
   },
   {
-    path: 'auth/login',
-    loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent)
-  },
-  {
-    path: 'auth/register',
-    loadComponent: () => import('./features/auth/register/register').then(m => m.RegisterComponent)
-  },
-  {
-    path: 'auth/forgot-password',
-    loadComponent: () => import('./features/auth/forgot-password/forgot-password').then(m => m.ForgotPasswordComponent)
-  },
-  {
-    path: 'auth/reset-password',
-    loadComponent: () => import('./features/auth/reset-password/reset-password').then(m => m.ResetPasswordComponent)
-  },
-  {
-    path: 'auth/oauth-callback',
-    loadComponent: () => import('./features/auth/oauth-callback/oauth-callback').then(m => m.OAuthCallbackComponent)
+    path: 'auth',
+    children: AUTH_ROUTES
   },
   {
     path: 'vehicles',
@@ -49,7 +34,7 @@ export const routes: Routes = [
   {
     path: 'profile',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/user-profile/user-profile').then(m => m.UserProfile)
+    loadComponent: () => import('./features/user-profile/user-profile').then(m => m.UserProfileComponent)
   },
   {
     path: 'admin',
