@@ -10,6 +10,14 @@ import { errorInterceptor } from './core/interceptors/error-interceptor';
 import { loadingInterceptor } from './core/interceptors/loading-interceptor';
 import { TokenRefreshService } from './core/services/token-refresh.service';
 
+// Import layout components
+import { MainLayout } from './shared/layouts/main-layout/main-layout';
+import { AuthLayout } from './shared/layouts/auth-layout/auth-layout';
+import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
+import { HeaderComponent } from './shared/components/header/header';
+import { Footer } from './shared/components/footer/footer';
+import { Sidebar } from './shared/components/sidebar/sidebar';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
@@ -31,6 +39,13 @@ export const appConfig: ApplicationConfig = {
       messageClass: 'ngx-toastr-message'
     }),
     // Initialize the token refresh service
-    TokenRefreshService
+    TokenRefreshService,
+    // Register layout components
+    MainLayout,
+    AuthLayout,
+    AdminLayout,
+    HeaderComponent,
+    Footer,
+    Sidebar
   ]
 };
