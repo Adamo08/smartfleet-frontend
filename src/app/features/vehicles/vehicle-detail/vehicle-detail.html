@@ -1,1 +1,247 @@
-<p>vehicle-detail works!</p>
+<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
+  <!-- Background Effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
+    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
+    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Loading State -->
+    @if (loading) {
+      <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
+      </div>
+    } @else if (vehicle) {
+      <!-- Breadcrumb -->
+      <nav class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-gray-400">
+          <li><a routerLink="/vehicles" class="hover:text-indigo-400 transition-colors duration-200">Vehicles</a></li>
+          <li><span class="mx-2">/</span></li>
+          <li class="text-white">{{ vehicle.brand }} {{ vehicle.model }}</li>
+        </ol>
+      </nav>
+
+      <!-- Vehicle Header -->
+      <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Vehicle Image -->
+          <div class="relative h-96 lg:h-full bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center">
+            @if (vehicle.imageUrl) {
+              <img [src]="vehicle.imageUrl" [alt]="vehicle.brand + ' ' + vehicle.model" class="w-full h-full object-cover">
+            } @else {
+              <svg class="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            }
+            
+            <!-- Status Badge -->
+            <div class="absolute top-4 left-4">
+              @if (vehicle.status === 'AVAILABLE') {
+                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Available</span>
+              } @else if (vehicle.status === 'RENTED') {
+                <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Rented</span>
+              } @else if (vehicle.status === 'MAINTENANCE') {
+                <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Maintenance</span>
+              } @else {
+                <span class="bg-gray-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Out of Service</span>
+              }
+            </div>
+
+            <!-- Favorite Button -->
+            @if (isLoggedIn) {
+              <button 
+                (click)="toggleFavorite()"
+                class="absolute top-4 right-4 p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                @if (isFavorite) {
+                  <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                  </svg>
+                } @else {
+                  <svg class="w-6 h-6 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+
+          <!-- Vehicle Info -->
+          <div class="p-8">
+            <div class="mb-6">
+              <h1 class="text-3xl font-bold text-white mb-2">{{ vehicle.brand }} {{ vehicle.model }}</h1>
+              <p class="text-lg text-gray-300">{{ vehicle.year }} • {{ vehicle.licensePlate }}</p>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-6">
+              <div class="flex items-baseline space-x-2">
+                <span class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">${{ vehicle.pricePerDay }}</span>
+                <span class="text-lg text-gray-400">per day</span>
+              </div>
+            </div>
+
+            <!-- Quick Specs -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div class="text-sm text-gray-400 mb-1">Vehicle Type</div>
+                <div class="font-semibold text-white">{{ vehicle.vehicleType }}</div>
+              </div>
+              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div class="text-sm text-gray-400 mb-1">Fuel Type</div>
+                <div class="font-semibold text-white">{{ vehicle.fuelType }}</div>
+              </div>
+              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div class="text-sm text-gray-400 mb-1">Mileage</div>
+                <div class="font-semibold text-white">{{ vehicle.mileage }}km</div>
+              </div>
+              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div class="text-sm text-gray-400 mb-1">Year</div>
+                <div class="font-semibold text-white">{{ vehicle.year }}</div>
+              </div>
+            </div>
+
+            <!-- Description -->
+            @if (vehicle.description) {
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-white mb-2">Description</h3>
+                <p class="text-gray-300 leading-relaxed">{{ vehicle.description }}</p>
+              </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4">
+              @if (vehicle.status === 'AVAILABLE') {
+                <button 
+                  (click)="bookVehicle()"
+                  class="flex-1 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white py-3 px-6 rounded-2xl hover:shadow-xl transition-all duration-300 font-semibold"
+                >
+                  Book Now
+                </button>
+              } @else {
+                <button 
+                  disabled
+                  class="flex-1 bg-gray-600 text-white py-3 px-6 rounded-2xl cursor-not-allowed font-semibold"
+                >
+                  Not Available
+                </button>
+              }
+              <button 
+                (click)="checkAvailability()"
+                class="flex-1 border border-indigo-400 text-indigo-400 py-3 px-6 rounded-2xl hover:bg-indigo-400/10 transition-all duration-300 font-semibold"
+              >
+                Check Availability
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Testimonials Section -->
+      @if (vehicleTestimonials.length > 0) {
+        <div class="py-16 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl my-8">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
+                Customer <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Reviews</span>
+              </h2>
+              <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+                See what other customers have to say about their experience with this {{ vehicle.brand }} {{ vehicle.model }}.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              @for (testimonial of vehicleTestimonials; track testimonial.id) {
+                <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                  <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-semibold">
+                      {{ testimonial.userName?.[0] }}
+                    </div>
+                    <div class="ml-3">
+                      <h4 class="font-semibold text-white">{{ testimonial.userName }}</h4>
+                      <p class="text-sm text-gray-400">{{ testimonial.vehicleBrand }} {{ testimonial.vehicleModel }}</p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center mb-3">
+                    @for (star of getStarRating(testimonial.rating); track $index) {
+                      <span class="text-yellow-400 text-sm">{{ star }}</span>
+                    }
+                  </div>
+                  
+                  <h5 class="font-semibold text-white mb-2 text-sm">{{ testimonial.title }}</h5>
+                  <p class="text-gray-300 text-sm leading-relaxed">{{ testimonial.content }}</p>
+                  
+                  @if (testimonial.adminReplyContent) {
+                    <div class="mt-4 p-3 bg-indigo-500/10 rounded-2xl border-l-4 border-indigo-400">
+                      <p class="text-xs text-indigo-300 font-medium mb-1">SmartFleet Response:</p>
+                      <p class="text-xs text-indigo-200">{{ testimonial.adminReplyContent }}</p>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Similar Vehicles -->
+      @if (similarVehicles.length > 0) {
+        <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-8">
+          <h2 class="text-2xl font-bold text-white mb-6">Similar Vehicles</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (similarVehicle of similarVehicles; track similarVehicle.id) {
+              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
+                <div class="h-32 bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center">
+                  @if (similarVehicle.imageUrl) {
+                    <img [src]="similarVehicle.imageUrl" [alt]="similarVehicle.brand + ' ' + similarVehicle.model" class="w-full h-full object-cover">
+                  } @else {
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                  }
+                </div>
+                <div class="p-4">
+                  <h3 class="font-semibold text-white mb-2">{{ similarVehicle.brand }} {{ similarVehicle.model }}</h3>
+                  <p class="text-sm text-gray-400 mb-2">{{ similarVehicle.year }} • {{ similarVehicle.vehicleType }}</p>
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-indigo-400">${{ similarVehicle.pricePerDay }}/day</span>
+                    <a 
+                      [routerLink]="['/vehicles', similarVehicle.id]"
+                      class="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors duration-200"
+                    >
+                      View Details →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    } @else {
+      <!-- Error State -->
+      <div class="text-center py-12">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+        </svg>
+        <h3 class="text-lg font-medium text-white mb-2">Vehicle not found</h3>
+        <p class="text-gray-300">The vehicle you're looking for doesn't exist or has been removed.</p>
+        <a routerLink="/vehicles" class="mt-4 inline-block bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-6 py-3 rounded-2xl hover:shadow-xl transition-all duration-300 font-semibold">
+          Browse Vehicles
+        </a>
+      </div>
+    }
+  </div>
+</div>
+
+<style>
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+</style>

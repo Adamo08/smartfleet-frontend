@@ -63,7 +63,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   navigateToBookmarks(): void {
-    this.router.navigate(['/bookmarks']);
+    this.router.navigate(['/my-bookmarks']);
   }
 
   navigateToFavorites(): void {

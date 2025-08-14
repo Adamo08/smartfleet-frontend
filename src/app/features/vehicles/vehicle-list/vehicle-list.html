@@ -1,1 +1,221 @@
-<p>vehicle-list works!</p>
+<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
+  <!-- Background Effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
+    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
+    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
+        Our <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Vehicle Fleet</span>
+      </h1>
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+        Discover our premium selection of vehicles for your next journey. Find the perfect ride that matches your style and needs.
+      </p>
+    </div>
+
+    <!-- Enhanced Search and Filters -->
+    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Search -->
+        <div class="lg:col-span-2">
+          <label class="block text-sm font-semibold text-white mb-2">Search Vehicles</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              placeholder="Search by brand, model, or license plate..."
+              [(ngModel)]="searchTerm"
+              (input)="onSearchChange()"
+              class="w-full px-4 py-3 pl-10 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+            >
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Vehicle Type Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Vehicle Type</label>
+          <select 
+            [(ngModel)]="selectedVehicleType"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="">All Types</option>
+            <option value="SEDAN">Sedan</option>
+            <option value="SUV">SUV</option>
+            <option value="TRUCK">Truck</option>
+            <option value="VAN">Van</option>
+            <option value="MOTORCYCLE">Motorcycle</option>
+          </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Status</label>
+          <select 
+            [(ngModel)]="selectedStatus"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="">All Status</option>
+            <option value="AVAILABLE">Available</option>
+            <option value="RENTED">Rented</option>
+            <option value="MAINTENANCE">Maintenance</option>
+            <option value="OUT_OF_SERVICE">Out of Service</option>
+          </select>
+        </div>
+
+        <!-- Fuel Type Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Fuel Type</label>
+          <select 
+            [(ngModel)]="selectedFuelType"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="">All Fuel Types</option>
+            <option value="GASOLINE">Gasoline</option>
+            <option value="DIESEL">Diesel</option>
+            <option value="ELECTRIC">Electric</option>
+            <option value="HYBRID">Hybrid</option>
+          </select>
+        </div>
+
+        <!-- Price Range Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Max Price/Day</label>
+          <select 
+            [(ngModel)]="maxPrice"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="">Any Price</option>
+            <option value="50">$50</option>
+            <option value="100">$100</option>
+            <option value="200">$200</option>
+            <option value="500">$500</option>
+          </select>
+        </div>
+
+        <!-- Year Range Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Min Year</label>
+          <select 
+            [(ngModel)]="minYear"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="">Any Year</option>
+            <option value="2020">2020+</option>
+            <option value="2018">2018+</option>
+            <option value="2015">2015+</option>
+            <option value="2010">2010+</option>
+          </select>
+        </div>
+
+        <!-- Mileage Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Max Mileage</label>
+          <select 
+            [(ngModel)]="maxMileage"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="">Any Mileage</option>
+            <option value="10000">10,000 km</option>
+            <option value="50000">50,000 km</option>
+            <option value="100000">100,000 km</option>
+            <option value="200000">200,000 km</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading) {
+      <div class="flex justify-center items-center py-16">
+        <div class="text-center">
+          <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-400 mx-auto mb-4"></div>
+          <p class="text-gray-300 text-lg">Loading vehicles...</p>
+        </div>
+      </div>
+    } @else {
+      <!-- Results Count and Sort -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl">
+        <div>
+          <p class="text-lg text-white">
+            <span class="font-semibold text-indigo-400">{{ filteredVehicles.length }}</span> vehicles found
+          </p>
+          @if (searchTerm || selectedVehicleType || selectedStatus || selectedFuelType || maxPrice || minYear || maxMileage) {
+            <button 
+              (click)="clearFilters()"
+              class="text-sm text-indigo-400 hover:text-indigo-300 font-medium mt-1 transition-colors duration-200"
+            >
+              Clear all filters
+            </button>
+          }
+        </div>
+        <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+          <label class="text-sm font-semibold text-white">Sort by:</label>
+          <select 
+            [(ngModel)]="sortBy"
+            (change)="onSortChange()"
+            class="px-4 py-2 bg-white/5 border border-white/20 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="createdAt">Newest First</option>
+            <option value="pricePerDay">Price: Low to High</option>
+            <option value="pricePerDay_desc">Price: High to Low</option>
+            <option value="year">Year: Newest</option>
+            <option value="mileage">Mileage: Low to High</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Vehicle Grid -->
+      @if (filteredVehicles.length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          @for (vehicle of filteredVehicles; track vehicle.id) {
+            <app-vehicle-card
+              [vehicle]="vehicle"
+              [isLoggedIn]="isLoggedIn"
+              [isFavorite]="isFavorite(vehicle.id)"
+              (favoriteToggled)="toggleFavorite($event)"
+            ></app-vehicle-card>
+          }
+        </div>
+      } @else {
+        <!-- No Results -->
+        <div class="text-center py-16 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl">
+          <svg class="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          <h3 class="text-2xl font-bold text-white mb-4">No vehicles found</h3>
+          <p class="text-gray-300 mb-6 max-w-md mx-auto">
+            Try adjusting your search criteria or filters to find the perfect vehicle for your needs.
+          </p>
+          <button 
+            (click)="clearFilters()"
+            class="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 hover:shadow-xl"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<style>
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+</style>

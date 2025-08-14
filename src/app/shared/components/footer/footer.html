@@ -1,1 +1,87 @@
-<p>footer works!</p>
+<footer class="bg-slate-900 py-12 border-t border-white/10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Company Info -->
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-10 h-10 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-white">SmartFleet</div>
+            <div class="text-sm text-gray-400">Vehicle Rental System</div>
+          </div>
+        </div>
+        <p class="text-gray-400 mb-6 max-w-md">
+          Experience premium vehicle rental with cutting-edge technology, exceptional service, and a fleet that meets every need.
+        </p>
+        
+        <!-- Newsletter Subscription -->
+        <div class="mb-6">
+          <h4 class="text-white font-semibold mb-3">Stay Updated</h4>
+          <div class="flex">
+            <input 
+              type="email" 
+              placeholder="Enter your email"
+              [(ngModel)]="newsletterEmail"
+              class="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            >
+            <button 
+              (click)="subscribeNewsletter()"
+              [disabled]="isSubscribing"
+              class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-r-lg hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            >
+              @if (isSubscribing) {
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              }
+              {{ isSubscribing ? 'Subscribing...' : 'Subscribe' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+        <ul class="space-y-2">
+          <li><a routerLink="/vehicles" class="text-gray-400 hover:text-white transition-colors duration-200">Browse Vehicles</a></li>
+          @if (isLoggedIn) {
+            <li><a routerLink="/reservations" class="text-gray-400 hover:text-white transition-colors duration-200">My Reservations</a></li>
+            <li><a routerLink="/profile" class="text-gray-400 hover:text-white transition-colors duration-200">Profile</a></li>
+            <li><a routerLink="/my-bookmarks" class="text-gray-400 hover:text-white transition-colors duration-200">Bookmarks</a></li>
+            <li><a routerLink="/favorites" class="text-gray-400 hover:text-white transition-colors duration-200">Favorites</a></li>
+          } @else {
+            <li><a routerLink="/auth/login" class="text-gray-400 hover:text-white transition-colors duration-200">Sign In</a></li>
+            <li><a routerLink="/auth/register" class="text-gray-400 hover:text-white transition-colors duration-200">Create Account</a></li>
+            <li><a routerLink="/auth/forgot-password" class="text-gray-400 hover:text-white transition-colors duration-200">Forgot Password</a></li>
+          }
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div>
+        <h3 class="text-white font-semibold mb-4">Support</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Help Center</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Contact Us</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Terms of Service</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Privacy Policy</a></li>
+          @if (isLoggedIn && isAdmin) {
+            <li><a routerLink="/admin" class="text-gray-400 hover:text-white transition-colors duration-200">Admin Panel</a></li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-white/10 mt-8 pt-8 text-center">
+      <p class="text-gray-400 text-sm">
+        © 2024 SmartFleet VRS. All rights reserved. Built with ❤️ for premium vehicle rental experiences.
+      </p>
+    </div>
+  </div>
+</footer>

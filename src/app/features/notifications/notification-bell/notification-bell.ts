@@ -30,7 +30,7 @@ export class NotificationBell implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('🔧 NotificationBell ngOnInit() called');
-    
+
     this.subscriptions.push(
       this.notificationService.notifications$.subscribe(notifications => {
         console.log('📋 NotificationService notifications$ updated:', notifications);
@@ -50,7 +50,7 @@ export class NotificationBell implements OnInit, OnDestroy {
         console.log('📨 Message:', message);
         console.log('📨 Message type:', message?.type);
         console.log('📨 Message payload:', message?.payload);
-        
+
         if (message && message.payload) {
           console.log('✅ Message has payload, calling handleRealTimeNotification');
           this.handleRealTimeNotification(message.payload);
@@ -68,7 +68,7 @@ export class NotificationBell implements OnInit, OnDestroy {
     // Initialize WebSocket connection if user is authenticated
     const currentUser = this.authService.getCurrentUser();
     console.log('🔧 Current user from auth service:', currentUser);
-    
+
     if (currentUser?.email) {
       console.log('✅ User authenticated with email:', currentUser.email);
       console.log('🔧 Initializing WebSocket connection...');
@@ -86,7 +86,7 @@ export class NotificationBell implements OnInit, OnDestroy {
 
   private initializeWebSocket(userEmail: string): void {
     console.log('🔧 initializeWebSocket() called with userEmail:', userEmail);
-    
+
     this.webSocketService.connect(userEmail).then(() => {
       console.log('✅ WebSocket connected for notifications');
     }).catch(error => {
@@ -96,23 +96,24 @@ export class NotificationBell implements OnInit, OnDestroy {
 
   private handleRealTimeNotification(notification: any): void {
     console.log('🔧 handleRealTimeNotification() called with:', notification);
-    
+
     try {
       // Convert the notification to match our interface
       const newNotification: Notification = {
         id: notification.id,
+        userId: notification.userId,
         message: notification.message,
         type: notification.type as NotificationType,
         createdAt: new Date(notification.createdAt),
         read: notification.read
       };
-      
+
       console.log('✅ Converted notification:', newNotification);
 
       // Add to the beginning of the list
       const currentNotifications = this.notifications;
       console.log('📋 Current notifications count:', currentNotifications.length);
-      
+
       this.notifications = [newNotification, ...currentNotifications];
       console.log('📋 Updated notifications count:', this.notifications.length);
 
@@ -191,6 +192,7 @@ export class NotificationBell implements OnInit, OnDestroy {
   }
 
   formatTime(date: Date): string {
+    console.log('🔧 formatTime() called with date:', date);
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
     const minutes = Math.floor(diff / 60000);

@@ -6,14 +6,13 @@ export interface Vehicle {
   licensePlate: string;
   vehicleType: VehicleType;
   fuelType: FuelType;
-  transmission: string;
-  mileage: number;
-  dailyRate: number;
   status: VehicleStatus;
+  mileage: number;
+  pricePerDay: number;
+  imageUrl?: string;
   description?: string;
-  images: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum VehicleType {
