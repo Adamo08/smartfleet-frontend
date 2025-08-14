@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 // Updated to match backend NotificationDto
 export interface Notification {
   id: number;
+  userId: number;
   message: string;
   type: NotificationType;
   createdAt: Date;
@@ -44,6 +45,12 @@ export enum NotificationType {
 export interface NotificationPreferences {
   id: number;
   userId: number;
+  realTimeEnabled: boolean;
+  emailEnabled: boolean;
+}
+
+// Backend UserNotificationPreferencesDto
+export interface UserNotificationPreferences {
   realTimeEnabled: boolean;
   emailEnabled: boolean;
 }
@@ -109,6 +116,15 @@ export class NotificationService {
     return this.http.put<NotificationPreferences>(`${environment.apiUrl}/notifications/preferences`, preferences);
   }
 
+  // User Preferences (from UserNotificationPreferencesController)
+  getUserNotificationPreferences(): Observable<UserNotificationPreferences> {
+    return this.http.get<UserNotificationPreferences>(`${environment.apiUrl}/user/preferences/notifications`);
+  }
+
+  updateUserNotificationPreferences(preferences: UserNotificationPreferences): Observable<UserNotificationPreferences> {
+    return this.http.put<UserNotificationPreferences>(`${environment.apiUrl}/user/preferences/notifications`, preferences);
+  }
+
   private updateUnreadCount(): void {
     const unreadCount = this.notificationsSubject.value.filter(n => !n.read).length;
     this.unreadCountSubject.next(unreadCount);
@@ -121,7 +137,7 @@ export class NotificationService {
 
   // Get notification type display name
   getNotificationTypeDisplayName(type: NotificationType): string {
-    return type.replace(/_/g, ' ').toLowerCase()
+    return type.toString().replace(/_/g, ' ').toLowerCase()
       .replace(/\b\w/g, l => l.toUpperCase());
   }
 

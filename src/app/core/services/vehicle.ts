@@ -1,7 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api';
 import { Vehicle } from '../models/vehicle.interface';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+
+interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +18,9 @@ export class VehicleService {
   constructor(private apiService: ApiService) {}
 
   getVehicles(params?: any): Observable<Vehicle[]> {
-    return this.apiService.get<Vehicle[]>('/vehicles', params);
+    return this.apiService.get<PaginatedResponse<Vehicle>>('/vehicles', params).pipe(
+      map(response => response.content)
+    );
   }
 
   getVehicleById(id: number): Observable<Vehicle> {
@@ -18,7 +28,9 @@ export class VehicleService {
   }
 
   searchVehicles(params: any): Observable<Vehicle[]> {
-    return this.apiService.get<Vehicle[]>('/vehicles/search', params);
+    return this.apiService.get<PaginatedResponse<Vehicle>>('/vehicles/search', params).pipe(
+      map(response => response.content)
+    );
   }
 
   createVehicle(vehicle: Partial<Vehicle>): Observable<Vehicle> {
