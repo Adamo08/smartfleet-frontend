@@ -24,53 +24,79 @@ export class NotificationBell implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private webSocketService: WebSocketService,
     private authService: AuthService
-  ) {}
+  ) {
+    console.log('🔧 NotificationBell component initialized');
+  }
 
   ngOnInit(): void {
+    console.log('🔧 NotificationBell ngOnInit() called');
+    
     this.subscriptions.push(
       this.notificationService.notifications$.subscribe(notifications => {
+        console.log('📋 NotificationService notifications$ updated:', notifications);
         this.notifications = notifications;
       }),
       this.notificationService.unreadCount$.subscribe(count => {
+        console.log('🔢 NotificationService unreadCount$ updated:', count);
         this.unreadCount = count;
       }),
       this.webSocketService.state$.subscribe(state => {
+        console.log('🔌 WebSocket state$ updated:', state);
         this.wsConnected = state.connected;
       }),
       // Subscribe to WebSocket messages for real-time notifications
       this.webSocketService.messages$.subscribe(message => {
-        // log the received message for debugging
-        console.log('WebSocket message received:', message);
+        console.log('📨 === NotificationBell: WebSocket Message Received ===');
+        console.log('📨 Message:', message);
+        console.log('📨 Message type:', message?.type);
+        console.log('📨 Message payload:', message?.payload);
+        
         if (message && message.payload) {
+          console.log('✅ Message has payload, calling handleRealTimeNotification');
           this.handleRealTimeNotification(message.payload);
+        } else {
+          console.warn('⚠️ Message is null or missing payload');
+          console.warn('⚠️ Message object:', message);
         }
       })
     );
 
     // Load initial notifications
+    console.log('🔧 Loading initial notification data...');
     this.notificationService.loadInitialData();
 
     // Initialize WebSocket connection if user is authenticated
     const currentUser = this.authService.getCurrentUser();
+    console.log('🔧 Current user from auth service:', currentUser);
+    
     if (currentUser?.email) {
+      console.log('✅ User authenticated with email:', currentUser.email);
+      console.log('🔧 Initializing WebSocket connection...');
       this.initializeWebSocket(currentUser.email);
+    } else {
+      console.warn('⚠️ No authenticated user found, cannot initialize WebSocket');
     }
   }
 
   ngOnDestroy(): void {
+    console.log('🔧 NotificationBell ngOnDestroy() called');
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.webSocketService.disconnect();
   }
 
   private initializeWebSocket(userEmail: string): void {
+    console.log('🔧 initializeWebSocket() called with userEmail:', userEmail);
+    
     this.webSocketService.connect(userEmail).then(() => {
-      console.log('WebSocket connected for notifications');
+      console.log('✅ WebSocket connected for notifications');
     }).catch(error => {
-      console.error('Failed to connect WebSocket:', error);
+      console.error('❌ Failed to connect WebSocket:', error);
     });
   }
 
   private handleRealTimeNotification(notification: any): void {
+    console.log('🔧 handleRealTimeNotification() called with:', notification);
+    
     try {
       // Convert the notification to match our interface
       const newNotification: Notification = {
@@ -80,21 +106,26 @@ export class NotificationBell implements OnInit, OnDestroy {
         createdAt: new Date(notification.createdAt),
         read: notification.read
       };
+      
+      console.log('✅ Converted notification:', newNotification);
 
       // Add to the beginning of the list
       const currentNotifications = this.notifications;
-      // log the current notifications for debugging
-      console.log('Current notifications before adding new one:', currentNotifications);
+      console.log('📋 Current notifications count:', currentNotifications.length);
+      
       this.notifications = [newNotification, ...currentNotifications];
+      console.log('📋 Updated notifications count:', this.notifications.length);
 
       // Update unread count if notification is unread
       if (!newNotification.read) {
         this.unreadCount++;
+        console.log('🔢 Updated unread count to:', this.unreadCount);
       }
 
-      console.log('Real-time notification received:', newNotification);
+      console.log('✅ Real-time notification processed successfully:', newNotification);
     } catch (error) {
-      console.error('Error handling real-time notification:', error);
+      console.error('❌ Error handling real-time notification:', error);
+      console.error('❌ Notification data that caused error:', notification);
     }
   }
 
