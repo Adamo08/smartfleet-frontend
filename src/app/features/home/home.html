@@ -94,13 +94,13 @@
 </div>
 
 <!-- Featured Vehicles Section -->
-<div class="py-24 bg-white relative overflow-hidden">
+<div class="py-24 bg-gradient-to-br from-slate-800 via-indigo-900 to-slate-800 relative overflow-hidden">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-        Featured <span class="bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">Vehicles</span>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+        Featured <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Vehicles</span>
       </h2>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
         Discover our most popular vehicles, carefully selected for comfort, style, and performance.
       </p>
     </div>
@@ -222,27 +222,27 @@
 </div>
 
 <!-- Testimonials Section -->
-<div class="py-24 bg-gray-50 relative overflow-hidden">
+<div class="py-24 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 relative overflow-hidden">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-        What Our <span class="bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">Customers</span> Say
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+        What Our <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Customers</span> Say
       </h2>
-      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
         Don't just take our word for it. Here's what our satisfied customers have to say about their SmartFleet experience.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       @for (testimonial of serviceTestimonials; track testimonial.id) {
-        <div class="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
+        <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-white/10">
           <div class="flex items-center mb-6">
             <div class="w-12 h-12 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-semibold">
               {{ testimonial.userName[0] }}
             </div>
             <div class="ml-4">
-              <h4 class="font-semibold text-gray-900">{{ testimonial.userName }}</h4>
-              <p class="text-sm text-gray-500">SmartFleet Customer</p>
+              <h4 class="font-semibold text-white">{{ testimonial.userName }}</h4>
+              <p class="text-sm text-gray-400">SmartFleet Customer</p>
             </div>
           </div>
 
@@ -252,8 +252,8 @@
             }
           </div>
 
-          <h5 class="font-semibold text-gray-900 mb-3">{{ testimonial.title }}</h5>
-          <p class="text-gray-600 leading-relaxed">{{ testimonial.content }}</p>
+          <h5 class="font-semibold text-white mb-3">{{ testimonial.title }}</h5>
+          <p class="text-gray-300 leading-relaxed">{{ testimonial.content }}</p>
         </div>
       }
     </div>
