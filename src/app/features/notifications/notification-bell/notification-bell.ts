@@ -5,6 +5,7 @@ import { NotificationService, Notification, NotificationType } from '../../../co
 import { WebSocketService, WebSocketMessage } from '../../../core/services/websocket';
 import { AuthService } from '../../../core/services/auth';
 import { Subscription } from 'rxjs';
+import { User } from '../../../core/models/user.interface';
 
 @Component({
   selector: 'app-notification-bell',
@@ -19,6 +20,7 @@ export class NotificationBell implements OnInit, OnDestroy {
   isDropdownOpen: boolean = false;
   wsConnected: boolean = false;
   private subscriptions: Subscription[] = [];
+  private currentUser: User | null = null;
 
   constructor(
     private notificationService: NotificationService,
@@ -58,24 +60,25 @@ export class NotificationBell implements OnInit, OnDestroy {
           console.warn('⚠️ Message is null or missing payload');
           console.warn('⚠️ Message object:', message);
         }
+      }),
+      // ✅ NEW: Subscribe to currentUser$ to handle asynchronous user data
+      this.authService.currentUser$.subscribe(user => {
+        this.currentUser = user;
+        console.log('🔧 Current user updated from auth service:', this.currentUser);
+
+        if (this.currentUser?.email) {
+          console.log('✅ User authenticated with email:', this.currentUser.email);
+          console.log('🔧 Initializing WebSocket connection...');
+          this.initializeWebSocket(this.currentUser.email);
+        } else {
+          console.warn('⚠️ No authenticated user found, cannot initialize WebSocket');
+        }
       })
     );
 
     // Load initial notifications
     console.log('🔧 Loading initial notification data...');
     this.notificationService.loadInitialData();
-
-    // Initialize WebSocket connection if user is authenticated
-    const currentUser = this.authService.getCurrentUser();
-    console.log('🔧 Current user from auth service:', currentUser);
-
-    if (currentUser?.email) {
-      console.log('✅ User authenticated with email:', currentUser.email);
-      console.log('🔧 Initializing WebSocket connection...');
-      this.initializeWebSocket(currentUser.email);
-    } else {
-      console.warn('⚠️ No authenticated user found, cannot initialize WebSocket');
-    }
   }
 
   ngOnDestroy(): void {

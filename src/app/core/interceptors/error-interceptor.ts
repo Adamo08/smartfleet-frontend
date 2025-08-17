@@ -1,38 +1,23 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { catchError, throwError, switchMap } from 'rxjs';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../services/auth';
+import { catchError, throwError } from 'rxjs';
+import { ErrorService} from '../services/error';
 
-export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router);
-  const authService = inject(AuthService);
+/**
+ * HttpInterceptorFn for global error handling.
+ * This interceptor intercepts all HTTP requests and delegates error handling to the ErrorService.
+ */
+export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
+  // Inject the ErrorService to use its methods.
+  const errorService = inject(ErrorService);
 
   return next(req).pipe(
+    // Catch errors in the observable stream.
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        // Don't intercept auth endpoints to avoid infinite loops
-        if (!req.url.includes('/auth/')) {
-          console.log('401 error detected, attempting token refresh...');
-          
-          // Try to refresh the token
-          authService.refreshToken().subscribe({
-            next: () => {
-              console.log('Token refreshed successfully, retrying request...');
-              // The request will be retried automatically by the client
-            },
-            error: (refreshError) => {
-              console.log('Token refresh failed, logging out...');
-              authService.logout();
-              router.navigate(['/auth/login']).then(r => console.log("Navigating to login due to refresh failure..."));
-            }
-          });
-        } else {
-          // For auth endpoints, just logout
-          authService.logout();
-          router.navigate(['/auth/login']).then(r => console.log("Navigating to login due to auth endpoint 401..."));
-        }
-      }
+      // Call the centralized error handler in the ErrorService.
+      errorService.handleError(error);
+
+      // Re-throw the error to propagate it to the component or service that made the call.
       return throwError(() => error);
     })
   );

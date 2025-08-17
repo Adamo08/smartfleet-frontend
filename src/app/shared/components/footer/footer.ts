@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NewsletterService } from '../../../core/services/newsletter';
 import { AuthService } from '../../../core/services/auth';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
@@ -12,22 +13,31 @@ import { AuthService } from '../../../core/services/auth';
   templateUrl: './footer.html',
   styleUrl: './footer.css'
 })
-export class Footer {
+export class Footer implements OnInit, OnDestroy {
   newsletterEmail: string = '';
   isSubscribing: boolean = false;
   isLoggedIn: boolean = false;
   isAdmin: boolean = false;
+  private authSubscription!: Subscription;
 
   constructor(
     private newsletterService: NewsletterService,
     private authService: AuthService
-  ) {
-    this.checkAuthStatus();
+  ) {}
+
+  ngOnInit(): void {
+    // Subscribe to the currentUser$ observable to react to authentication state changes
+    this.authSubscription = this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      this.isAdmin = !!user && user.role === 'ADMIN';
+    });
   }
 
-  private checkAuthStatus(): void {
-    this.isLoggedIn = this.authService.isAuthenticated();
-    this.isAdmin = this.authService.isAdmin();
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 
   subscribeNewsletter() {

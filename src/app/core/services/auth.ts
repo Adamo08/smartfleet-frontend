@@ -12,7 +12,8 @@ import {
   ForgotPasswordRequest,
   ResetPasswordRequest,
   ChangePasswordRequest,
-  OAuthProvider
+  OAuthProvider,
+  JwtResponse
 } from '../models/user.interface';
 
 @Injectable({
@@ -28,8 +29,8 @@ export class AuthService {
     this.loadUserFromStorage();
   }
 
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, credentials)
+  login(credentials: LoginRequest): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>(`${environment.apiUrl}/auth/login`, credentials)
       .pipe(
         tap(response => {
           this.handleSuccessfulAuth(response);
@@ -61,17 +62,16 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  // The simplified isAuthenticated method
   isAuthenticated(): boolean {
     const token = localStorage.getItem('accessToken');
-    if (!token) return false;
-    
-    // Check if token is expired
-    if (this.isTokenExpired(token)) {
-      this.logout();
-      return false;
-    }
-    
-    return !!this.getCurrentUser();
+    return !!token && !this.isTokenExpired(token);
+  }
+
+  // Check if the current user has the 'ADMIN' role.
+  isAdmin(): boolean {
+    const user = this.getCurrentUser();
+    return !!user && user.role === 'ADMIN';
   }
 
   // New method for async authentication check
@@ -80,18 +80,18 @@ export class AuthService {
     if (!token) {
       return of(false);
     }
-    
+
     // Check if token is expired
     if (this.isTokenExpired(token)) {
       this.logout();
       return of(false);
     }
-    
+
     // If we have a user, return true immediately
     if (this.getCurrentUser()) {
       return of(true);
     }
-    
+
     // If no user but token exists, validate it
     return this.validateToken().pipe(
       map(user => {
@@ -103,11 +103,6 @@ export class AuthService {
         return of(false);
       })
     );
-  }
-
-  isAdmin(): boolean {
-    const user = this.getCurrentUser();
-    return user?.role === 'ADMIN';
   }
 
   getAccessToken(): string | null {
@@ -219,15 +214,17 @@ export class AuthService {
     });
   }
 
-  private handleSuccessfulAuth(response: LoginResponse | OAuthLoginResponse): void {
+  private handleSuccessfulAuth(response: LoginResponse | OAuthLoginResponse | JwtResponse): void {
     console.log('Handling successful authentication:', response);
 
     // Store tokens
     localStorage.setItem('accessToken', response.accessToken);
-    localStorage.setItem('refreshToken', response.refreshToken);
+    if ('refreshToken' in response) {
+      localStorage.setItem('refreshToken', response.refreshToken);
+    }
 
     // Update user state
-    if (response.user) {
+    if ('user' in response && response.user) {
       console.log('Setting current user:', response.user);
       this.currentUserSubject.next(response.user);
     } else {
@@ -260,10 +257,10 @@ export class AuthService {
 
   private loadUserFromStorage(): void {
     if (this.isInitializing) return;
-    
+
     this.isInitializing = true;
     const token = localStorage.getItem('accessToken');
-    
+
     if (token) {
       // Check if token is expired before making the request
       if (this.isTokenExpired(token)) {
@@ -272,7 +269,7 @@ export class AuthService {
         this.isInitializing = false;
         return;
       }
-      
+
       this.validateToken().pipe(
         retry({ count: 2, delay: 1000 }), // Retry up to 2 times with 1 second delay
         catchError((error) => {
@@ -316,7 +313,7 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expirationTime = payload.exp * 1000; // Convert to milliseconds
       const currentTime = Date.now();
-      
+
       // Add 5 minute buffer to prevent edge cases
       return currentTime >= (expirationTime - (5 * 60 * 1000));
     } catch (error) {
