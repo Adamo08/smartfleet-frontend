@@ -43,3 +43,7 @@ Thumbs.db
 
 ### guide.md ###
 guide.md
+
+
+### Skip the puller bash script ###
+puller.sh
