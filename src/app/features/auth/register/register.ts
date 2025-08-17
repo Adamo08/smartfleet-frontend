@@ -51,24 +51,7 @@ export class RegisterComponent {
       },
       error: (err: HttpErrorResponse) => {
         this.loading = false;
-
-        if (err.error && typeof err.error === 'object' && !Array.isArray(err.error)) {
-          const errorKeys = Object.keys(err.error);
-
-          if (errorKeys.length > 0) {
-            const fieldName = errorKeys[0];
-            const message = err.error[fieldName];
-            this.error = `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`;
-          } else {
-            this.error = 'An unknown validation error occurred.';
-          }
-        } else if (err.error?.message) {
-          this.error = err.error.message;
-        } else {
-          this.error = 'Registration failed due to a server error.';
-        }
-
-        this.toastr.error(this.error, 'Registration Failed');
+        this.error = err.error.message;
       }
     });
   }
@@ -79,7 +62,7 @@ export class RegisterComponent {
     this.error = '';
 
     if (!this.registerData.email || !this.registerData.password ||
-      !this.registerData.firstName || !this.registerData.lastName) {
+      !this.registerData.firstName || !this.registerData.lastName || !this.registerData.phoneNumber) {
       this.error = 'Please fill in all required fields';
       return false;
     }
@@ -89,6 +72,13 @@ export class RegisterComponent {
       this.error = 'Please enter a valid email address';
       return false;
     }
+
+    const phoneRegex = /^0[76][0-9]{8}$/;
+    if (!phoneRegex.test(this.registerData.phoneNumber)) {
+      this.error = 'Invalid phone number format. Phone number must start with 06 or 07 and be followed by 8 digits';
+      return false;
+    }
+
 
     if (this.registerData.password.length < 6) {
       this.error = 'Password must be at least 6 characters long';

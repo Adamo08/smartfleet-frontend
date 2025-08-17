@@ -5,6 +5,7 @@ import { NotificationService, Notification, NotificationType } from '../../../co
 import { WebSocketService, WebSocketMessage } from '../../../core/services/websocket';
 import { AuthService } from '../../../core/services/auth';
 import { Subscription } from 'rxjs';
+import { User } from '../../../core/models/user.interface';
 
 @Component({
   selector: 'app-notification-bell',
@@ -19,6 +20,7 @@ export class NotificationBell implements OnInit, OnDestroy {
   isDropdownOpen: boolean = false;
   wsConnected: boolean = false;
   private subscriptions: Subscription[] = [];
+  private currentUser: User | null = null;
 
   constructor(
     private notificationService: NotificationService,
@@ -58,24 +60,25 @@ export class NotificationBell implements OnInit, OnDestroy {
           console.warn('⚠️ Message is null or missing payload');
           console.warn('⚠️ Message object:', message);
         }
+      }),
+      // ✅ NEW: Subscribe to currentUser$ to handle asynchronous user data
+      this.authService.currentUser$.subscribe(user => {
+        this.currentUser = user;
+        console.log('🔧 Current user updated from auth service:', this.currentUser);
+
+        if (this.currentUser?.email) {
+          console.log('✅ User authenticated with email:', this.currentUser.email);
+          console.log('🔧 Initializing WebSocket connection...');
+          this.initializeWebSocket(this.currentUser.email);
+        } else {
+          console.warn('⚠️ No authenticated user found, cannot initialize WebSocket');
+        }
       })
     );
 
     // Load initial notifications
     console.log('🔧 Loading initial notification data...');
     this.notificationService.loadInitialData();
-
-    // Initialize WebSocket connection if user is authenticated
-    const currentUser = this.authService.getCurrentUser();
-    console.log('🔧 Current user from auth service:', currentUser);
-
-    if (currentUser?.email) {
-      console.log('✅ User authenticated with email:', currentUser.email);
-      console.log('🔧 Initializing WebSocket connection...');
-      this.initializeWebSocket(currentUser.email);
-    } else {
-      console.warn('⚠️ No authenticated user found, cannot initialize WebSocket');
-    }
   }
 
   ngOnDestroy(): void {
@@ -130,11 +133,11 @@ export class NotificationBell implements OnInit, OnDestroy {
     }
   }
 
-  toggleDropdown(): void {
-    this.isDropdownOpen = !this.isDropdownOpen;
+  showDropdown(): void {
+    this.isDropdownOpen = true;
   }
 
-  closeDropdown(): void {
+  hideDropdown(): void {
     this.isDropdownOpen = false;
   }
 
@@ -174,16 +177,16 @@ export class NotificationBell implements OnInit, OnDestroy {
       case NotificationType.PAYMENT_SUCCESS:
       case NotificationType.BOOKING_CONFIRMATION:
       case NotificationType.RESERVATION_CONFIRMED:
-        return 'text-green-600 bg-green-50 border-green-200';
+        return 'text-green-400 bg-green-500/10 border-green-500/20';
       case NotificationType.PAYMENT_FAILURE:
       case NotificationType.SECURITY_ALERT:
       case NotificationType.BOOKING_CANCELLATION:
-        return 'text-red-600 bg-red-50 border-red-200';
+        return 'text-red-400 bg-red-500/10 border-red-500/20';
       case NotificationType.SLOT_UNAVAILABLE:
       case NotificationType.MAINTENANCE_NOTIFICATION:
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+        return 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20';
       default:
-        return 'text-blue-600 bg-blue-50 border-blue-200';
+        return 'text-blue-400 bg-blue-500/10 border-blue-500/20';
     }
   }
 
@@ -193,6 +196,7 @@ export class NotificationBell implements OnInit, OnDestroy {
 
   formatTime(date: Date): string {
     console.log('🔧 formatTime() called with date:', date);
+
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
     const minutes = Math.floor(diff / 60000);

@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { VehicleService } from '../../core/services/vehicle';
 import { Vehicle } from '../../core/models/vehicle.interface';
 import { VehicleCard } from '../vehicles/vehicle-card/vehicle-card';
+import { User } from '../../core/models/user.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -13,11 +15,12 @@ import { VehicleCard } from '../vehicles/vehicle-card/vehicle-card';
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
-  currentUser: any = null;
+  currentUser: User | null = null;
   featuredVehicles: Vehicle[] = [];
   loading = true;
+  private userSubscription: Subscription | null = null;
 
   // Static service testimonials
   serviceTestimonials = [
@@ -52,13 +55,19 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.checkAuthStatus();
     this.loadFeaturedVehicles();
+    // Log the current user and authentication status
+    console.log('🔧 HomeComponent initialized');
+    console.log('🔧 Current User:', this.currentUser);
+    console.log('🔧 Is Authenticated:', this.isAuthenticated);
   }
 
+  // Updated to subscribe to the user data
   private checkAuthStatus(): void {
-    this.isAuthenticated = this.authService.isAuthenticated();
-    if (this.isAuthenticated) {
-      this.currentUser = this.authService.getCurrentUser();
-    }
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isAuthenticated = !!user; // Set isAuthenticated based on if a user exists
+      console.log('🔧 User data updated:', this.currentUser);
+    });
   }
 
   private loadFeaturedVehicles(): void {
@@ -98,5 +107,11 @@ export class HomeComponent implements OnInit {
   onFavoriteToggled(vehicleId: number): void {
     // Handle favorite toggle for featured vehicles
     console.log('Favorite toggled for vehicle:', vehicleId);
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 }

@@ -30,7 +30,11 @@ export interface LoginRequest {
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
-  user: User;
+}
+
+// New interface for the backend's token-only response
+export interface JwtResponse {
+  accessToken: string;
 }
 
 export interface RegisterRequest {
