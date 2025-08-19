@@ -1,1 +1,177 @@
-<p>slot-selector works!</p>
+<div class="slot-selector-container">
+  <!-- Error Message -->
+  @if (errorMessage) {
+  <div class="error-message">
+    {{ errorMessage }}
+  </div>
+  }
+
+  <!-- Loading Spinner -->
+  @if (isLoading) {
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading available slots...</p>
+  </div>
+  }
+
+  <!-- Calendar View -->
+  @if (showDatePicker) {
+  <div class="calendar-section">
+    <div class="calendar-header">
+      <button class="nav-btn" (click)="onPreviousMonth()" type="button">
+        <span>&lt;</span>
+      </button>
+      <h3 class="month-title">{{ getMonthName() }}</h3>
+      <button class="nav-btn" (click)="onNextMonth()" type="button">
+        <span>&gt;</span>
+      </button>
+    </div>
+
+    <div class="calendar-grid">
+      <!-- Day headers -->
+      @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
+      <div class="day-header">
+        {{ day }}
+      </div>
+      }
+
+      <!-- Calendar days -->
+      @for (date of calendarDays; track date) {
+      <div 
+        class="calendar-day"
+        [class.current-month]="isCurrentMonth(date)"
+        [class.today]="isToday(date)"
+        [class.selected]="isSelectedDate(date)"
+        [class.has-slots]="hasAvailableSlots(date)"
+        (click)="onDateSelect(date)">
+        
+        <span class="day-number">{{ getDayNumber(date) }}</span>
+        
+        <!-- Slot indicator -->
+        @if (hasAvailableSlots(date)) {
+        <div class="slot-indicator">
+          <span class="slot-count">{{ getSlotCountForDate(date) }}</span>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Time Slots View -->
+  @if (showTimeSlots && availableSlots.length > 0) {
+  <div class="time-slots-section">
+    <h4>Available Time Slots for {{ formatDate(selectedDate) }}</h4>
+    
+    <div class="time-slots-grid">
+      @for (slot of getAvailableSlotsForDate(selectedDate); track slot.id) {
+      <div 
+        class="time-slot-card"
+        [class.selected]="selectedSlot?.id === slot.id"
+        (click)="onSlotSelect(slot)">
+        
+        <div class="slot-time-range">
+          <div class="start-time">{{ formatTime(slot.startTime) }}</div>
+          <div class="time-separator">-</div>
+          <div class="end-time">{{ formatTime(slot.endTime) }}</div>
+        </div>
+        
+        <div class="slot-duration">
+          {{ getSlotDuration(slot) }}
+        </div>
+        
+        <div class="slot-vehicle-info">
+          <span class="vehicle-brand">{{ slot.vehicleBrand }}</span>
+          <span class="vehicle-model">{{ slot.vehicleModel }}</span>
+        </div>
+        
+        <div class="slot-status">
+          <span class="status-badge available">Available</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- No Slots Available -->
+  @if (showTimeSlots && availableSlots.length === 0 && !isLoading) {
+  <div class="no-slots">
+    <div class="no-slots-icon">📅</div>
+    <h4>No Available Slots</h4>
+    <p>There are no available time slots for the selected date.</p>
+    <p>Try selecting a different date or contact us for assistance.</p>
+  </div>
+  }
+
+  <!-- Time Range Selector -->
+  @if (showTimeSlots && timeSlots.length > 0) {
+  <div class="time-range-selector">
+    <h4>Custom Time Range</h4>
+    
+    <div class="time-range-inputs">
+      <div class="time-input-group">
+        <label for="startTime">Start Time</label>
+        <select 
+          id="startTime" 
+          [(ngModel)]="selectedStartTime"
+          (change)="onTimeSelect(selectedStartTime, selectedEndTime)"
+          class="time-select">
+          <option value="">Select start time</option>
+          @for (time of timeSlots; track time) {
+          <option [value]="time">
+            {{ time }}
+          </option>
+          }
+        </select>
+      </div>
+      
+      <div class="time-input-group">
+        <label for="endTime">End Time</label>
+        <select 
+          id="endTime" 
+          [(ngModel)]="selectedEndTime"
+          (change)="onTimeSelect(selectedStartTime, selectedEndTime)"
+          class="time-select">
+          <option value="">Select end time</option>
+          @for (time of timeSlots; track time) {
+          <option [value]="time">
+            {{ time }}
+          </option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Selected Slot Summary -->
+  @if (selectedSlot) {
+  <div class="selected-slot-summary">
+    <h4>Selected Time Slot</h4>
+    
+    <div class="selected-slot-details">
+      <div class="detail-row">
+        <span class="label">Date:</span>
+        <span class="value">{{ formatDate(selectedSlot.startTime) }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="label">Time:</span>
+        <span class="value">{{ formatTime(selectedSlot.startTime) }} - {{ formatTime(selectedSlot.endTime) }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="label">Duration:</span>
+        <span class="value">{{ getSlotDuration(selectedSlot) }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <span class="label">Vehicle:</span>
+        <span class="value">{{ selectedSlot.vehicleBrand }} {{ selectedSlot.vehicleModel }}</span>
+      </div>
+    </div>
+  </div>
+  }
+</div>
