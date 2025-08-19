@@ -1,83 +1,122 @@
-<div class="error-container">
-  <div class="error-content">
-    <div class="error-icon">
-      <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4 sm:p-8">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 lg:p-12 text-center shadow-2xl max-w-lg w-full mx-auto transform transition-all duration-600 ease-out animate-fade-in-up">
+    
+    <!-- Error Icon -->
+    <div class="mb-8 text-indigo-500 animate-pulse">
+      <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
       </svg>
     </div>
     
-    <h1 class="error-title">404 - Page Not Found</h1>
+    <!-- Error Title -->
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+      404 - Page Not Found
+    </h1>
     
-    <p class="error-message">
+    <!-- Error Message -->
+    <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
       Oops! The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
     </p>
     
-    <div class="search-section">
-      <h3>Looking for something specific?</h3>
-      <div class="search-box">
+    <!-- Search Section -->
+    <div class="mb-8">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Looking for something specific?</h3>
+      <div class="flex max-w-md mx-auto rounded-xl overflow-hidden shadow-lg">
         <input 
           type="text" 
           placeholder="Search for vehicles, services..." 
           [(ngModel)]="searchQuery"
           (keyup.enter)="performSearch()"
-          class="search-input"
+          class="flex-1 px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-700 border-none outline-none placeholder-gray-500 dark:placeholder-gray-400"
         >
-        <button class="search-btn" (click)="performSearch()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <button 
+          (click)="performSearch()"
+          class="px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-none cursor-pointer transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 flex items-center justify-center"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/>
           </svg>
         </button>
       </div>
     </div>
     
-    <div class="quick-links">
-      <h3>Popular Pages</h3>
-      <div class="links-grid">
-        <a routerLink="/" class="quick-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Quick Links -->
+    <div class="mb-8">
+      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Popular Pages</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-md mx-auto">
+        <a 
+          routerLink="/" 
+          class="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-700 dark:text-gray-200 font-medium transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-indigo-500 border-2 border-transparent hover:-translate-y-1 hover:shadow-lg"
+        >
+          <svg class="w-5 h-5 text-indigo-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/>
           </svg>
-          Home
+          <span class="text-sm">Home</span>
         </a>
-        <a routerLink="/vehicles" class="quick-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <a 
+          routerLink="/vehicles" 
+          class="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-700 dark:text-gray-200 font-medium transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-indigo-500 border-2 border-transparent hover:-translate-y-1 hover:shadow-lg"
+        >
+          <svg class="w-5 h-5 text-indigo-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" fill="currentColor"/>
           </svg>
-          Vehicles
+          <span class="text-sm">Vehicles</span>
         </a>
-        <a routerLink="/reservations" class="quick-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <a 
+          routerLink="/reservations" 
+          class="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-700 dark:text-gray-200 font-medium transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-indigo-500 border-2 border-transparent hover:-translate-y-1 hover:shadow-lg"
+        >
+          <svg class="w-5 h-5 text-indigo-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" fill="currentColor"/>
           </svg>
-          Reservations
+          <span class="text-sm">Reservations</span>
         </a>
-        <a routerLink="/auth/login" class="quick-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <a 
+          routerLink="/auth/login" 
+          class="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl text-gray-700 dark:text-gray-200 font-medium transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-indigo-500 border-2 border-transparent hover:-translate-y-1 hover:shadow-lg"
+        >
+          <svg class="w-5 h-5 text-indigo-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z" fill="currentColor"/>
           </svg>
-          Login
+          <span class="text-sm">Login</span>
         </a>
       </div>
     </div>
     
-    <div class="error-actions">
-      <button class="btn btn-primary" (click)="goHome()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+      <button 
+        (click)="goHome()"
+        class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 min-w-[140px]"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/>
         </svg>
         Go Home
       </button>
       
-      <button class="btn btn-secondary" (click)="goBack()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <button 
+        (click)="goBack()"
+        class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 min-w-[140px]"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
         </svg>
         Go Back
       </button>
     </div>
     
-    <div class="error-help">
-      <p>Still can't find what you're looking for? <a href="mailto:support@smartfleet.com">Contact Support</a></p>
+    <!-- Help Section -->
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        Still can't find what you're looking for? 
+        <a 
+          href="mailto:support@smartfleet.com" 
+          class="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold transition-colors duration-300 hover:underline"
+        >
+          Contact Support
+        </a>
+      </p>
     </div>
   </div>
 </div>
