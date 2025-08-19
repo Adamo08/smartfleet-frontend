@@ -16,17 +16,24 @@ import {
   JwtResponse
 } from '../models/user.interface';
 
+export type UserMode = 'admin' | 'customer';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  
+  private currentModeSubject = new BehaviorSubject<UserMode>('customer');
+  public currentMode$ = this.currentModeSubject.asObservable();
+  
   private isRefreshing = false;
   private isInitializing = false;
 
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();
+    this.loadModeFromStorage();
   }
 
   login(credentials: LoginRequest): Observable<JwtResponse> {
@@ -55,7 +62,9 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userMode');
     this.currentUserSubject.next(null);
+    this.currentModeSubject.next('customer');
   }
 
   getCurrentUser(): User | null {
@@ -319,6 +328,38 @@ export class AuthService {
     } catch (error) {
       console.error('Error parsing token:', error);
       return true; // Consider invalid tokens as expired
+    }
+  }
+
+  // Mode management methods
+  getCurrentMode(): UserMode {
+    return this.currentModeSubject.value;
+  }
+
+  isAdminMode(): boolean {
+    return this.isAdmin() && this.getCurrentMode() === 'admin';
+  }
+
+  isCustomerMode(): boolean {
+    return !this.isAdmin() || this.getCurrentMode() === 'customer';
+  }
+
+  switchToAdminMode(): void {
+    if (this.isAdmin()) {
+      this.currentModeSubject.next('admin');
+      localStorage.setItem('userMode', 'admin');
+    }
+  }
+
+  switchToCustomerMode(): void {
+    this.currentModeSubject.next('customer');
+    localStorage.setItem('userMode', 'customer');
+  }
+
+  private loadModeFromStorage(): void {
+    const savedMode = localStorage.getItem('userMode') as UserMode;
+    if (savedMode && (savedMode === 'admin' || savedMode === 'customer')) {
+      this.currentModeSubject.next(savedMode);
     }
   }
 }

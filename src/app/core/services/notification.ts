@@ -107,15 +107,6 @@ export class NotificationService {
       );
   }
 
-  // Preferences
-  getNotificationPreferences(): Observable<NotificationPreferences> {
-    return this.http.get<NotificationPreferences>(`${environment.apiUrl}/notifications/preferences`);
-  }
-
-  updateNotificationPreferences(preferences: Partial<NotificationPreferences>): Observable<NotificationPreferences> {
-    return this.http.put<NotificationPreferences>(`${environment.apiUrl}/notifications/preferences`, preferences);
-  }
-
   // User Preferences (from UserNotificationPreferencesController)
   getUserNotificationPreferences(): Observable<UserNotificationPreferences> {
     return this.http.get<UserNotificationPreferences>(`${environment.apiUrl}/user/preferences/notifications`);
