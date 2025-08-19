@@ -11,7 +11,14 @@ const redirectIfAuthenticated = () => {
   return authService.isAuthenticatedAsync().pipe(
     map(isAuthenticated => {
       if (isAuthenticated) {
-        router.navigate(['/']).then(() => console.log("Redirecting authenticated user to home..."));
+        const isAdmin = authService.isAdmin();
+        if (isAdmin) {
+          authService.switchToAdminMode();
+          router.navigate(['/admin']).then(() => console.log("Redirecting admin to dashboard..."));
+        } else {
+          authService.switchToCustomerMode();
+          router.navigate(['/']).then(() => console.log("Redirecting customer to home..."));
+        }
         return false;
       }
       return true;

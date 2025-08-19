@@ -7,6 +7,7 @@ import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { AuthService } from '../../../core/services/auth';
 import { Vehicle, VehicleType, VehicleStatus, FuelType } from '../../../core/models/vehicle.interface';
 import { VehicleCard } from '../vehicle-card/vehicle-card';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-vehicle-list',
@@ -35,7 +36,8 @@ export class VehicleList implements OnInit {
   constructor(
     private vehicleService: VehicleService,
     private favoriteService: FavoriteService,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -173,6 +175,9 @@ export class VehicleList implements OnInit {
   }
 
   toggleFavorite(vehicleId: number): void {
+    const vehicle = this.vehicles.find(v => v.id === vehicleId);
+    const vehicleName = vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Vehicle';
+    
     if (this.isFavorite(vehicleId)) {
       // Remove from favorites
       const favorite = this.favorites.find(f => f.vehicleId === vehicleId);
@@ -180,9 +185,11 @@ export class VehicleList implements OnInit {
         this.favoriteService.deleteFavorite(favorite.id).subscribe({
           next: () => {
             this.favorites = this.favorites.filter(f => f.vehicleId !== vehicleId);
+            this.toastr.success(`${vehicleName} removed from favorites`, 'Favorite Removed');
           },
           error: (error) => {
             console.error('Error removing from favorites:', error);
+            this.toastr.error('Failed to remove from favorites', 'Error');
           }
         });
       }
@@ -191,9 +198,11 @@ export class VehicleList implements OnInit {
       this.favoriteService.addToFavorites(vehicleId).subscribe({
         next: (favorite) => {
           this.favorites.push(favorite);
+          this.toastr.success(`${vehicleName} added to favorites`, 'Favorite Added');
         },
         error: (error) => {
           console.error('Error adding to favorites:', error);
+          this.toastr.error('Failed to add to favorites', 'Error');
         }
       });
     }

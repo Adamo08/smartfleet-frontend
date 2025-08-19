@@ -6,6 +6,7 @@ import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { TestimonialService, Testimonial } from '../../../core/services/testimonial';
 import { AuthService } from '../../../core/services/auth';
 import { Vehicle } from '../../../core/models/vehicle.interface';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-vehicle-detail',
@@ -28,7 +29,8 @@ export class VehicleDetail implements OnInit {
     private vehicleService: VehicleService,
     private favoriteService: FavoriteService,
     private testimonialService: TestimonialService,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -144,6 +146,8 @@ export class VehicleDetail implements OnInit {
   toggleFavorite(): void {
     if (!this.vehicle) return;
 
+    const vehicleName = `${this.vehicle.brand} ${this.vehicle.model}`;
+
     if (this.isFavorite) {
       // Remove from favorites
       const favorite = this.favorites.find(f => f.vehicleId === this.vehicle!.id);
@@ -152,9 +156,11 @@ export class VehicleDetail implements OnInit {
           next: () => {
             this.favorites = this.favorites.filter(f => f.vehicleId !== this.vehicle!.id);
             this.isFavorite = false;
+            this.toastr.success(`${vehicleName} removed from favorites`, 'Favorite Removed');
           },
           error: (error) => {
             console.error('Error removing from favorites:', error);
+            this.toastr.error('Failed to remove from favorites', 'Error');
           }
         });
       }
@@ -164,9 +170,11 @@ export class VehicleDetail implements OnInit {
         next: (favorite) => {
           this.favorites.push(favorite);
           this.isFavorite = true;
+          this.toastr.success(`${vehicleName} added to favorites`, 'Favorite Added');
         },
         error: (error) => {
           console.error('Error adding to favorites:', error);
+          this.toastr.error('Failed to add to favorites', 'Error');
         }
       });
     }

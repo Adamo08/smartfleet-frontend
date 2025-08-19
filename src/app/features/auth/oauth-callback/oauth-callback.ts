@@ -111,8 +111,17 @@ export class OAuthCallbackComponent implements OnInit {
       this.toastr.success('OAuth authentication successful!', 'Welcome!');
       
       setTimeout(() => {
-        console.log('Navigating to home page');
-        this.router.navigate(['/']).then(r => console.log("Navigation result:", r));
+        console.log('Navigating to appropriate page based on role');
+        this.authService.isAuthenticatedAsync().subscribe(() => {
+          const isAdmin = this.authService.isAdmin();
+          if (isAdmin) {
+            this.authService.switchToAdminMode();
+            this.router.navigate(['/admin']).then(r => console.log('Navigation result:', r));
+          } else {
+            this.authService.switchToCustomerMode();
+            this.router.navigate(['/']).then(r => console.log('Navigation result:', r));
+          }
+        });
       }, 1500);
       
     } catch (err) {
@@ -156,7 +165,14 @@ export class OAuthCallbackComponent implements OnInit {
           this.toastr.success('Login successful!', 'Welcome back!');
         }
         setTimeout(() => {
-          this.router.navigate(['/']);
+          const isAdmin = this.authService.isAdmin();
+          if (isAdmin) {
+            this.authService.switchToAdminMode();
+            this.router.navigate(['/admin']);
+          } else {
+            this.authService.switchToCustomerMode();
+            this.router.navigate(['/']);
+          }
         }, 1500);
       },
       error: (error) => {
