@@ -37,5 +37,10 @@ export const routes: Routes = [
     loadComponent: () => import('./shared/layouts/admin-layout/admin-layout').then(m => m.AdminLayout),
     children: ADMIN_ROUTES
   },
-  { path: '**', redirectTo: '' }
+  // Error pages
+  { path: 'unauthorized', loadComponent: () => import('./features/pages/unauthorized/unauthorized').then(m => m.Unauthorized) },
+  { path: 'forbidden', loadComponent: () => import('./features/pages/forbidden/forbidden').then(m => m.Forbidden) },
+  { path: 'not-found', loadComponent: () => import('./features/pages/not-found/not-found').then(m => m.NotFound) },
+  // Catch all route - redirect to not-found
+  { path: '**', redirectTo: '/not-found' }
 ];
