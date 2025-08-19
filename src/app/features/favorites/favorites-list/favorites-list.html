@@ -1,1 +1,39 @@
-<p>favorites-list works!</p>
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent">My Favorites</h1>
+      @if (favorites.length > 0) {
+        <button 
+          (click)="removeAllFavorites()"
+          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-2xl font-semibold transition-all duration-300"
+        >
+          Remove All
+        </button>
+      }
+    </div>
+
+    @if (loading) {
+      <p class="text-gray-300">Loading favorites...</p>
+    } @else if (error) {
+      <p class="text-red-400">{{ error }}</p>
+    } @else if (favorites.length === 0) {
+      <div class="text-center py-16">
+        <p class="text-gray-300 mb-4">No favorites yet</p>
+        <a routerLink="/vehicles" class="inline-flex items-center bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:shadow-xl">Browse Vehicles</a>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (fav of favorites; track fav.id) {
+          <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-white text-xl font-semibold">{{ fav.vehicleBrand }} {{ fav.vehicleModel }}</h3>
+              <button (click)="removeFavorite(fav.id)" class="text-red-400 hover:text-red-300">Remove</button>
+            </div>
+            <p class="text-gray-400 text-sm">Added on {{ fav.createdAt | date:'MMM dd, yyyy' }}</p>
+            <a [routerLink]="['/vehicles', fav.vehicleId]" class="inline-flex mt-4 items-center bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-2xl">View Vehicle</a>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
