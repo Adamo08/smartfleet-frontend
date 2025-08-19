@@ -1,3 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 @import "ngx-toastr/toastr";
+
+/* Global select and option styling for dark theme */
+select {
+  color: white;
+}
+
+select option {
+  background-color: #1e293b; /* slate-800 */
+  color: white;
+  padding: 8px 12px;
+}
+
+select option:hover {
+  background-color: #334155; /* slate-700 */
+}
+
+select option:checked {
+  background-color: #3b82f6; /* blue-500 */
+  color: white;
+}
+
+/* Ensure select dropdown is visible */
+select:focus option:checked {
+  background-color: #3b82f6;
+  color: white;
+}

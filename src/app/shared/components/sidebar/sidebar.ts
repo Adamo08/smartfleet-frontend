@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
@@ -12,8 +12,15 @@ import { AuthService } from '../../../core/services/auth';
 })
 export class Sidebar {
   currentUser: any = null;
+  collapsed = false;
+  @Output() collapsedChange = new EventEmitter<boolean>();
 
   constructor(private authService: AuthService) {
     this.currentUser = this.authService.getCurrentUser();
+  }
+
+  toggleCollapse(): void {
+    this.collapsed = !this.collapsed;
+    this.collapsedChange.emit(this.collapsed);
   }
 }
