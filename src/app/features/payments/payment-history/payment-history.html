@@ -1,1 +1,203 @@
-<p>payment-history works!</p>
+<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
+  <!-- Background Effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
+    <div class="absolute top-40 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
+    <div class="absolute bottom-20 left-1/2 w-72 h-72 bg-purple-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
+        Payment <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">History</span>
+      </h1>
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+        View and manage all your payment transactions in one place
+      </p>
+    </div>
+
+    <!-- Filters -->
+    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6 mb-8">
+      <h3 class="text-xl font-semibold text-white mb-4">Filters</h3>
+      <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Status Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Status</label>
+          <select formControlName="status" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white">
+            <option value="">All Statuses</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="PENDING">Pending</option>
+            <option value="FAILED">Failed</option>
+            <option value="REFUNDED">Refunded</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+        </div>
+        <!-- Search Term -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Search</label>
+          <input type="text" formControlName="searchTerm" placeholder="Search payments..." class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400">
+        </div>
+        <!-- Start Date -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Start Date</label>
+          <input type="date" formControlName="startDate" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white">
+        </div>
+        <!-- End Date -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">End Date</label>
+          <input type="date" formControlName="endDate" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white">
+        </div>
+      </form>
+      <!-- Filter Actions -->
+      <div class="flex justify-end mt-4">
+        <button (click)="onFilterReset()" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium">Reset Filters</button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading) {
+    <div class="text-center py-20">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
+      <p class="mt-4 text-gray-300">Loading payment history...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error && !loading) {
+    <div class="text-center py-20">
+      <div class="inline-flex items-center px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg">
+        <svg class="w-6 h-6 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-red-400 font-medium">{{ error }}</span>
+      </div>
+    </div>
+    }
+
+    <!-- Payment History Table -->
+    @if (!loading && !error) {
+    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+      <!-- Table Header -->
+      <div class="grid grid-cols-12 gap-4 p-6 border-b border-white/10 bg-white/5">
+        <div class="col-span-2">
+          <button (click)="onSort('transactionId')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+            <span>Transaction ID</span>
+            <span [class]="getSortIconClass('transactionId')" class="text-lg">{{ getSortIcon('transactionId') }}</span>
+          </button>
+        </div>
+        <div class="col-span-2">
+          <button (click)="onSort('amount')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+            <span>Amount</span>
+            <span [class]="getSortIconClass('amount')" class="text-lg">{{ getSortIcon('amount') }}</span>
+          </button>
+        </div>
+        <div class="col-span-2">
+          <button (click)="onSort('status')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+            <span>Status</span>
+            <span [class]="getSortIconClass('status')" class="text-lg">{{ getSortIcon('status') }}</span>
+          </button>
+        </div>
+        <div class="col-span-2">
+          <button (click)="onSort('provider')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+            <span>Provider</span>
+            <span [class]="getSortIconClass('provider')" class="text-lg">{{ getSortIcon('provider') }}</span>
+          </button>
+        </div>
+        <div class="col-span-2">
+          <button (click)="onSort('createdAt')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+            <span>Date</span>
+            <span [class]="getSortIconClass('createdAt')" class="text-lg">{{ getSortIcon('createdAt') }}</span>
+          </button>
+        </div>
+        <div class="col-span-2 text-sm font-semibold text-gray-300">Actions</div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="divide-y divide-white/10">
+        @for (payment of payments; track payment.id) {
+        <div (click)="onPaymentClick(payment)" class="grid grid-cols-12 gap-4 p-6 hover:bg-white/5 transition-all duration-200 cursor-pointer">
+          <div class="col-span-2">
+            <div class="text-sm font-medium text-white">{{ payment.transactionId || 'N/A' }}</div>
+          </div>
+          <div class="col-span-2">
+            <div class="text-sm text-white font-semibold">{{ formatCurrency(payment.amount, payment.currency) }}</div>
+          </div>
+          <div class="col-span-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white" [class]="getStatusColor(payment.status)">
+              {{ getStatusText(payment.status) }}
+            </span>
+          </div>
+          <div class="col-span-2">
+            <div class="text-sm text-gray-300">{{ payment.provider }}</div>
+          </div>
+          <div class="col-span-2">
+            <div class="text-sm text-gray-300">{{ formatDate(payment.createdAt) }}</div>
+          </div>
+          <div class="col-span-2">
+            <div class="flex space-x-2">
+              <button class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition-all duration-200">View</button>
+              @if (payment.status === 'COMPLETED') {
+              <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-all duration-200">Refund</button>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Empty State -->
+      @if (payments.length === 0 && !loading) {
+      <div class="text-center py-20">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-300 mb-2">No payments found</h3>
+        <p class="text-gray-400">Your payment history will appear here once you make transactions.</p>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+    <div class="mt-8 flex items-center justify-between">
+      <!-- Page Size Selector -->
+      <div class="flex items-center space-x-2">
+        <label class="text-sm text-gray-300">Show:</label>
+        <select #pageSizeSelect (change)="onPageSizeChange(+pageSizeSelect.value)" class="px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <span class="text-sm text-gray-300">per page</span>
+      </div>
+
+                        <!-- Pagination Info -->
+                  <div class="text-sm text-gray-300">
+                    Showing {{ currentPage * pageSize + 1 }} to {{ getMaxPageElement() }} of {{ totalElements }} results
+                  </div>
+
+      <!-- Pagination Controls -->
+      <div class="flex items-center space-x-2">
+        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed border border-white/20 rounded-lg text-white text-sm transition-all duration-200">
+          Previous
+        </button>
+        
+        <div class="flex items-center space-x-1">
+          @for (page of getPageNumbers(); track page) {
+          <button (click)="onPageChange(page)" [class]="page === currentPage ? 'bg-indigo-600 text-white' : 'bg-white/5 text-gray-300 hover:bg-white/10'" class="px-3 py-2 border border-white/20 rounded-lg text-sm transition-all duration-200">
+            {{ page + 1 }}
+          </button>
+          }
+        </div>
+        
+        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages - 1" class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed border border-white/20 rounded-lg text-white text-sm transition-all duration-200">
+          Next
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+</div>

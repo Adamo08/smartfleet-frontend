@@ -1,1 +1,218 @@
-<p>reservation-calendar works!</p>
+<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
+  <!-- Background Effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
+    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
+    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h2 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
+        Reservation <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Calendar</span>
+      </h2>
+      <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+        View your reservations and available slots in an interactive calendar
+      </p>
+    </div>
+
+    <!-- Calendar Container -->
+    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-8">
+      <!-- Calendar Navigation -->
+      <div class="flex items-center justify-between mb-8">
+        <button
+          (click)="onPreviousMonth()"
+          class="p-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-lg transition-all duration-200 text-white hover:text-indigo-300"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+
+        <div class="text-center">
+          <h3 class="text-2xl font-bold text-white">{{ getMonthName() }}</h3>
+          <button
+            (click)="onToday()"
+            class="mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 text-sm font-medium"
+          >
+            Today
+          </button>
+        </div>
+
+        <button
+          (click)="onNextMonth()"
+          class="p-2 bg-white/5 hover:bg-white/10 border border-white/20 rounded-lg transition-all duration-200 text-white hover:text-indigo-300"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div class="grid grid-cols-7 gap-1 mb-6">
+        <!-- Day Headers -->
+        @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
+        <div class="p-3 text-center text-sm font-semibold text-gray-300">
+          {{ day }}
+        </div>
+        }
+
+        <!-- Calendar Days -->
+        @for (date of calendarDays; track date) {
+        <div 
+             (click)="onDateSelect(date)"
+             [class]="getDayClasses(date)"
+             class="relative p-3 min-h-[80px] cursor-pointer transition-all duration-200 hover:bg-white/5 rounded-lg border border-transparent hover:border-white/20">
+          
+          <!-- Day Number -->
+          <div class="text-sm font-medium mb-2"
+               [class]="getDayNumberClasses(date)">
+            {{ formatDay(date) }}
+          </div>
+
+          <!-- Reservations for this date -->
+          @if (showReservations && hasReservations(date)) {
+          <div class="space-y-1">
+            @for (reservation of getReservationsForDate(date); track reservation.id) {
+            <div 
+                 (click)="onReservationSelect(reservation); $event.stopPropagation()"
+                 class="text-xs p-1 rounded cursor-pointer hover:bg-white/10 transition-all duration-200"
+                 [class]="getStatusColor(reservation.status)">
+              <div class="font-medium text-white">{{ getStatusText(reservation.status) }}</div>
+              <div class="text-white/80">{{ reservation.vehicle.brand }} {{ reservation.vehicle.model }}</div>
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Available Slots for this date -->
+          @if (showSlots && hasAvailableSlots(date)) {
+          <div class="space-y-1 mt-2">
+            @for (slot of getAvailableSlotsForDate(date); track slot.id) {
+            <div 
+                 (click)="onSlotSelect(slot); $event.stopPropagation()"
+                 class="text-xs p-1 rounded cursor-pointer hover:bg-white/10 transition-all duration-200 bg-green-500/80">
+              <div class="font-medium text-white">Available</div>
+              <div class="text-white/80">{{ slot.startTime | date:'shortTime' }} - {{ slot.endTime | date:'shortTime' }}</div>
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Indicators -->
+          @if (isToday(date)) {
+          <div class="absolute top-1 right-1">
+            <div class="w-2 h-2 bg-indigo-400 rounded-full"></div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Legend -->
+      <div class="border-t border-white/10 pt-6">
+        <h4 class="text-lg font-semibold text-white mb-4">Legend</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-yellow-500 rounded"></div>
+            <span class="text-sm text-gray-300">Pending</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-green-500 rounded"></div>
+            <span class="text-sm text-gray-300">Confirmed</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-red-500 rounded"></div>
+            <span class="text-sm text-gray-300">Cancelled</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-blue-500 rounded"></div>
+            <span class="text-sm text-gray-300">Completed</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-4 h-4 bg-green-500/80 rounded"></div>
+            <span class="text-sm text-gray-300">Available Slots</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-2 h-2 bg-indigo-400 rounded-full"></div>
+            <span class="text-sm text-gray-300">Today</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Date Info -->
+      @if (selectedDate) {
+      <div class="border-t border-white/10 pt-6 mt-6">
+        <h4 class="text-lg font-semibold text-white mb-4">
+          {{ selectedDate | date:'fullDate' }}
+        </h4>
+        
+        <!-- Reservations for selected date -->
+        @if (showReservations && getReservationsForDate(selectedDate).length > 0) {
+        <div class="mb-4">
+          <h5 class="text-md font-medium text-white mb-2">Reservations:</h5>
+          <div class="space-y-2">
+            @for (reservation of getReservationsForDate(selectedDate); track reservation.id) {
+            <div class="p-3 bg-white/5 rounded-lg border border-white/10">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-medium text-white">{{ reservation.vehicle.brand }} {{ reservation.vehicle.model }}</div>
+                  <div class="text-sm text-gray-300">
+                    {{ reservation.startDate | date:'short' }} - {{ reservation.endDate | date:'short' }}
+                  </div>
+                </div>
+                <span class="px-2 py-1 text-xs rounded-full text-white"
+                      [class]="getStatusColor(reservation.status)">
+                  {{ getStatusText(reservation.status) }}
+                </span>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Available slots for selected date -->
+        @if (showSlots && getAvailableSlotsForDate(selectedDate).length > 0) {
+        <div>
+          <h5 class="text-md font-medium text-white mb-2">Available Slots:</h5>
+          <div class="space-y-2">
+            @for (slot of getAvailableSlotsForDate(selectedDate); track slot.id) {
+            <div class="p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-medium text-white">Available Time</div>
+                  <div class="text-sm text-gray-300">
+                    {{ slot.startTime | date:'shortTime' }} - {{ slot.endTime | date:'shortTime' }}
+                  </div>
+                </div>
+                <button
+                  (click)="onSlotSelect(slot)"
+                  class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition-all duration-200"
+                >
+                  Select
+                </button>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- No data message -->
+        @if ((!showReservations || getReservationsForDate(selectedDate).length === 0) && 
+             (!showSlots || getAvailableSlotsForDate(selectedDate).length === 0)) {
+        <div class="text-center py-8 text-gray-400">
+          <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <p>No reservations or slots for this date</p>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>

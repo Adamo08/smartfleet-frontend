@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { LoginRequest, OAuthProvider } from '../../../core/models/user.interface';
 import { ToastrService } from 'ngx-toastr';
+import { filter, switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -37,16 +38,31 @@ export class LoginComponent {
     this.loading = true;
     this.error = '';
 
-    this.authService.login(this.loginData).subscribe({
-      next: () => {
-        this.toastr.success('Login successful!', 'Welcome back!');
-        this.router.navigate(['/']);
-      },
-      error: (error) => {
-        this.error = error.error?.message || 'Invalid credentials';
-        this.loading = false;
-      }
-    });
+    this.authService.login(this.loginData)
+      .pipe(
+        // Ensure user is loaded after token is stored
+        switchMap(() => this.authService.isAuthenticatedAsync()),
+        switchMap(() => this.authService.currentUser$),
+        filter((u): u is NonNullable<typeof u> => !!u),
+        take(1)
+      )
+      .subscribe({
+        next: () => {
+          this.toastr.success('Login successful!', 'Welcome back!');
+          const isAdmin = this.authService.isAdmin();
+          if (isAdmin) {
+            this.authService.switchToAdminMode();
+            this.router.navigate(['/admin']);
+          } else {
+            this.authService.switchToCustomerMode();
+            this.router.navigate(['/']);
+          }
+        },
+        error: (error) => {
+          this.error = error.error?.message || 'Invalid credentials';
+          this.loading = false;
+        }
+      });
   }
 
   loginWithGoogle(): void {

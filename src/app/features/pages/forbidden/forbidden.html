@@ -1,0 +1,73 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-500 to-orange-600 p-4 sm:p-8">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 lg:p-12 text-center shadow-2xl max-w-md w-full mx-auto transform transition-all duration-600 ease-out animate-fade-in-up">
+    
+    <!-- Error Icon -->
+    <div class="mb-8 text-amber-500 animate-pulse">
+      <svg class="w-24 h-24 sm:w-32 sm:h-32 mx-auto" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+      </svg>
+    </div>
+    
+    <!-- Error Title -->
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+      403 - Access Forbidden
+    </h1>
+    
+    <!-- Error Message -->
+    <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+      Sorry, you don't have permission to access this page. This area is restricted to authorized users only.
+    </p>
+    
+    <!-- Error Details -->
+    <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 mb-8 border-l-4 border-amber-500">
+      <div class="flex items-center gap-3 mb-3 text-amber-800 dark:text-amber-200 text-sm">
+        <svg class="w-5 h-5 flex-shrink-0 text-amber-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" fill="currentColor"/>
+        </svg>
+        <span>This page requires special permissions</span>
+      </div>
+      <div class="flex items-center gap-3 text-amber-800 dark:text-amber-200 text-sm">
+        <svg class="w-5 h-5 flex-shrink-0 text-amber-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+        </svg>
+        <span>Contact your administrator for access</span>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+      <button 
+        (click)="goHome()"
+        class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 min-w-[140px]"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/>
+        </svg>
+        Go Home
+      </button>
+      
+      <button 
+        (click)="goBack()"
+        class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 min-w-[140px]"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+        </svg>
+        Go Back
+      </button>
+    </div>
+    
+    <!-- Help Section -->
+    <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        Need help? 
+        <a 
+          href="mailto:support@smartfleet.com" 
+          class="text-amber-500 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 font-semibold transition-colors duration-300 hover:underline"
+        >
+          Contact Support
+        </a>
+      </p>
+    </div>
+  </div>
+</div>

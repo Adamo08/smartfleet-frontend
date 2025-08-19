@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,5 +11,13 @@ import { RouterModule } from '@angular/router';
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
+  switchToCustomerMode(): void {
+    this.authService.switchToCustomerMode();
+    this.router.navigate(['/']);
+  }
 }

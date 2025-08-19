@@ -1,1 +1,343 @@
-<p>reservation-list works!</p>
+<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
+  <!-- Background Effects -->
+  <div class="absolute inset-0">
+    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
+    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
+    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
+        My <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Reservations</span>
+      </h1>
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+        View and manage all your vehicle reservations in one place
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-center mb-8">
+      <button
+        (click)="onCreateReservation()"
+        class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+      >
+        <svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Create New Reservation
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6 mb-8">
+      <h3 class="text-xl font-semibold text-white mb-4">Filters</h3>
+
+      <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Status Filter -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Status</label>
+          <select
+            formControlName="status"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+            <option value="">All Statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="CONFIRMED">Confirmed</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+        </div>
+
+        <!-- Search Term -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Search</label>
+          <input
+            type="text"
+            formControlName="searchTerm"
+            placeholder="Search reservations..."
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+          >
+        </div>
+
+        <!-- Start Date -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">Start Date</label>
+          <input
+            type="date"
+            formControlName="startDate"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+        </div>
+
+        <!-- End Date -->
+        <div>
+          <label class="block text-sm font-semibold text-white mb-2">End Date</label>
+          <input
+            type="date"
+            formControlName="endDate"
+            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+          >
+        </div>
+      </form>
+
+      <!-- Filter Actions -->
+      <div class="flex justify-end mt-4">
+        <button
+          (click)="onFilterReset()"
+          class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium"
+        >
+          Reset Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading) {
+    <div class="text-center py-20">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
+      <p class="mt-4 text-gray-300">Loading reservations...</p>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error && !loading) {
+    <div class="text-center py-20">
+      <div class="inline-flex items-center px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg">
+        <svg class="w-6 h-6 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-red-400 font-medium">{{ error }}</span>
+      </div>
+    </div>
+    }
+
+    <!-- Reservations Table -->
+    @if (!loading && !error) {
+    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+      <!-- Table Header -->
+      <div class="bg-white/5 border-b border-white/10">
+        <div class="grid grid-cols-12 gap-4 p-4 text-sm font-semibold text-gray-300">
+          <div class="col-span-2">
+            <button
+              (click)="onSort('vehicleBrand')"
+              class="flex items-center space-x-1 hover:text-white transition-colors duration-200"
+            >
+              <span>Vehicle</span>
+              <svg class="w-4 h-4" [class]="getSortIconClass('vehicleBrand')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('vehicleBrand')"/>
+              </svg>
+            </button>
+          </div>
+          <div class="col-span-2">
+            <button
+              (click)="onSort('startDate')"
+              class="flex items-center space-x-1 hover:text-white transition-colors duration-200"
+            >
+              <span>Start Date</span>
+              <svg class="w-4 h-4" [class]="getSortIconClass('startDate')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('startDate')"/>
+              </svg>
+            </button>
+          </div>
+          <div class="col-span-2">
+            <button
+              (click)="onSort('endDate')"
+              class="flex items-center space-x-1 hover:text-white transition-colors duration-200"
+            >
+              <span>End Date</span>
+              <svg class="w-4 h-4" [class]="getSortIconClass('endDate')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('endDate')"/>
+              </svg>
+            </button>
+          </div>
+          <div class="col-span-1">
+            <button
+              (click)="onSort('duration')"
+              class="flex items-center space-x-1 hover:text-white transition-colors duration-200"
+            >
+              <span>Days</span>
+              <svg class="w-4 h-4" [class]="getSortIconClass('duration')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('duration')"/>
+              </svg>
+            </button>
+          </div>
+          <div class="col-span-2">
+            <button
+              (click)="onSort('status')"
+              class="flex items-center space-x-1 hover:text-white transition-colors duration-200"
+            >
+              <span>Status</span>
+              <svg class="w-4 h-4" [class]="getSortIconClass('status')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('status')"/>
+              </svg>
+            </button>
+          </div>
+          <div class="col-span-2">
+            <button
+              (click)="onSort('createdAt')"
+              class="flex items-center space-x-1 hover:text-white transition-colors duration-200"
+            >
+              <span>Created</span>
+              <svg class="w-4 h-4" [class]="getSortIconClass('createdAt')" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('createdAt')"/>
+              </svg>
+            </button>
+          </div>
+          <div class="col-span-1 text-center">Actions</div>
+        </div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="divide-y divide-white/10">
+        @for (reservation of reservations; track reservation.id) {
+        <div
+             (click)="onReservationClick(reservation)"
+             class="grid grid-cols-12 gap-4 p-4 hover:bg-white/5 cursor-pointer transition-all duration-200">
+
+          <!-- Vehicle -->
+          <div class="col-span-2">
+            <div class="flex items-center space-x-3">
+              <img
+                [src]="reservation.vehicle.imageUrl || '/assets/images/icons/car.svg'"
+                alt="{{ reservation.vehicle.brand }} {{ reservation.vehicle.model }}"
+                class="w-10 h-10 rounded-lg object-cover border border-white/10"
+              />
+              <div>
+                <div class="font-medium text-white">{{ reservation.vehicle.brand }} {{ reservation.vehicle.model }}</div>
+                <div class="text-sm text-gray-400">{{ reservation.vehicle.year }} • {{ reservation.vehicle.licensePlate }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Start Date -->
+          <div class="col-span-2">
+            <div class="text-white">{{ formatDate(reservation.startDate) }}</div>
+          </div>
+
+          <!-- End Date -->
+          <div class="col-span-2">
+            <div class="text-white">{{ formatDate(reservation.endDate) }}</div>
+          </div>
+
+          <!-- Duration -->
+          <div class="col-span-1">
+            <div class="text-white">{{ getTotalDays(reservation.startDate, reservation.endDate) }} days</div>
+          </div>
+
+          <!-- Status -->
+          <div class="col-span-2">
+            <span class="px-3 py-1 text-xs font-medium text-white rounded-full"
+                  [class]="getStatusColor(reservation.status)">
+              {{ getStatusText(reservation.status) }}
+            </span>
+          </div>
+
+          <!-- Created Date -->
+          <div class="col-span-2">
+            <div class="text-white">{{ formatDate(reservation.createdAt) }}</div>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-span-1 text-center">
+            <button
+              (click)="onReservationClick(reservation); $event.stopPropagation()"
+              class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- No Reservations Message -->
+      @if (reservations.length === 0) {
+      <div class="text-center py-20">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-300 mb-2">No reservations found</h3>
+        <p class="text-gray-400 mb-4">Try adjusting your filters or create a new reservation</p>
+        <button
+          (click)="onCreateReservation()"
+          class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 font-medium"
+        >
+          Create Reservation
+        </button>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Pagination -->
+    @if (!loading && !error && totalPages > 1) {
+      <div class="mt-8 flex justify-center">
+        <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-2xl shadow-xl p-4">
+          <div class="flex items-center space-x-2">
+            <!-- Previous Page -->
+            <button
+              (click)="onPageChange(currentPage - 1)"
+              [disabled]="currentPage === 0"
+              class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-gray-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+
+            <!-- Page Numbers -->
+            <div class="flex items-center space-x-1">
+              @for (page of getPageNumbers(); track page) {
+              <button
+                (click)="onPageChange(page)"
+                [class]="page === currentPage ? 'bg-indigo-600 text-white' : 'bg-white/5 hover:bg-white/10 text-white'"
+                class="px-3 py-2 rounded-lg transition-all duration-200 font-medium"
+              >
+                {{ page + 1 }}
+              </button>
+              }
+            </div>
+
+            <!-- Next Page -->
+            <button
+              (click)="onPageChange(currentPage + 1)"
+              [disabled]="currentPage === totalPages - 1"
+              class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-gray-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Page Size Selector -->
+          <div class="mt-4 flex items-center justify-center space-x-2">
+            <span class="text-sm text-gray-300">Show:</span>
+            <select
+              #pageSizeSelect
+              (change)="onPageSizeChange(+pageSizeSelect.value)"
+              [value]="pageSize"
+              class="px-3 py-1 bg-white/5 border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span class="text-sm text-gray-300">per page</span>
+          </div>
+
+          <!-- Total Count -->
+          <div class="mt-2 text-center text-sm text-gray-400">
+            Showing {{ (currentPage * pageSize) + 1 }} to {{ getMaxPageElement() }} of {{ totalElements }} reservations
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

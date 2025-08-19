@@ -26,6 +26,16 @@
 
       <div class="flex items-center space-x-4">
         @if (authService.isAuthenticated()) {
+          <!-- Admins on customer pages: show single switch to Admin button -->
+          @if (authService.isAdmin() && !authService.isAdminMode()) {
+            <button (click)="switchToAdminMode()" class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500 transition-all duration-300 hover:shadow-xl">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+              </svg>
+              Admin Panel
+            </button>
+          }
+
           <app-notification-bell></app-notification-bell>
 
           <div class="relative group">
@@ -95,6 +105,7 @@
                     </svg>
                     Admin Dashboard
                   </a>
+                  <div class="border-t border-white/10 my-2"></div>
                 }
                 <a routerLink="/profile" class="flex items-center px-3 py-3 text-sm text-gray-300 hover:bg-indigo-500/20 hover:text-indigo-200 transition-colors duration-200 rounded-2xl group">
                   <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

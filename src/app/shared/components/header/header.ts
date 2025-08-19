@@ -69,4 +69,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateToFavorites(): void {
     this.router.navigate(['/favorites']);
   }
+
+  switchToCustomerMode(): void {
+    this.authService.switchToCustomerMode();
+    this.router.navigate(['/']);
+  }
+
+  switchToAdminMode(): void {
+    if (this.authService.isAdmin()) {
+      this.authService.switchToAdminMode();
+      this.router.navigate(['/admin']);
+    }
+  }
 }

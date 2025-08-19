@@ -1,23 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { BookmarkService } from '../../../core/services/bookmark.service';
+import { Page } from '../../../core/models/pagination.interface';
+import { BookmarkDto } from '../../../core/models/bookmark.interface';
 
-interface Bookmark {
-  id: number;
-  userId: number;
-  vehicleId: number;
-  createdAt: Date;
-  vehicle?: {
-    id: number;
-    brand: string;
-    model: string;
-    year: number;
-    imageUrl?: string;
-    pricePerDay: number;
-  };
-}
+type Bookmark = BookmarkDto;
 
 @Component({
   selector: 'app-bookmarks-list',
@@ -31,7 +19,7 @@ export class BookmarksList implements OnInit {
   loading = false;
   error: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private bookmarkService: BookmarkService) {}
 
   ngOnInit(): void {
     this.loadBookmarks();
@@ -41,9 +29,9 @@ export class BookmarksList implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.http.get<Bookmark[]>(`${environment.apiUrl}/bookmarks`).subscribe({
-      next: (data) => {
-        this.bookmarks = data;
+    this.bookmarkService.getMyBookmarks(0, 50).subscribe({
+      next: (page: Page<Bookmark>) => {
+        this.bookmarks = page.content;
         this.loading = false;
       },
       error: (error) => {
@@ -55,7 +43,7 @@ export class BookmarksList implements OnInit {
   }
 
   removeBookmark(bookmarkId: number): void {
-    this.http.delete(`${environment.apiUrl}/bookmarks/${bookmarkId}`).subscribe({
+    this.bookmarkService.deleteBookmark(bookmarkId).subscribe({
       next: () => {
         this.bookmarks = this.bookmarks.filter(b => b.id !== bookmarkId);
       },
@@ -66,7 +54,7 @@ export class BookmarksList implements OnInit {
     });
   }
 
-  getVehicleImageUrl(vehicle: any): string {
-    return vehicle?.imageUrl || '/assets/images/icons/car.svg';
+  getVehicleImageUrl(vehicleId?: number): string {
+    return '/assets/images/icons/car.svg';
   }
 }

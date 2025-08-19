@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api';
 import { Observable, map } from 'rxjs';
+import { AuthService } from './auth';
 
 export interface Favorite {
   id: number;
@@ -28,7 +29,7 @@ interface PaginatedResponse<T> {
   providedIn: 'root'
 })
 export class FavoriteService {
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private authService: AuthService) {}
 
   getMyFavorites(params?: any): Observable<Favorite[]> {
     return this.apiService.get<PaginatedResponse<Favorite>>('/favorites/my', params).pipe(
@@ -41,7 +42,9 @@ export class FavoriteService {
   }
 
   createFavorite(favorite: Partial<Favorite>): Observable<Favorite> {
-    return this.apiService.post<Favorite>('/favorites', favorite);
+    const currentUser = this.authService.getCurrentUser();
+    const payload = { ...favorite, userId: currentUser?.id };
+    return this.apiService.post<Favorite>('/favorites', payload);
   }
 
   deleteFavorite(id: number): Observable<void> {
@@ -49,12 +52,15 @@ export class FavoriteService {
   }
 
   addToFavorites(vehicleId: number): Observable<Favorite> {
-    return this.apiService.post<Favorite>('/favorites', { vehicleId });
+    const currentUser = this.authService.getCurrentUser();
+    return this.apiService.post<Favorite>('/favorites', { userId: currentUser?.id, vehicleId });
   }
 
-  removeFromFavorites(vehicleId: number): Observable<void> {
-    // This would need to be implemented based on how the backend handles it
-    // For now, we'll need to get the favorite ID first
-    return this.apiService.delete<void>(`/favorites/${vehicleId}`);
+  removeFromFavoritesById(favoriteId: number): Observable<void> {
+    return this.apiService.delete<void>(`/favorites/${favoriteId}`);
+  }
+
+  deleteAllFavorites(): Observable<void> {
+    return this.apiService.delete<void>('/favorites/my/all');
   }
 }
