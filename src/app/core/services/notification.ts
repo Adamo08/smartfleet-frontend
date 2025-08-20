@@ -116,6 +116,11 @@ export class NotificationService {
     return this.http.put<UserNotificationPreferences>(`${environment.apiUrl}/user/preferences/notifications`, preferences);
   }
 
+  // ADMIN: Broadcast a notification
+  broadcastNotificationAdmin(payload: { message: string; type: NotificationType }): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/notifications/broadcast`, payload);
+  }
+
   private updateUnreadCount(): void {
     const unreadCount = this.notificationsSubject.value.filter(n => !n.read).length;
     this.unreadCountSubject.next(unreadCount);

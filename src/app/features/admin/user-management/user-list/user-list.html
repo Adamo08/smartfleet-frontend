@@ -1,1 +1,34 @@
-<p>user-list works!</p>
+<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-white">Users</h2>
+    <a routerLink="/admin/users/create" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">New User</a>
+  </div>
+  @if (isLoading) {
+    <div class="text-gray-300">Loading...</div>
+  } @else {
+    <table class="min-w-full text-sm text-gray-200">
+      <thead>
+        <tr class="text-left border-b border-white/10">
+          <th class="p-2">ID</th>
+          <th class="p-2">Name</th>
+          <th class="p-2">Email</th>
+          <th class="p-2">Phone</th>
+          <th class="p-2">Role</th>
+          <th class="p-2">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of users; track u.id) {
+          <tr class="border-b border-indigo-500/10">
+            <td class="p-2">{{ u.id }}</td>
+            <td class="p-2">{{ u.firstName }} {{ u.lastName }}</td>
+            <td class="p-2">{{ u.email }}</td>
+            <td class="p-2">{{ u.phoneNumber || '-' }}</td>
+            <td class="p-2">{{ u.role }}</td>
+            <td class="p-2">{{ u.createdAt | date:'short' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

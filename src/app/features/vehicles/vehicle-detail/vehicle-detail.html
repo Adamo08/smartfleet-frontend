@@ -236,6 +236,23 @@
   </div>
 </div>
 
+<!-- Booking Modal -->
+@if (isBookingOpen && vehicle) {
+  <app-modal>
+    <div modal-close>
+      <button (click)="closeBooking()" class="text-gray-300 hover:text-white">✕</button>
+    </div>
+    <div>
+      <h3 class="text-2xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">Select a Time Slot</h3>
+      <app-slot-selector [vehicleId]="vehicle.id" (slotSelected)="onSlotSelected($event)"></app-slot-selector>
+    </div>
+    <div modal-actions class="flex items-center justify-end gap-3">
+      <button (click)="closeBooking()" class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5">Cancel</button>
+      <button [disabled]="!selectedSlot || isSubmitting" (click)="confirmBooking()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-semibold disabled:opacity-50">Confirm Reservation</button>
+    </div>
+  </app-modal>
+}
+
 <style>
   .animation-delay-2000 {
     animation-delay: 2s;

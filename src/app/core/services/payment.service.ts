@@ -11,7 +11,8 @@ import {
   SessionResponseDto,
   RefundRequestDto,
   RefundResponseDto,
-  RefundDetailsDto
+  RefundDetailsDto,
+  PaymentDetailsDto
 } from '../models/payment.interface';
 import { Page, Pageable } from '../models/pagination.interface';
 
@@ -126,6 +127,41 @@ export class PaymentService {
     return this.http.get<Page<RefundDetailsDto>>(`${this.baseUrl}/refunds`, { params });
   }
 
+  /**
+   * ADMIN: Get all payments with pagination
+   */
+  getAllPaymentsAdmin(pageable: Pageable): Observable<Page<PaymentDetailsDto>> {
+    let params = new HttpParams()
+      .set('page', pageable.page.toString())
+      .set('size', pageable.size.toString());
+
+    if (pageable.sortBy) {
+      params = params.set('sort', `${pageable.sortBy},${pageable.sortDirection || 'ASC'}`);
+    }
+
+    return this.http.get<Page<PaymentDetailsDto>>(`${environment.apiUrl}/admin/payments`, { params });
+  }
+
+  /**
+   * ADMIN: Get payment details by ID
+   */
+  getPaymentDetailsAdmin(paymentId: number): Observable<PaymentDetailsDto> {
+    return this.http.get<PaymentDetailsDto>(`${environment.apiUrl}/admin/payments/${paymentId}`);
+  }
+
+  /**
+   * ADMIN: Manually trigger a refund for a payment
+   */
+  manualRefundAdmin(request: RefundRequestDto): Observable<RefundResponseDto> {
+    return this.http.post<RefundResponseDto>(`${environment.apiUrl}/admin/payments/refund`, request);
+  }
+
+  /**
+   * ADMIN: Get refunds for a given payment
+   */
+  getRefundsForPaymentAdmin(paymentId: number): Observable<RefundDetailsDto[]> {
+    return this.http.get<RefundDetailsDto[]>(`${environment.apiUrl}/admin/payments/${paymentId}/refunds`);
+  }
   /**
    * Get payment statistics for the current user
    */

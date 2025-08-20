@@ -1,1 +1,20 @@
-<p>broadcast works!</p>
+<div class="max-w-lg backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl p-6">
+  <h2 class="text-xl font-semibold text-white mb-4">Broadcast Notification</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <div>
+      <label class="block text-sm text-gray-300 mb-1">Message</label>
+      <textarea formControlName="message" rows="4" class="w-full p-3 rounded-xl bg-slate-900/60 border border-white/10 text-white"></textarea>
+    </div>
+    <div>
+      <label class="block text-sm text-gray-300 mb-1">Type</label>
+      <select formControlName="type" class="w-full p-3 rounded-xl bg-slate-900/60 border border-white/10 text-white">
+        @for (t of types; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+    </div>
+    <div class="flex justify-end">
+      <button type="submit" [disabled]="form.invalid" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white disabled:opacity-50">Send</button>
+    </div>
+  </form>
+</div>

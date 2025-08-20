@@ -1,1 +1,19 @@
-<p>moderation works!</p>
+<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
+  <h2 class="text-xl font-semibold text-white mb-6">Testimonials Moderation</h2>
+  @if (isLoading) {
+    <div class="text-gray-300">Loading...</div>
+  } @else {
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    @for (t of testimonials; track t.id) {
+    <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-4">
+      <div class="text-white font-semibold">{{ t.title }}</div>
+      <div class="text-gray-300 text-sm mb-2">{{ t.userName }}</div>
+      <p class="text-gray-200 text-sm">{{ t.content }}</p>
+      <div class="mt-3 flex justify-end">
+        <button class="px-3 py-1 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white" (click)="approve(t.id)" [disabled]="t.approved">{{ t.approved ? 'Approved' : 'Approve' }}</button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

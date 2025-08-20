@@ -62,4 +62,16 @@ export class TestimonialService {
       map(response => response.content)
     );
   }
+
+  // ADMIN: list all testimonials
+  getAllTestimonials(params?: any): Observable<Testimonial[]> {
+    return this.apiService.get<PaginatedResponse<Testimonial>>('/testimonials', params).pipe(
+      map(response => response.content)
+    );
+  }
+
+  // ADMIN: approve testimonial
+  approveTestimonial(id: number): Observable<Testimonial> {
+    return this.apiService.put<Testimonial>(`/testimonials/${id}/approve`, {});
+  }
 }

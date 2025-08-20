@@ -1,1 +1,33 @@
-<p>role-list works!</p>
+<div class="p-6 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl">
+  <h2 class="text-xl font-semibold text-white mb-6">Manage Roles</h2>
+  @if (isLoading) {
+    <div class="text-gray-300">Loading...</div>
+  } @else {
+  <table class="min-w-full text-sm text-gray-200">
+    <thead>
+      <tr class="text-left border-b border-white/10">
+        <th class="p-2">ID</th>
+        <th class="p-2">Name</th>
+        <th class="p-2">Email</th>
+        <th class="p-2">Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of users; track u.id) {
+        <tr class="border-b border-white/10">
+          <td class="p-2">{{ u.id }}</td>
+          <td class="p-2">{{ u.firstName }} {{ u.lastName }}</td>
+          <td class="p-2">{{ u.email }}</td>
+          <td class="p-2">
+            <select class="bg-slate-900/60 border border-white/10 rounded-xl p-2" [value]="u.role" (change)="updateRole(u, $any($event.target).value)">
+              <option value="ADMIN">ADMIN</option>
+              <option value="CUSTOMER">CUSTOMER</option>
+              <option value="GUEST">GUEST</option>
+            </select>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  }
+</div>

@@ -1,1 +1,16 @@
-<p>payment-settings works!</p>
+<div class="p-6 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl">
+  <h2 class="text-xl font-semibold text-white mb-6">Payment Settings</h2>
+  <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+    <label class="flex items-center gap-2 text-white">
+      <input type="checkbox" formControlName="paypalActive" class="accent-indigo-500"/>
+      Enable PayPal
+    </label>
+    <label class="flex items-center gap-2 text-white">
+      <input type="checkbox" formControlName="cmiActive" class="accent-indigo-500"/>
+      Enable CMI
+    </label>
+    <div class="flex justify-end">
+      <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">Save</button>
+    </div>
+  </form>
+</div>

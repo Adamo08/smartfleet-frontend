@@ -55,13 +55,17 @@
             class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
             [class.border-red-500]="isFieldInvalid('vehicleId')">
             <option value="">Choose a vehicle...</option>
-            <option *ngFor="let vehicle of availableVehicles" [value]="vehicle.id">
+            @for (vehicle of availableVehicles; track vehicle.id) {
+            <option [value]="vehicle.id">
               {{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.year }}) - {{ vehicle.licensePlate }}
             </option>
+            }
           </select>
-          <div *ngIf="isFieldInvalid('vehicleId')" class="text-red-400 text-sm">
+          @if (isFieldInvalid('vehicleId')) {
+          <div class="text-red-400 text-sm">
             {{ getFieldError('vehicleId') }}
           </div>
+          }
         </div>
       </div>
 
@@ -81,9 +85,11 @@
               formControlName="startDate"
               class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
               [class.border-red-500]="isFieldInvalid('startDate')">
-            <div *ngIf="isFieldInvalid('startDate')" class="text-red-400 text-sm">
+            @if (isFieldInvalid('startDate')) {
+            <div class="text-red-400 text-sm">
               {{ getFieldError('startDate') }}
             </div>
+            }
           </div>
 
           <div class="space-y-4">
@@ -94,9 +100,11 @@
               formControlName="endDate"
               class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
               [class.border-red-500]="isFieldInvalid('endDate')">
-            <div *ngIf="isFieldInvalid('endDate')" class="text-red-400 text-sm">
+            @if (isFieldInvalid('endDate')) {
+            <div class="text-red-400 text-sm">
               {{ getFieldError('endDate') }}
             </div>
+            }
           </div>
         </div>
 
