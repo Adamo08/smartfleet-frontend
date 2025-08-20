@@ -46,6 +46,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'payments',
     children: [
+      { path: '', redirectTo: 'transactions', pathMatch: 'full' },
       { path: 'transactions', loadComponent: () => import('./payments/transaction-list/transaction-list').then(m => m.TransactionList) },
       { path: 'transactions/:id', loadComponent: () => import('./payments/transaction-detail/transaction-detail').then(m => m.TransactionDetail) },
       { path: 'refunds', loadComponent: () => import('./payments/refund-list/refund-list').then(m => m.RefundList) },
@@ -74,12 +75,14 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'testimonials',
     children: [
+      { path: '', redirectTo: 'moderation', pathMatch: 'full' },
       { path: 'moderation', loadComponent: () => import('./testimonials/moderation/moderation').then(m => m.Moderation) },
     ]
   },
   {
     path: 'analytics',
     children: [
+      { path: '', redirectTo: 'reservations', pathMatch: 'full' },
       { path: 'reservations', loadComponent: () => import('./analytics/reservation-stats/reservation-stats').then(m => m.ReservationStats) },
       { path: 'revenue', loadComponent: () => import('./analytics/revenue-chart/revenue-chart').then(m => m.RevenueChart) },
       { path: 'vehicle-utilization', loadComponent: () => import('./analytics/vehicle-utilization/vehicle-utilization').then(m => m.VehicleUtilization) },
@@ -88,6 +91,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'settings',
     children: [
+      { path: '', redirectTo: 'general', pathMatch: 'full' },
       { path: 'general', loadComponent: () => import('./system-settings/system-settings').then(m => m.SystemSettings) },
       { path: 'pricing', loadComponent: () => import('./system-settings/pricing/pricing').then(m => m.Pricing) },
       { path: 'opening-hours', loadComponent: () => import('./system-settings/opening-hours/opening-hours').then(m => m.OpeningHours) },
@@ -98,6 +102,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'webhooks',
     children: [
+      { path: '', redirectTo: 'logs', pathMatch: 'full' },
       { path: 'logs', loadComponent: () => import('./webhooks/logs/logs').then(m => m.Logs) },
       { path: 'endpoints', loadComponent: () => import('./webhooks/endpoints/endpoints').then(m => m.Endpoints) },
     ]

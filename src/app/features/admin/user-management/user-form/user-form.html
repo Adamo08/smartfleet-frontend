@@ -1,1 +1,24 @@
-<p>user-form works!</p>
+<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl max-w-2xl">
+  <h2 class="text-xl font-semibold text-white mb-6">Create User</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+    <div>
+      <label class="block text-sm text-gray-300 mb-1">First name</label>
+      <input formControlName="firstName" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="John"/>
+    </div>
+    <div>
+      <label class="block text-sm text-gray-300 mb-1">Last name</label>
+      <input formControlName="lastName" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="Doe"/>
+    </div>
+    <div>
+      <label class="block text-sm text-gray-300 mb-1">Email</label>
+      <input formControlName="email" type="email" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="john@example.com"/>
+    </div>
+    <div>
+      <label class="block text-sm text-gray-300 mb-1">Password</label>
+      <input formControlName="password" type="password" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="********"/>
+    </div>
+    <div class="flex justify-end">
+      <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">Create</button>
+    </div>
+  </form>
+</div>
