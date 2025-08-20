@@ -7,11 +7,17 @@ import { TestimonialService, Testimonial } from '../../../core/services/testimon
 import { AuthService } from '../../../core/services/auth';
 import { Vehicle } from '../../../core/models/vehicle.interface';
 import { ToastrService } from 'ngx-toastr';
+import { Modal } from '../../../shared/components/modal/modal';
+import { SlotSelector } from '../../reservations/slot-selector/slot-selector';
+import { ReservationService } from '../../../core/services/reservation.service';
+import { PaymentService } from '../../../core/services/payment.service';
+import { SlotDto } from '../../../core/models/slot.interface';
+import { CreateReservationRequest } from '../../../core/models/reservation.interface';
 
 @Component({
   selector: 'app-vehicle-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Modal, SlotSelector],
   templateUrl: './vehicle-detail.html',
   styleUrl: './vehicle-detail.css'
 })
@@ -23,6 +29,9 @@ export class VehicleDetail implements OnInit {
   loading = true;
   isLoggedIn = false;
   isFavorite = false;
+  isBookingOpen = false;
+  selectedSlot: SlotDto | null = null;
+  isSubmitting = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,7 +39,9 @@ export class VehicleDetail implements OnInit {
     private favoriteService: FavoriteService,
     private testimonialService: TestimonialService,
     private authService: AuthService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private reservationService: ReservationService,
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
@@ -182,11 +193,8 @@ export class VehicleDetail implements OnInit {
 
   bookVehicle(): void {
     if (!this.vehicle) return;
-    
-    // Navigate to booking page or show booking modal
-    console.log('Booking vehicle:', this.vehicle.id);
-    // TODO: Implement booking functionality
-    alert('Booking functionality will be implemented soon!');
+    this.selectedSlot = null;
+    this.isBookingOpen = true;
   }
 
   checkAvailability(): void {
@@ -196,6 +204,47 @@ export class VehicleDetail implements OnInit {
     console.log('Checking availability for vehicle:', this.vehicle.id);
     // TODO: Implement availability check
     alert('Availability check will be implemented soon!');
+  }
+
+  onSlotSelected(slot: SlotDto): void {
+    this.selectedSlot = slot;
+  }
+
+  closeBooking(): void {
+    this.isBookingOpen = false;
+    this.selectedSlot = null;
+  }
+
+  confirmBooking(): void {
+    if (!this.vehicle || !this.selectedSlot || this.isSubmitting) return;
+    this.isSubmitting = true;
+
+    const request: CreateReservationRequest = {
+      vehicleId: this.vehicle.id,
+      slotId: this.selectedSlot.id,
+      startDate: new Date(this.selectedSlot.startTime),
+      endDate: new Date(this.selectedSlot.endTime),
+      comment: ''
+    };
+
+    this.reservationService.createReservation(request).subscribe({
+      next: (reservation) => {
+        this.toastr.success('Reservation created. You can proceed to payment or wait for approval.', 'Reservation Pending');
+        this.isSubmitting = false;
+        // Keep modal open and show actions
+      },
+      error: (err) => {
+        console.error('Failed to create reservation', err);
+        this.toastr.error(err?.error?.message || 'Failed to create reservation', 'Error');
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  startPayment(provider: 'paypal' | 'cmi' | 'onsite'): void {
+    if (!this.vehicle || !this.selectedSlot) return;
+    // We need reservationId; in a full flow we’d fetch payment for latest reservation.
+    // For now, we’ll navigate users to reservations page after creation, or this method would be triggered with reservation context.
   }
 
   getStarRating(rating: number): string[] {

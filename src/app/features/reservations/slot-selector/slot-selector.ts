@@ -20,6 +20,7 @@ export class SlotSelector implements OnInit, OnDestroy {
   @Input() endTime?: string;
   @Input() showTimeSlots: boolean = true;
   @Input() showDatePicker: boolean = true;
+  @Input() includeUnavailable: boolean = false;
   
   @Output() slotSelected = new EventEmitter<SlotDto>();
   @Output() dateChanged = new EventEmitter<Date>();
@@ -101,7 +102,11 @@ export class SlotSelector implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.slotService.getAvailableSlotsByVehicle(this.vehicleId)
+    const loader$ = this.includeUnavailable
+      ? this.slotService.getAllSlotsInRange(this.vehicleId)
+      : this.slotService.getAvailableSlotsByVehicle(this.vehicleId);
+
+    loader$
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (slots) => {
@@ -158,13 +163,13 @@ export class SlotSelector implements OnInit, OnDestroy {
 
   hasAvailableSlots(date: Date): boolean {
     return this.availableSlots.some(slot => 
-      slot.startTime.toDateString() === date.toDateString()
+      new Date(slot.startTime).toDateString() === date.toDateString()
     );
   }
 
   getAvailableSlotsForDate(date: Date): SlotDto[] {
     return this.availableSlots.filter(slot => 
-      slot.startTime.toDateString() === date.toDateString()
+      new Date(slot.startTime).toDateString() === date.toDateString()
     );
   }
 
@@ -190,15 +195,20 @@ export class SlotSelector implements OnInit, OnDestroy {
   }
 
   getSlotDuration(slot: SlotDto): string {
-    const start = new Date(slot.startTime);
-    const end = new Date(slot.endTime);
+    const start = new Date(slot.startTime as unknown as string);
+    const end = new Date(slot.endTime as unknown as string);
     const diffMs = end.getTime() - start.getTime();
     const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+    if (diffHours >= 24) {
+      const diffDays = Math.round(diffHours / 24);
+      return `${diffDays}d`;
+    }
     return `${diffHours}h`;
   }
 
   formatTime(date: Date): string {
-    return date.toLocaleTimeString('en-US', { 
+    const d = new Date(date as unknown as string);
+    return d.toLocaleTimeString('en-US', { 
       hour: '2-digit', 
       minute: '2-digit',
       hour12: false 
@@ -206,7 +216,8 @@ export class SlotSelector implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', { 
+    const d = new Date(date as unknown as string);
+    return d.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric' 
     });

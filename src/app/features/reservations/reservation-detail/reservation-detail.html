@@ -284,10 +284,12 @@
                 <p class="text-white">{{ reservation.user.email }}</p>
               </div>
               
-              <div *ngIf="reservation.user.phoneNumber">
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Phone</label>
-                <p class="text-white">{{ reservation.user.phoneNumber }}</p>
-              </div>
+              @if (reservation.user.phoneNumber) {
+                <div>
+                  <label class="block text-sm font-semibold text-gray-300 mb-1">Phone</label>
+                  <p class="text-white">{{ reservation.user.phoneNumber }}</p>
+                </div>
+              }
             </div>
           </div>
         </div>
