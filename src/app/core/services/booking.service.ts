@@ -33,8 +33,8 @@ export class BookingService {
     reservation: DetailedReservationDto;
     payment: PaymentResponseDto;
   }> {
-    return this.validateBookingRequest(reservationRequest).pipe(
-      switchMap(() => this.createReservation(reservationRequest)),
+    // Rely on backend validation (slot state and times). Remove admin-only slot check.
+    return this.createReservation(reservationRequest).pipe(
       switchMap(reservation => 
         this.processPayment({
           ...paymentRequest,
@@ -154,31 +154,7 @@ export class BookingService {
   /**
    * Validate booking request before processing
    */
-  private validateBookingRequest(request: CreateReservationRequest): Observable<boolean> {
-    const now = new Date();
-    
-    if (request.startDate <= now) {
-      return throwError(() => new Error('Start date must be in the future'));
-    }
-    
-    if (request.endDate <= request.startDate) {
-      return throwError(() => new Error('End date must be after start date'));
-    }
-    
-    if (request.startDate.getTime() === request.endDate.getTime()) {
-      return throwError(() => new Error('Start and end dates cannot be the same'));
-    }
-
-    // Check if the requested time slot is available
-    return this.slotService.isSlotAvailable(request.slotId).pipe(
-      map(isAvailable => {
-        if (!isAvailable) {
-          throw new Error('Selected time slot is no longer available');
-        }
-        return true;
-      })
-    );
-  }
+  // Removed client-side slot availability check (admin-protected). Backend enforces it.
 
   /**
    * Create reservation

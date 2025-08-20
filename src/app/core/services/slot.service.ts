@@ -85,15 +85,24 @@ export class SlotService {
   }
 
   /**
-   * Get available slots for a vehicle within a date range
+   * Get all slots for a vehicle (available and unavailable) within an optional date range
+   */
+  getAllSlotsInRange(vehicleId: number, startDate?: Date, endDate?: Date): Observable<SlotDto[]> {
+    let params = new HttpParams();
+    if (startDate && endDate) {
+      params = params.set('start', startDate.toISOString()).set('end', endDate.toISOString());
+    }
+    return this.http.get<SlotDto[]>(`${this.baseUrl}/vehicle/${vehicleId}`, { params });
+  }
+
+  /**
+   * Get available slots for a vehicle within a date range (fallback/simple)
    */
   getAvailableSlotsInRange(vehicleId: number, startDate: Date, endDate: Date): Observable<SlotDto[]> {
-    const params = new HttpParams()
-      .set('vehicleId', vehicleId.toString())
-      .set('startDate', startDate.toISOString())
-      .set('endDate', endDate.toISOString());
-    
-    return this.http.get<SlotDto[]>(`${this.baseUrl}/vehicle/${vehicleId}/available`, { params });
+    // Backend does not filter by range on available endpoint; client-side filter after fetch
+    return this.getAvailableSlotsByVehicle(vehicleId).pipe(
+      map(slots => slots.filter(s => new Date(s.startTime) >= startDate && new Date(s.endTime) <= endDate))
+    );
   }
 
   /**
