@@ -1,34 +1,114 @@
 <div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-xl font-semibold text-white">Users</h2>
-    <a routerLink="/admin/users/create" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">New User</a>
+    <button (click)="openAddUserModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">New User</button>
   </div>
+
+  <div class="flex justify-between items-center mb-4">
+    <input
+      type="text"
+      placeholder="Search users by name or email..."
+      class="p-2 rounded-xl bg-slate-800 text-white border border-white/10 flex-grow mr-2"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchTermChange($event)"
+    />
+    <select
+      [(ngModel)]="selectedRole"
+      (ngModelChange)="onRoleFilterChange($event)"
+      class="p-2 rounded-xl bg-slate-800 text-white border border-white/10 mr-2"
+    >
+      <option value="">All Roles</option>
+      @for (role of userRoles; track role) {
+        <option [value]="role">{{ role }}</option>
+      }
+    </select>
+    <button (click)="exportUsers()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white">Export CSV</button>
+  </div>
+
   @if (isLoading) {
     <div class="text-gray-300">Loading...</div>
-  } @else {
-    <table class="min-w-full text-sm text-gray-200">
-      <thead>
-        <tr class="text-left border-b border-white/10">
-          <th class="p-2">ID</th>
-          <th class="p-2">Name</th>
-          <th class="p-2">Email</th>
-          <th class="p-2">Phone</th>
-          <th class="p-2">Role</th>
-          <th class="p-2">Created</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (u of users; track u.id) {
-          <tr class="border-b border-indigo-500/10">
-            <td class="p-2">{{ u.id }}</td>
-            <td class="p-2">{{ u.firstName }} {{ u.lastName }}</td>
-            <td class="p-2">{{ u.email }}</td>
-            <td class="p-2">{{ u.phoneNumber || '-' }}</td>
-            <td class="p-2">{{ u.role }}</td>
-            <td class="p-2">{{ u.createdAt | date:'short' }}</td>
+  } @else if (usersPage && usersPage.content.length > 0) {
+    <div class="overflow-x-auto rounded-lg shadow-xl">
+      <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+        <thead>
+          <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
+            <th class="p-3 text-white">ID</th>
+            <th class="p-3 text-white">Name</th>
+            <th class="p-3 text-white">Email</th>
+            <th class="p-3 text-white">Phone</th>
+            <th class="p-3 text-white">Role</th>
+            <th class="p-3 text-white">Created</th>
+            <th class="p-3 text-white">Actions</th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (u of usersPage.content; track u.id) {
+            <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
+              <td class="p-3">{{ u.id }}</td>
+              <td class="p-3">{{ u.firstName }} {{ u.lastName }}</td>
+              <td class="p-3">{{ u.email }}</td>
+              <td class="p-3">{{ u.phoneNumber || '-' }}</td>
+              <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
+                'bg-blue-500/20 text-blue-300': u.role === 'USER',
+                'bg-purple-500/20 text-purple-300': u.role === 'ADMIN'
+              }">{{ u.role }}</span></td>
+              <td class="p-3">{{ u.createdAt | date:'short' }}</td>
+              <td class="p-3 flex space-x-2">
+                <button class="text-blue-400 hover:text-blue-300 transition-colors duration-200" (click)="viewUser(u)">View</button>
+                <button class="text-yellow-400 hover:text-yellow-300 transition-colors duration-200" (click)="openEditUserModal(u)">Edit</button>
+                <button class="text-red-400 hover:text-red-300 transition-colors duration-200" (click)="openDeleteUserModal(u)">Delete</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-6 flex justify-center">
+      <app-pagination
+        [currentPage]="usersPage.number"
+        [totalPages]="usersPage.totalPages"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    </div>
+  } @else {
+    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-xl bg-slate-900/40">
+      No users found.
+    </div>
+  }
+
+  @if (showUserDetailModal && selectedUser) {
+    <app-modal [title]="'User Details'" (close)="closeUserDetailModal()">
+      <app-user-detail [user]="selectedUser"></app-user-detail>
+    </app-modal>
+  }
+
+  @if (showAddUserModal) {
+    <app-modal [title]="'Add New User'" (close)="closeAddUserModal()">
+      <app-user-form (formSubmitted)="closeAddUserModal()"></app-user-form>
+      <div modal-actions class="flex justify-end space-x-2 mt-4">
+        <button (click)="closeAddUserModal()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">Cancel</button>
+      </div>
+    </app-modal>
+  }
+
+  @if (showEditUserModal && selectedUser) {
+    <app-modal [title]="'Edit User'" (close)="closeEditUserModal()">
+      <app-user-form [user]="selectedUser" (formSubmitted)="closeEditUserModal()"></app-user-form>
+      <div modal-actions class="flex justify-end space-x-2 mt-4">
+        <button (click)="closeEditUserModal()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">Cancel</button>
+      </div>
+    </app-modal>
+  }
+
+  @if (showDeleteUserModal && userToDelete) {
+    <app-configrm-dialog
+      [title]="'Confirm Deletion'"
+      [message]="'Are you sure you want to delete user \'' + userToDelete.firstName + ' ' + userToDelete.lastName + '\'? This action cannot be undone.'"
+      [confirmButtonText]="'Delete'"
+      [cancelButtonText]="'Cancel'"
+      [actionType]="DialogActionType.DELETE"
+      (confirmed)="confirmDeleteUser()"
+      (cancelled)="closeDeleteUserModal()">
+    </app-configrm-dialog>
   }
 </div>

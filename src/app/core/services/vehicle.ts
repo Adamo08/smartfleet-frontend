@@ -1,15 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api';
 import { Vehicle } from '../models/vehicle.interface';
-import { Observable, map } from 'rxjs';
-
-interface PaginatedResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
+import { Observable } from 'rxjs';
+import { Page, Pageable } from '../models/pagination.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -17,20 +10,20 @@ interface PaginatedResponse<T> {
 export class VehicleService {
   constructor(private apiService: ApiService) {}
 
-  getVehicles(params?: any): Observable<Vehicle[]> {
-    return this.apiService.get<PaginatedResponse<Vehicle>>('/vehicles', params).pipe(
-      map(response => response.content)
-    );
+  getVehicles(pageable: Pageable): Observable<Page<Vehicle>> {
+    const params: { [key: string]: any } = {
+      page: pageable.page,
+      size: pageable.size,
+      sortBy: pageable.sortBy,
+      sortDirection: pageable.sortDirection
+    };
+    // Add filter parameters if they exist in pageable (assuming they will be added later)
+    // For now, keep it simple as per current backend API
+    return this.apiService.get<Page<Vehicle>>('/vehicles', params);
   }
 
   getVehicleById(id: number): Observable<Vehicle> {
     return this.apiService.get<Vehicle>(`/vehicles/${id}`);
-  }
-
-  searchVehicles(params: any): Observable<Vehicle[]> {
-    return this.apiService.get<PaginatedResponse<Vehicle>>('/vehicles/search', params).pipe(
-      map(response => response.content)
-    );
   }
 
   createVehicle(vehicle: Partial<Vehicle>): Observable<Vehicle> {

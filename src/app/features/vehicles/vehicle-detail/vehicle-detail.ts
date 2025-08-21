@@ -6,6 +6,7 @@ import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { TestimonialService, Testimonial } from '../../../core/services/testimonial';
 import { AuthService } from '../../../core/services/auth';
 import { Vehicle } from '../../../core/models/vehicle.interface';
+import { Page, Pageable } from '../../../core/models/pagination.interface'; // Import Page and Pageable
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from '../../../shared/components/modal/modal';
 import { SlotSelector } from '../../reservations/slot-selector/slot-selector';
@@ -13,6 +14,7 @@ import { ReservationService } from '../../../core/services/reservation.service';
 import { PaymentService } from '../../../core/services/payment.service';
 import { SlotDto } from '../../../core/models/slot.interface';
 import { CreateReservationRequest } from '../../../core/models/reservation.interface';
+import { Input } from '@angular/core';
 
 @Component({
   selector: 'app-vehicle-detail',
@@ -22,7 +24,7 @@ import { CreateReservationRequest } from '../../../core/models/reservation.inter
   styleUrl: './vehicle-detail.css'
 })
 export class VehicleDetail implements OnInit {
-  vehicle: Vehicle | null = null;
+  @Input() vehicle: Vehicle | null = null;
   vehicleTestimonials: Testimonial[] = [];
   similarVehicles: Vehicle[] = [];
   favorites: Favorite[] = [];
@@ -45,24 +47,33 @@ export class VehicleDetail implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // If vehicle is passed as an input, we don't need to load it from route params
+    if (!this.vehicle) {
+      this.loadVehicleFromRoute();
+    } else {
+      // If vehicle is passed as input, proceed with related data loading
+      this.loadVehicleTestimonials(this.vehicle.id);
+      this.loadSimilarVehicles(this.vehicle);
+      this.loading = false;
+    }
+
     this.isLoggedIn = this.authService.isAuthenticated();
-    this.loadVehicle();
     if (this.isLoggedIn) {
       this.loadFavorites();
     }
   }
 
-  private loadVehicle(): void {
+  private loadVehicleFromRoute(): void {
     const vehicleId = this.route.snapshot.paramMap.get('id');
     if (vehicleId) {
       this.vehicleService.getVehicleById(parseInt(vehicleId)).subscribe({
-        next: (vehicle) => {
+        next: (vehicle: Vehicle) => { // Explicitly type 'vehicle'
           this.vehicle = vehicle;
           this.loadVehicleTestimonials(vehicle.id);
           this.loadSimilarVehicles(vehicle);
           this.loading = false;
         },
-        error: (error) => {
+        error: (error: any) => { // Explicitly type 'error'
           console.error('Error loading vehicle:', error);
           this.loading = false;
         }
@@ -72,11 +83,11 @@ export class VehicleDetail implements OnInit {
 
   private loadFavorites(): void {
     this.favoriteService.getMyFavorites().subscribe({
-      next: (favorites) => {
+      next: (favorites: Favorite[]) => { // Explicitly type 'favorites'
         this.favorites = favorites;
         this.updateFavoriteStatus();
       },
-      error: (error) => {
+      error: (error: any) => { // Explicitly type 'error'
         console.error('Error loading favorites:', error);
       }
     });
@@ -84,10 +95,10 @@ export class VehicleDetail implements OnInit {
 
   private loadVehicleTestimonials(vehicleId: number): void {
     this.testimonialService.getPublicTestimonials({ vehicleId, page: 0, size: 6 }).subscribe({
-      next: (testimonials) => {
+      next: (testimonials: Testimonial[]) => { // Explicitly type 'testimonials'
         this.vehicleTestimonials = testimonials;
       },
-      error: (error) => {
+      error: (error: any) => { // Explicitly type 'error'
         console.error('Error loading vehicle testimonials:', error);
         // Load some mock testimonials for demonstration
         this.loadMockVehicleTestimonials();
@@ -131,18 +142,24 @@ export class VehicleDetail implements OnInit {
   }
 
   private loadSimilarVehicles(currentVehicle: Vehicle): void {
-    // Load vehicles of the same type and similar price range
-    this.vehicleService.searchVehicles({
-      type: currentVehicle.vehicleType,
+    const pageable: Pageable = {
+      page: 0,
+      size: 4, // Fetch one more than needed to ensure we can filter out the current vehicle
+      sortBy: 'pricePerDay',
+      sortDirection: 'ASC'
+    };
+
+    const filters = {
+      vehicleType: currentVehicle.vehicleType,
       minPrice: currentVehicle.pricePerDay * 0.7,
       maxPrice: currentVehicle.pricePerDay * 1.3,
-      page: 0,
-      size: 3
-    }).subscribe({
-      next: (vehicles) => {
-        this.similarVehicles = vehicles.filter(v => v.id !== currentVehicle.id);
+    };
+
+    this.vehicleService.getVehicles({ ...pageable, ...filters }).subscribe({
+      next: (page: Page<Vehicle>) => { // Explicitly type 'page'
+        this.similarVehicles = page.content.filter((v: Vehicle) => v.id !== currentVehicle.id).slice(0, 3); // Explicitly type 'v'
       },
-      error: (error) => {
+      error: (error: any) => { // Explicitly type 'error'
         console.error('Error loading similar vehicles:', error);
       }
     });
@@ -169,7 +186,7 @@ export class VehicleDetail implements OnInit {
             this.isFavorite = false;
             this.toastr.success(`${vehicleName} removed from favorites`, 'Favorite Removed');
           },
-          error: (error) => {
+          error: (error: any) => { // Explicitly type 'error'
             console.error('Error removing from favorites:', error);
             this.toastr.error('Failed to remove from favorites', 'Error');
           }
@@ -178,12 +195,12 @@ export class VehicleDetail implements OnInit {
     } else {
       // Add to favorites
       this.favoriteService.addToFavorites(this.vehicle.id).subscribe({
-        next: (favorite) => {
+        next: (favorite: Favorite) => { // Explicitly type 'favorite'
           this.favorites.push(favorite);
           this.isFavorite = true;
           this.toastr.success(`${vehicleName} added to favorites`, 'Favorite Added');
         },
-        error: (error) => {
+        error: (error: any) => { // Explicitly type 'error'
           console.error('Error adding to favorites:', error);
           this.toastr.error('Failed to add to favorites', 'Error');
         }
@@ -199,7 +216,7 @@ export class VehicleDetail implements OnInit {
 
   checkAvailability(): void {
     if (!this.vehicle) return;
-    
+
     // Check vehicle availability for specific dates
     console.log('Checking availability for vehicle:', this.vehicle.id);
     // TODO: Implement availability check
@@ -228,12 +245,12 @@ export class VehicleDetail implements OnInit {
     };
 
     this.reservationService.createReservation(request).subscribe({
-      next: (reservation) => {
+      next: (reservation: any) => { // Explicitly type 'reservation'
         this.toastr.success('Reservation created. You can proceed to payment or wait for approval.', 'Reservation Pending');
         this.isSubmitting = false;
         // Keep modal open and show actions
       },
-      error: (err) => {
+      error: (err: any) => { // Explicitly type 'err'
         console.error('Failed to create reservation', err);
         this.toastr.error(err?.error?.message || 'Failed to create reservation', 'Error');
         this.isSubmitting = false;

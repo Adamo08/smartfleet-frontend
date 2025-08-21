@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { User } from '../../../../core/models/user.interface';
 
 @Component({
   selector: 'app-user-detail',
@@ -10,5 +11,5 @@ import { RouterModule } from '@angular/router';
   styleUrl: './user-detail.css'
 })
 export class UserDetail {
-
+  @Input() user!: User;
 }

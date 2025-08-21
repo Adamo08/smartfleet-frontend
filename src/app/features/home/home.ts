@@ -71,9 +71,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private loadFeaturedVehicles(): void {
-    this.vehicleService.getVehicles({ page: 0, size: 6 }).subscribe({
-      next: (vehicles) => {
-        this.featuredVehicles = vehicles;
+    this.vehicleService.getVehicles({ page: 0, size: 6, sortBy: 'createdAt', sortDirection: 'DESC' }).subscribe({
+      next: (page) => {
+        this.featuredVehicles = page.content;
         this.loading = false;
       },
       error: (error) => {

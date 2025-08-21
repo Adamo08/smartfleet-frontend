@@ -6,32 +6,48 @@ import { VehicleService } from '../../../core/services/vehicle';
 import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { AuthService } from '../../../core/services/auth';
 import { Vehicle, VehicleType, VehicleStatus, FuelType } from '../../../core/models/vehicle.interface';
+import { Page, Pageable, Sort } from '../../../core/models/pagination.interface';
 import { VehicleCard } from '../vehicle-card/vehicle-card';
 import { ToastrService } from 'ngx-toastr';
+import { Modal } from '../../../shared/components/modal/modal';
+import { VehicleDetail } from '../vehicle-detail/vehicle-detail';
+import { Pagination } from '../../../shared/components/pagination/pagination';
 
 @Component({
   selector: 'app-vehicle-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, VehicleCard],
+  imports: [CommonModule, RouterModule, FormsModule, VehicleCard, Modal, VehicleDetail, Pagination],
   templateUrl: './vehicle-list.html',
   styleUrl: './vehicle-list.css'
 })
 export class VehicleList implements OnInit {
-  vehicles: Vehicle[] = [];
-  filteredVehicles: Vehicle[] = [];
+  vehiclesPage!: Page<Vehicle>;
   favorites: Favorite[] = [];
   loading = true;
   isLoggedIn = false;
 
-  // Search and filters
-  searchTerm = '';
-  selectedVehicleType = '';
-  selectedStatus = '';
-  selectedFuelType = '';
-  maxPrice = '';
-  minYear = '';
-  maxMileage = '';
+  // Pagination properties
+  currentPage = 0;
+  pageSize = 9; // Display 9 vehicles per page in the grid
   sortBy = 'createdAt';
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
+
+  // Filter properties
+  searchTerm = '';
+  selectedVehicleType: string | null = null;
+  selectedStatus: string | null = null;
+  selectedFuelType: string | null = null;
+  maxPrice: number | null = null;
+  minYear: number | null = null;
+  maxMileage: number | null = null;
+
+  // Enums for dropdowns
+  readonly VehicleType = Object.values(VehicleType);
+  readonly FuelType = Object.values(FuelType);
+  readonly VehicleStatus = Object.values(VehicleStatus);
+
+  selectedVehicle: Vehicle | null = null;
+  showVehicleDetailModal = false;
 
   constructor(
     private vehicleService: VehicleService,
@@ -49,10 +65,33 @@ export class VehicleList implements OnInit {
   }
 
   private loadVehicles(): void {
-    this.vehicleService.getVehicles().subscribe({
-      next: (vehicles) => {
-        this.vehicles = vehicles;
-        this.filteredVehicles = [...vehicles];
+    this.loading = true;
+
+    const pageable: Pageable = {
+      page: this.currentPage,
+      size: this.pageSize,
+      sortBy: this.sortBy.includes('_desc') ? this.sortBy.replace('_desc', '') : this.sortBy,
+      sortDirection: this.sortBy.includes('_desc') ? 'DESC' : 'ASC'
+    };
+
+    const filters = {
+      brand: this.searchTerm || null,
+      model: this.searchTerm || null, // Assuming search term can apply to brand or model
+      vehicleType: this.selectedVehicleType,
+      fuelType: this.selectedFuelType,
+      status: this.selectedStatus,
+      minPrice: null, // minPrice is not used in the current UI dropdowns
+      maxPrice: this.maxPrice,
+      minYear: this.minYear,
+      maxMileage: this.maxMileage
+    };
+
+    // Remove null or empty string filters to avoid sending them to backend
+    Object.keys(filters).forEach(key => (filters[key as keyof typeof filters] === null || filters[key as keyof typeof filters] === '') && delete filters[key as keyof typeof filters]);
+
+    this.vehicleService.getVehicles({ ...pageable, ...filters }).subscribe({
+      next: (page) => {
+        this.vehiclesPage = page;
         this.loading = false;
       },
       error: (error) => {
@@ -74,100 +113,46 @@ export class VehicleList implements OnInit {
   }
 
   onSearchChange(): void {
-    this.applyFilters();
+    this.currentPage = 0; // Reset to first page on new search
+    this.loadVehicles();
   }
 
   onFilterChange(): void {
-    this.applyFilters();
+    this.currentPage = 0; // Reset to first page on new filter
+    this.loadVehicles();
   }
 
   onSortChange(): void {
-    this.applyFilters();
+    this.currentPage = 0; // Reset to first page on new sort
+    this.loadVehicles();
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadVehicles();
   }
 
   clearFilters(): void {
     this.searchTerm = '';
-    this.selectedVehicleType = '';
-    this.selectedStatus = '';
-    this.selectedFuelType = '';
-    this.maxPrice = '';
-    this.minYear = '';
-    this.maxMileage = '';
+    this.selectedVehicleType = null;
+    this.selectedStatus = null;
+    this.selectedFuelType = null;
+    this.maxPrice = null;
+    this.minYear = null;
+    this.maxMileage = null;
     this.sortBy = 'createdAt';
-    this.applyFilters();
+    this.currentPage = 0;
+    this.loadVehicles();
   }
 
-  private applyFilters(): void {
-    let filtered = [...this.vehicles];
-
-    // Search filter
-    if (this.searchTerm.trim()) {
-      const search = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(vehicle =>
-        vehicle.brand.toLowerCase().includes(search) ||
-        vehicle.model.toLowerCase().includes(search) ||
-        vehicle.licensePlate.toLowerCase().includes(search)
-      );
-    }
-
-    // Vehicle type filter
-    if (this.selectedVehicleType) {
-      filtered = filtered.filter(vehicle => vehicle.vehicleType === this.selectedVehicleType);
-    }
-
-    // Status filter
-    if (this.selectedStatus) {
-      filtered = filtered.filter(vehicle => vehicle.status === this.selectedStatus);
-    }
-
-    // Fuel type filter
-    if (this.selectedFuelType) {
-      filtered = filtered.filter(vehicle => vehicle.fuelType === this.selectedFuelType);
-    }
-
-    // Price filter
-    if (this.maxPrice) {
-      const maxPrice = parseFloat(this.maxPrice);
-      filtered = filtered.filter(vehicle => vehicle.pricePerDay <= maxPrice);
-    }
-
-    // Year filter
-    if (this.minYear) {
-      const minYear = parseInt(this.minYear);
-      filtered = filtered.filter(vehicle => vehicle.year >= minYear);
-    }
-
-    // Mileage filter
-    if (this.maxMileage) {
-      const maxMileage = parseFloat(this.maxMileage);
-      filtered = filtered.filter(vehicle => vehicle.mileage <= maxMileage);
-    }
-
-    // Sort
-    this.sortVehicles(filtered);
-
-    this.filteredVehicles = filtered;
+  viewVehicle(vehicle: Vehicle): void {
+    this.selectedVehicle = vehicle;
+    this.showVehicleDetailModal = true;
   }
 
-  private sortVehicles(vehicles: Vehicle[]): void {
-    switch (this.sortBy) {
-      case 'pricePerDay':
-        vehicles.sort((a, b) => a.pricePerDay - b.pricePerDay);
-        break;
-      case 'pricePerDay_desc':
-        vehicles.sort((a, b) => b.pricePerDay - a.pricePerDay);
-        break;
-      case 'year':
-        vehicles.sort((a, b) => b.year - a.year);
-        break;
-      case 'mileage':
-        vehicles.sort((a, b) => a.mileage - b.mileage);
-        break;
-      case 'createdAt':
-      default:
-        vehicles.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        break;
-    }
+  closeVehicleDetailModal(): void {
+    this.showVehicleDetailModal = false;
+    this.selectedVehicle = null;
   }
 
   isFavorite(vehicleId: number): boolean {
@@ -175,9 +160,9 @@ export class VehicleList implements OnInit {
   }
 
   toggleFavorite(vehicleId: number): void {
-    const vehicle = this.vehicles.find(v => v.id === vehicleId);
+    const vehicle = this.vehiclesPage.content.find(v => v.id === vehicleId);
     const vehicleName = vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Vehicle';
-    
+
     if (this.isFavorite(vehicleId)) {
       // Remove from favorites
       const favorite = this.favorites.find(f => f.vehicleId === vehicleId);

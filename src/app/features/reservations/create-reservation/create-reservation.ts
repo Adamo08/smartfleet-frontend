@@ -8,14 +8,15 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { BookingService } from '../../../core/services/booking.service';
 import { SlotService } from '../../../core/services/slot.service';
 import { VehicleService } from '../../../core/services/vehicle';
-import { 
-  CreateReservationRequest, 
-  ReservationFilter 
+import {
+  CreateReservationRequest,
+  ReservationFilter
 } from '../../../core/models/reservation.interface';
 import { SlotDto } from '../../../core/models/slot.interface';
 import { Vehicle } from '../../../core/models/vehicle.interface';
 import { PaymentRequestDto } from '../../../core/models/payment.interface';
 import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
+import { Page } from '../../../core/models/pagination.interface';
 
 @Component({
   selector: 'app-create-reservation',
@@ -38,7 +39,7 @@ export class CreateReservation implements OnInit, OnDestroy {
   selectedDate: Date | null = null;
   selectedStartTime: string = '';
   selectedEndTime: string = '';
-  
+
   // Booking details
   bookingDuration: number = 0;
   estimatedCost: number = 0;
@@ -78,7 +79,7 @@ export class CreateReservation implements OnInit, OnDestroy {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(9, 0, 0, 0);
-    
+
     const endTime = new Date(tomorrow);
     endTime.setHours(17, 0, 0, 0);
 
@@ -107,18 +108,20 @@ export class CreateReservation implements OnInit, OnDestroy {
           if (vehicleId) {
             return this.vehicleService.getVehicleById(vehicleId);
           }
-          return this.vehicleService.getVehicles();
+          // Provide default Pageable for getVehicles()
+          return this.vehicleService.getVehicles({ page: 0, size: 100, sortBy: 'id', sortDirection: 'ASC' });
         })
       )
       .subscribe({
-        next: (vehicle) => {
-          if ('id' in vehicle) {
+        next: (response) => {
+          // Check if it's a single Vehicle or a Page<Vehicle>
+          if ('id' in response) {
             // Single vehicle
-            this.selectedVehicle = vehicle;
-            this.reservationForm.patchValue({ vehicleId: vehicle.id });
-          } else {
-            // Multiple vehicles - user can select
-            this.availableVehicles = vehicle;
+            this.selectedVehicle = response as Vehicle;
+            this.reservationForm.patchValue({ vehicleId: (response as Vehicle).id });
+          } else if ('content' in response) {
+            // Page<Vehicle>
+            this.availableVehicles = (response as Page<Vehicle>).content;
           }
         },
         error: (error) => {
@@ -130,7 +133,7 @@ export class CreateReservation implements OnInit, OnDestroy {
 
   private onFormChange(): void {
     const { vehicleId, startDate, endDate } = this.reservationForm.value;
-    
+
     if (vehicleId && startDate && endDate) {
       this.loadAvailableSlots(vehicleId, startDate, endDate);
       this.calculateBookingDetails(startDate, endDate);
@@ -147,7 +150,7 @@ export class CreateReservation implements OnInit, OnDestroy {
         next: (result) => {
           this.availableSlots = result.availableSlots;
           this.isLoading = false;
-          
+
           if (result.availableSlots.length === 0) {
             this.errorMessage = 'No available slots for the selected date and time.';
             this.suggestAlternativeSlots(vehicleId, startDate, endDate);
@@ -217,7 +220,7 @@ export class CreateReservation implements OnInit, OnDestroy {
       this.successMessage = '';
 
       const reservationRequest: CreateReservationRequest = this.reservationForm.value;
-      
+
       // Create payment request (this would typically come from a payment form)
       const paymentRequest: PaymentRequestDto = {
         reservationId: 0, // Will be set by the service
@@ -233,7 +236,7 @@ export class CreateReservation implements OnInit, OnDestroy {
           next: (result) => {
             this.isLoading = false;
             this.successMessage = 'Reservation created successfully!';
-            
+
             // Redirect to reservation detail or payment page
             setTimeout(() => {
               this.router.navigate(['/reservations', result.reservation.id]);
@@ -282,12 +285,12 @@ export class CreateReservation implements OnInit, OnDestroy {
 
   getDuration(): string {
     if (!this.selectedSlot) return '0 hours';
-    
+
     const start = new Date(this.selectedSlot.startTime);
     const end = new Date(this.selectedSlot.endTime);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    
+
     return `${diffHours} hour${diffHours !== 1 ? 's' : ''}`;
   }
 }
