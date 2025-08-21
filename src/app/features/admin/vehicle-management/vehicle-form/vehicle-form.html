@@ -1,1 +1,62 @@
-<p>vehicle-form works!</p>
+<h2 class="text-xl font-semibold text-white mb-6">{{ editMode ? 'Edit Vehicle' : 'Add New Vehicle' }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Brand</label>
+    <input formControlName="brand" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="Toyota"/>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Model</label>
+    <input formControlName="model" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="Camry"/>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Year</label>
+    <input formControlName="year" type="number" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="2023"/>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">License Plate</label>
+    <input formControlName="licensePlate" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="ABC-123"/>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Vehicle Type</label>
+    <select formControlName="vehicleType" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white">
+      @for (type of vehicleTypes; track type) {
+        <option [value]="type">{{ type }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Fuel Type</label>
+    <select formControlName="fuelType" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white">
+      @for (type of fuelTypes; track type) {
+        <option [value]="type">{{ type }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Status</label>
+    <select formControlName="status" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white">
+      @for (status of vehicleStatuses; track status) {
+        <option [value]="status">{{ status }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Mileage</label>
+    <input formControlName="mileage" type="number" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="50000"/>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Price Per Day</label>
+    <input formControlName="pricePerDay" type="number" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="50"/>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Image URL (Optional)</label>
+    <input formControlName="imageUrl" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="http://example.com/image.jpg"/>
+  </div>
+  <div>
+    <label class="block text-sm text-gray-300 mb-1">Description (Optional)</label>
+    <textarea formControlName="description" rows="3" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="A brief description of the vehicle."></textarea>
+  </div>
+  <div class="flex justify-end">
+    <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">{{ editMode ? 'Update' : 'Add Vehicle' }}</button>
+  </div>
+</form>

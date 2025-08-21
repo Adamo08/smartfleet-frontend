@@ -1,1 +1,41 @@
-<p>pagination works!</p>
+<nav class="flex justify-center items-center space-x-2" aria-label="Pagination">
+  <button
+    (click)="prevPage()"
+    [disabled]="currentPage === 0"
+    class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200"
+    [ngClass]="{
+      'bg-indigo-600 text-white hover:bg-indigo-700': currentPage > 0,
+      'bg-gray-700 text-gray-400 cursor-not-allowed': currentPage === 0
+    }"
+  >
+    Previous
+  </button>
+  @for (page of pages; track page) {
+    @if (page === '...') {
+      <span class="px-3 py-1 text-gray-400">...</span>
+    } @else {
+      <button
+        (click)="goToPage(page)"
+        [class.current]="page === currentPage"
+        class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200"
+        [ngClass]="{
+          'bg-indigo-600 text-white': page === currentPage,
+          'bg-slate-800 text-gray-300 hover:bg-slate-700': page !== currentPage
+        }"
+      >
+        {{ getDisplayPage(page) }}
+      </button>
+    }
+  }
+  <button
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages - 1"
+    class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200"
+    [ngClass]="{
+      'bg-indigo-600 text-white hover:bg-indigo-700': currentPage < totalPages - 1,
+      'bg-gray-700 text-gray-400 cursor-not-allowed': currentPage === totalPages - 1
+    }"
+  >
+    Next
+  </button>
+</nav>

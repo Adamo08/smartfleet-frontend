@@ -28,7 +28,7 @@
               type="text"
               placeholder="Search by brand, model, or license plate..."
               [(ngModel)]="searchTerm"
-              (input)="onSearchChange()"
+              (ngModelChange)="onSearchChange()"
               class="w-full px-4 py-3 pl-10 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
             >
             <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,15 +42,13 @@
           <label class="block text-sm font-semibold text-white mb-2">Vehicle Type</label>
           <select
             [(ngModel)]="selectedVehicleType"
-            (change)="onFilterChange()"
+            (ngModelChange)="onFilterChange()"
             class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
           >
-            <option value="">All Types</option>
-            <option value="SEDAN">Sedan</option>
-            <option value="SUV">SUV</option>
-            <option value="TRUCK">Truck</option>
-            <option value="VAN">Van</option>
-            <option value="MOTORCYCLE">Motorcycle</option>
+            <option [value]="null">All Types</option>
+            @for (type of VehicleType; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
           </select>
         </div>
 
@@ -59,14 +57,13 @@
           <label class="block text-sm font-semibold text-white mb-2">Status</label>
           <select
             [(ngModel)]="selectedStatus"
-            (change)="onFilterChange()"
+            (ngModelChange)="onFilterChange()"
             class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
           >
-            <option value="">All Status</option>
-            <option value="AVAILABLE">Available</option>
-            <option value="RENTED">Rented</option>
-            <option value="MAINTENANCE">Maintenance</option>
-            <option value="OUT_OF_SERVICE">Out of Service</option>
+            <option [value]="null">All Status</option>
+            @for (status of VehicleStatus; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
           </select>
         </div>
 
@@ -75,14 +72,13 @@
           <label class="block text-sm font-semibold text-white mb-2">Fuel Type</label>
           <select
             [(ngModel)]="selectedFuelType"
-            (change)="onFilterChange()"
+            (ngModelChange)="onFilterChange()"
             class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
           >
-            <option value="">All Fuel Types</option>
-            <option value="GASOLINE">Gasoline</option>
-            <option value="DIESEL">Diesel</option>
-            <option value="ELECTRIC">Electric</option>
-            <option value="HYBRID">Hybrid</option>
+            <option [value]="null">All Fuel Types</option>
+            @for (type of FuelType; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
           </select>
         </div>
 
@@ -91,14 +87,14 @@
           <label class="block text-sm font-semibold text-white mb-2">Max Price/Day</label>
           <select
             [(ngModel)]="maxPrice"
-            (change)="onFilterChange()"
+            (ngModelChange)="onFilterChange()"
             class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
           >
-            <option value="">Any Price</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-            <option value="200">$200</option>
-            <option value="500">$500</option>
+            <option [value]="null">Any Price</option>
+            <option [value]="50">$50</option>
+            <option [value]="100">$100</option>
+            <option [value]="200">$200</option>
+            <option [value]="500">$500</option>
           </select>
         </div>
 
@@ -107,14 +103,14 @@
           <label class="block text-sm font-semibold text-white mb-2">Min Year</label>
           <select
             [(ngModel)]="minYear"
-            (change)="onFilterChange()"
+            (ngModelChange)="onFilterChange()"
             class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
           >
-            <option value="">Any Year</option>
-            <option value="2020">2020+</option>
-            <option value="2018">2018+</option>
-            <option value="2015">2015+</option>
-            <option value="2010">2010+</option>
+            <option [value]="null">Any Year</option>
+            <option [value]="2020">2020+</option>
+            <option [value]="2018">2018+</option>
+            <option [value]="2015">2015+</option>
+            <option [value]="2010">2010+</option>
           </select>
         </div>
 
@@ -123,14 +119,14 @@
           <label class="block text-sm font-semibold text-white mb-2">Max Mileage</label>
           <select
             [(ngModel)]="maxMileage"
-            (change)="onFilterChange()"
+            (ngModelChange)="onFilterChange()"
             class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
           >
-            <option value="">Any Mileage</option>
-            <option value="10000">10,000 km</option>
-            <option value="50000">50,000 km</option>
-            <option value="100000">100,000 km</option>
-            <option value="200000">200,000 km</option>
+            <option [value]="null">Any Mileage</option>
+            <option [value]="10000">10,000 km</option>
+            <option [value]="50000">50,000 km</option>
+            <option [value]="100000">100,000 km</option>
+            <option [value]="200000">200,000 km</option>
           </select>
         </div>
       </div>
@@ -149,7 +145,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl">
         <div>
           <p class="text-lg text-white">
-            <span class="font-semibold text-indigo-400">{{ filteredVehicles.length }}</span> vehicles found
+            <span class="font-semibold text-indigo-400">{{ vehiclesPage.totalElements }}</span> vehicles found
           </p>
           @if (searchTerm || selectedVehicleType || selectedStatus || selectedFuelType || maxPrice || minYear || maxMileage) {
             <button
@@ -164,7 +160,7 @@
           <label class="text-sm font-semibold text-white">Sort by:</label>
           <select
             [(ngModel)]="sortBy"
-            (change)="onSortChange()"
+            (ngModelChange)="onSortChange()"
             class="px-4 py-2 bg-white/5 border border-white/20 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
           >
             <option value="createdAt">Newest First</option>
@@ -177,9 +173,9 @@
       </div>
 
       <!-- Vehicle Grid -->
-      @if (filteredVehicles.length > 0) {
+      @if (vehiclesPage.content.length > 0) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          @for (vehicle of filteredVehicles; track vehicle.id) {
+          @for (vehicle of vehiclesPage.content; track vehicle.id) {
             <app-vehicle-card
               [vehicle]="vehicle"
               [isLoggedIn]="isLoggedIn"
@@ -187,6 +183,13 @@
               (favoriteToggled)="toggleFavorite($event)"
             ></app-vehicle-card>
           }
+        </div>
+        <div class="mt-8 flex justify-center">
+          <app-pagination
+            [currentPage]="vehiclesPage.number"
+            [totalPages]="vehiclesPage.totalPages"
+            (pageChange)="onPageChange($event)">
+          </app-pagination>
         </div>
       } @else {
         <!-- No Results -->
@@ -208,6 +211,12 @@
       }
     }
   </div>
+
+  @if (showVehicleDetailModal && selectedVehicle) {
+    <app-modal [title]="'Vehicle Details'" (close)="closeVehicleDetailModal()">
+      <app-vehicle-detail [vehicle]="selectedVehicle"></app-vehicle-detail>
+    </app-modal>
+  }
 </div>
 
 <style>

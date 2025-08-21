@@ -1,1 +1,34 @@
-<p>user-detail works!</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+  <div>
+    <p class="font-semibold text-white">ID:</p>
+    <p>{{ user.id }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Name:</p>
+    <p>{{ user.firstName }} {{ user.lastName }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Email:</p>
+    <p>{{ user.email }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Phone:</p>
+    <p>{{ user.phoneNumber || '-' }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Role:</p>
+    <p>{{ user.role }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Auth Provider:</p>
+    <p>{{ user.authProvider || '-' }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Created At:</p>
+    <p>{{ user.createdAt | date:'short' }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Last Updated:</p>
+    <p>{{ user.updatedAt | date:'short' }}</p>
+  </div>
+</div>
