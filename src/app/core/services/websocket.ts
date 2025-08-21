@@ -40,7 +40,7 @@ export class WebSocketService {
 
   connect(userEmail?: string): Promise<void> {
     console.log('🔌 WebSocketService.connect() called with userEmail:', userEmail);
-    
+
     return new Promise((resolve, reject) => {
       if (this.stompClient && this.stompClient.connected) {
         console.log('✅ WebSocket already connected, skipping connection');
@@ -64,7 +64,7 @@ export class WebSocketService {
       // Get authentication token
       const token = localStorage.getItem('accessToken');
       const headers: any = {};
-      
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
         console.log('🔑 Using JWT token for WebSocket authentication');
@@ -100,7 +100,7 @@ export class WebSocketService {
 
   private subscribeToUserNotifications(userEmail: string): void {
     console.log('🔧 subscribeToUserNotifications() called with userEmail:', userEmail);
-    
+
     if (this.stompClient && this.stompClient.connected) {
       const destination = `/user/${userEmail}/queue/notifications`;
       console.log('📡 Subscribing to destination:', destination);
@@ -112,28 +112,30 @@ export class WebSocketService {
         console.log('📨 Message body:', message.body);
         console.log('📨 Message headers:', message.headers);
         console.log('📨 Destination:', destination);
-        
+
         try {
           const body = JSON.parse(message.body);
           console.log('📨 Parsed message body:', body);
-          
+
           const webSocketMessage: WebSocketMessage = {
-            ...body,
+            // Use the type from the parsed body, or a default if not present
+            type: body.type || 'GENERAL_UPDATE',
+            payload: body, // Assign the entire parsed body as the payload
             timestamp: new Date()
           };
-          
+
           console.log('📨 Created WebSocketMessage:', webSocketMessage);
           console.log('📨 Emitting message to messageSubject...');
-          
+
           this.messageSubject.next(webSocketMessage);
-          
+
           console.log('✅ Message successfully emitted to messageSubject');
         } catch (error) {
           console.error('❌ Error parsing STOMP message:', error);
           console.error('❌ Raw message body:', message.body);
         }
       });
-      
+
       console.log(`✅ Successfully subscribed to user notifications at ${destination}`);
     } else {
       console.warn('⚠️ STOMP client is not connected. Cannot subscribe.');
@@ -145,7 +147,7 @@ export class WebSocketService {
     console.log('📤 WebSocketService.send() called');
     console.log('📤 Destination:', destination);
     console.log('📤 Message:', message);
-    
+
     if (this.stompClient && this.stompClient.connected) {
       console.log('✅ STOMP client connected, sending message');
       this.stompClient.send(destination, {}, JSON.stringify(message));
@@ -158,7 +160,7 @@ export class WebSocketService {
 
   disconnect(): void {
     console.log('🔌 WebSocketService.disconnect() called');
-    
+
     if (this.stompClient && this.stompClient.connected) {
       console.log('🔄 Disconnecting STOMP client...');
       this.stompClient.disconnect(() => {
@@ -173,7 +175,7 @@ export class WebSocketService {
 
   private scheduleReconnect(userEmail?: string): void {
     console.log('🔄 scheduleReconnect() called');
-    
+
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.error('❌ Max reconnection attempts reached');
       this.updateState({ error: 'Max reconnection attempts reached' });
