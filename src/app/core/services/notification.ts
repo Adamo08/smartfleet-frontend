@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Page, Pageable } from '../models/pagination.interface';
 
 // Updated to match backend NotificationDto
 export interface Notification {
@@ -10,6 +11,7 @@ export interface Notification {
   message: string;
   type: NotificationType;
   createdAt: Date;
+  updatedAt?: Date; // Add this line
   read: boolean;
 }
 
@@ -155,4 +157,38 @@ export class NotificationService {
         return 'info';
     }
   }
+
+  getAllNotificationsAdmin(filter: NotificationFilter, pageable: Pageable): Observable<Page<Notification>> {
+    let params = new HttpParams()
+      .set('page', pageable.page.toString())
+      .set('size', pageable.size.toString())
+      .set('sortBy', pageable.sortBy || 'id')
+      .set('sortDirection', pageable.sortDirection || 'DESC');
+
+    if (filter.userId) {
+      params = params.set('userId', filter.userId.toString());
+    }
+    if (filter.read !== undefined) {
+      params = params.set('read', filter.read.toString());
+    }
+    if (filter.type) {
+      params = params.set('type', filter.type);
+    }
+    if (filter.startDate) {
+      params = params.set('startDate', filter.startDate.toISOString());
+    }
+    if (filter.endDate) {
+      params = params.set('endDate', filter.endDate.toISOString());
+    }
+
+    return this.http.get<Page<Notification>>(`${environment.apiUrl}/notifications/admin`, { params });
+  }
+}
+
+export interface NotificationFilter {
+  userId?: number;
+  read?: boolean;
+  type?: NotificationType;
+  startDate?: Date;
+  endDate?: Date;
 }

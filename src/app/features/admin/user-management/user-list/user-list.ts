@@ -95,6 +95,13 @@ export class UserList implements OnInit {
     this.loadUsers();
   }
 
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedRole = '';
+    this.currentPage = 0;
+    this.loadUsers();
+  }
+
   exportUsers(): void {
     // Fetch all users (or filtered users without pagination) for export
     let exportUrl = `/users?size=${this.usersPage.totalElements}`;

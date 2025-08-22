@@ -1,0 +1,40 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+  <div>
+    <p class="font-semibold text-white">Notification ID:</p>
+    <p>{{ notification.id }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">User ID:</p>
+    <p>{{ notification.userId }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Type:</p>
+    <p>{{ notification.type }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Message:</p>
+    <p class="max-w-prose">{{ notification.message }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Status:</p>
+    <p>
+      <span class="px-2 py-1 rounded-full text-xs font-semibold"
+            [ngClass]="{
+              'bg-green-500/20 text-green-300': notification.read,
+              'bg-yellow-500/20 text-yellow-300': !notification.read
+            }">
+        {{ notification.read ? 'Read' : 'Unread' }}
+      </span>
+    </p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Created At:</p>
+    <p>{{ notification.createdAt | date:'short' }}</p>
+  </div>
+  @if (notification.updatedAt) {
+    <div>
+      <p class="font-semibold text-white">Last Updated:</p>
+      <p>{{ notification.updatedAt | date:'short' }}</p>
+    </div>
+  }
+</div>

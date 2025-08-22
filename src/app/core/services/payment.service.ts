@@ -16,6 +16,16 @@ import {
 } from '../models/payment.interface';
 import { Page, Pageable } from '../models/pagination.interface';
 
+export interface PaymentFilter {
+  userId?: number;
+  reservationId?: number;
+  status?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  startDate?: Date;
+  endDate?: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -130,16 +140,43 @@ export class PaymentService {
   /**
    * ADMIN: Get all payments with pagination
    */
-  getAllPaymentsAdmin(pageable: Pageable): Observable<Page<PaymentDetailsDto>> {
+  getAllPaymentsAdmin(filter: PaymentFilter, pageable: Pageable): Observable<Page<PaymentDetailsDto>> {
     let params = new HttpParams()
       .set('page', pageable.page.toString())
-      .set('size', pageable.size.toString());
+      .set('size', pageable.size.toString())
+      .set('sortBy', pageable.sortBy || 'id')
+      .set('sortDirection', pageable.sortDirection || 'DESC');
 
-    if (pageable.sortBy) {
-      params = params.set('sort', `${pageable.sortBy},${pageable.sortDirection || 'ASC'}`);
+    if (filter.userId) {
+      params = params.set('userId', filter.userId.toString());
+    }
+    if (filter.reservationId) {
+      params = params.set('reservationId', filter.reservationId.toString());
+    }
+    if (filter.status) {
+      params = params.set('status', filter.status);
+    }
+    if (filter.minAmount) {
+      params = params.set('minAmount', filter.minAmount.toString());
+    }
+    if (filter.maxAmount) {
+      params = params.set('maxAmount', filter.maxAmount.toString());
+    }
+    if (filter.startDate) {
+      params = params.set('startDate', filter.startDate.toISOString());
+    }
+    if (filter.endDate) {
+      params = params.set('endDate', filter.endDate.toISOString());
     }
 
-    return this.http.get<Page<PaymentDetailsDto>>(`${environment.apiUrl}/admin/payments`, { params });
+    return this.http.get<Page<PaymentDetailsDto>>(`${this.baseUrl}/admin`, { params });
+  }
+
+  /**
+   * Delete a payment (Admin only)
+   */
+  deletePayment(paymentId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/admin/${paymentId}`);
   }
 
   /**

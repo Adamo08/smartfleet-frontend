@@ -1,0 +1,47 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+  <div>
+    <p class="font-semibold text-white">Payment ID:</p>
+    <p>{{ payment.id }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Reservation ID:</p>
+    <p>{{ payment.reservationId }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Amount:</p>
+    <p>{{ payment.amount | currency:'USD':'symbol':'1.2-2' }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Currency:</p>
+    <p>{{ payment.currency }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Status:</p>
+    <p>
+      <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
+        'bg-yellow-500/20 text-yellow-300': payment.status === PaymentStatus.PENDING,
+        'bg-green-500/20 text-green-300': payment.status === PaymentStatus.COMPLETED,
+        'bg-red-500/20 text-red-300': payment.status === PaymentStatus.FAILED,
+        'bg-blue-500/20 text-blue-300': payment.status === PaymentStatus.REFUNDED
+      }">{{ payment.status }}</span>
+    </p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Provider:</p>
+    <p>{{ payment.provider }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Transaction ID:</p>
+    <p>{{ payment.transactionId || 'N/A' }}</p>
+  </div>
+  <div>
+    <p class="font-semibold text-white">Payment Date:</p>
+    <p>{{ payment.createdAt | date:'short' }}</p>
+  </div>
+  @if (payment.updatedAt) {
+    <div>
+      <p class="font-semibold text-white">Last Updated:</p>
+      <p>{{ payment.updatedAt | date:'short' }}</p>
+    </div>
+  }
+</div>

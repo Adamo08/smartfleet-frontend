@@ -81,6 +81,7 @@ export class VehicleList implements OnInit {
   }
 
   openAddVehicleModal(): void {
+    this.selectedVehicle = null; // Ensure no vehicle is selected for adding
     this.showAddVehicleModal = true;
   }
 

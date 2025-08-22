@@ -1,38 +1,99 @@
 <div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
   <h2 class="text-xl font-semibold text-white mb-4">Payments</h2>
+
+  <form [formGroup]="filterForm" (ngSubmit)="onFilterChange()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="User ID" formControlName="userId" (change)="onFilterChange()">
+    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Reservation ID" formControlName="reservationId" (change)="onFilterChange()">
+    <select class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" formControlName="status" (change)="onFilterChange()">
+      <option value="">All Statuses</option>
+      @for (status of PaymentStatus | keyvalue; track status.key) {
+        <option [value]="status.value">{{ status.value }}</option>
+      }
+    </select>
+    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Min Amount" formControlName="minAmount" (change)="onFilterChange()">
+    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Max Amount" formControlName="maxAmount" (change)="onFilterChange()">
+    <input type="date" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Start Date" formControlName="startDate" (change)="onFilterChange()">
+    <input type="date" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="End Date" formControlName="endDate" (change)="onFilterChange()">
+    <button type="button" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
+    <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">Apply Filters</button>
+  </form>
+
   @if (isLoading) {
     <div class="text-gray-300">Loading...</div>
-  } @else {
-  <table class="min-w-full text-sm text-gray-200">
-    <thead>
-      <tr class="text-left border-b border-indigo-500/10">
-        <th class="p-2">ID</th>
-        <th class="p-2">Reservation</th>
-        <th class="p-2">Amount</th>
-        <th class="p-2">Currency</th>
-        <th class="p-2">Status</th>
-        <th class="p-2">Provider</th>
-        <th class="p-2">Created</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (p of payments; track p.id) {
-        <tr class="border-b border-indigo-500/10">
-          <td class="p-2">{{ p.id }}</td>
-          <td class="p-2">#{{ p.reservationId }}</td>
-          <td class="p-2">{{ p.amount }}</td>
-          <td class="p-2">{{ p.currency }}</td>
-          <td class="p-2">{{ p.status }}</td>
-          <td class="p-2">{{ p.provider }}</td>
-          <td class="p-2">{{ p.createdAt | date:'short' }}</td>
+  } @else if (paymentsPage && paymentsPage.content.length > 0) {
+  <div class="overflow-x-auto rounded-lg shadow-xl">
+    <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+      <thead>
+        <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
+          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('id')">ID</th>
+          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('reservation.id')">Reservation</th>
+          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('amount')">Amount</th>
+          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('status')">Status</th>
+          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('provider')">Provider</th>
+          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('createdAt')">Date</th>
+          <th class="p-3 text-white">Actions</th>
         </tr>
-      }
-    </tbody>
-  </table>
-  }
-  <div class="mt-3 flex items-center gap-2">
-    <button class="px-3 py-1 rounded-xl bg-indigo-500/10 text-white" (click)="load(page - 1)" [disabled]="page <= 0">Prev</button>
-    <span>Page {{ page + 1 }}</span>
-    <button class="px-3 py-1 rounded-xl bg-indigo-500/10 text-white" (click)="load(page + 1)" [disabled]="(page + 1) * size >= totalElements">Next</button>
+      </thead>
+      <tbody>
+        @for (p of paymentsPage.content; track p.id) {
+          <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
+            <td class="p-3">{{ p.id }}</td>
+            <td class="p-3">#{{ p.reservationId }}</td>
+            <td class="p-3">{{ p.amount | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
+              'bg-yellow-500/20 text-yellow-300': p.status === PaymentStatus.PENDING,
+              'bg-green-500/20 text-green-300': p.status === PaymentStatus.COMPLETED,
+              'bg-red-500/20 text-red-300': p.status === PaymentStatus.FAILED,
+              'bg-blue-500/20 text-blue-300': p.status === PaymentStatus.REFUNDED
+            }">{{ p.status }}</span></td>
+            <td class="p-3">{{ p.provider }}</td>
+            <td class="p-3">{{ p.createdAt | date:'short' }}</td>
+            <td class="p-3 flex space-x-2">
+              <button class="text-blue-400 hover:text-blue-300 transition-colors duration-200" (click)="viewPayment(p)" title="View">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              <button class="text-red-400 hover:text-red-300 transition-colors duration-200" (click)="openDeletePaymentModal(p)" title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.92c-1.01 0-1.93-.61-2.243-1.673L4.4 6.392m9.165 0c.66-.089 1.309-.178 1.964-.267m-9.964 0a48.11 48.11 0 01-3.478-.397m-1.559 0c.567.067 1.123.134 1.68.201m-.15.909.475 2.85a1.5 1.5 0 001.488 1.36h5.25a1.5 1.5 0 001.488-1.36l.476-2.85m-11.77-.55a22.354 22.354 0 00-.733-1.469C3.722 7.555 3 6.81 3 6h-.003L4.4 6.392V6c0-.528.288-.992.733-1.469a22.354 22.354 0 00.732-1.469A1.751 1.751 0 015.405 2.5C6.07 2.5 6.643 2.76 7 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5C18.27 2.5 18.843 2.76 19.2 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5C21.722 7.555 21 6.81 21 6h-.003L19.6 6.392V6c0-.528-.288-.992-.733-1.469a22.354 22.354 0 00-.732-1.469A1.751 1.751 0 0118.595 2.5C17.93 2.5 17.357 2.76 17 3c-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5C6.27 2.5 5.722 7.555 5.722 7.555z" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
   </div>
+  <div class="mt-6 flex justify-center">
+    <app-pagination
+      [currentPage]="paymentsPage.number"
+      [totalPages]="paymentsPage.totalPages"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </div>
+  } @else {
+    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-xl bg-slate-900/40">
+      No payments found.
+    </div>
+  }
+
+  @if (showPaymentDetailModal && selectedPayment) {
+    <app-modal [title]="'Payment Details'" (close)="closePaymentDetailModal()">
+      <app-payment-detail [payment]="selectedPayment"></app-payment-detail>
+    </app-modal>
+  }
+
+  @if (showDeletePaymentModal && paymentToDelete) {
+    <app-configrm-dialog
+      [title]="'Confirm Deletion'"
+      [message]="'Are you sure you want to delete payment #' + paymentToDelete.id + '? This action cannot be undone.'"
+      [confirmButtonText]="'Delete'"
+      [cancelButtonText]="'Cancel'"
+      [actionType]="DialogActionType.DELETE"
+      (confirmed)="confirmDeletePayment()"
+      (cancelled)="closeDeletePaymentModal()">
+    </app-configrm-dialog>
+  }
 </div>

@@ -51,6 +51,12 @@
   <div>
     <label class="block text-sm text-gray-300 mb-1">Image URL (Optional)</label>
     <input formControlName="imageUrl" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="http://example.com/image.jpg"/>
+    @if (form.get('imageUrl')?.value) {
+      <div class="mt-4 p-4 border border-white/10 rounded-xl bg-slate-900/40">
+        <p class="text-sm text-gray-300 mb-2">Image Preview:</p>
+        <img [src]="form.get('imageUrl')?.value" alt="Image Preview" class="max-w-full h-auto rounded-md object-contain border border-gray-700" />
+      </div>
+    }
   </div>
   <div>
     <label class="block text-sm text-gray-300 mb-1">Description (Optional)</label>

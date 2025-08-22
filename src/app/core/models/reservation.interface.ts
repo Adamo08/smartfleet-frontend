@@ -40,6 +40,7 @@ export interface DetailedReservationDto {
 
 export interface ReservationSummaryDto {
   id: number;
+  user: UserSummaryDto; // Ensure this line is present
   vehicle: VehicleSummaryDto;
   startDate: Date;
   endDate: Date;
@@ -75,4 +76,10 @@ export interface VehicleSummaryDto {
   licensePlate: string;
   year?: number;
   imageUrl?: string;
+}
+
+export interface UserSummaryDto { // Ensure this interface is present
+  id: number;
+  firstName: string;
+  lastName: string;
 }
