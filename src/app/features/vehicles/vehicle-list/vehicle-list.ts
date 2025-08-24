@@ -5,13 +5,22 @@ import { FormsModule } from '@angular/forms';
 import { VehicleService } from '../../../core/services/vehicle';
 import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { AuthService } from '../../../core/services/auth';
-import { Vehicle, VehicleType, VehicleStatus, FuelType } from '../../../core/models/vehicle.interface';
+import { Vehicle, VehicleStatus, FuelType } from '../../../core/models/vehicle.interface';
 import { Page, Pageable, Sort } from '../../../core/models/pagination.interface';
 import { VehicleCard } from '../vehicle-card/vehicle-card';
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from '../../../shared/components/modal/modal';
 import { VehicleDetail } from '../vehicle-detail/vehicle-detail';
 import { Pagination } from '../../../shared/components/pagination/pagination';
+import { ApiService } from '../../../core/services/api';
+import { VehicleFilter } from '../../../core/models/vehicle-filter.interface';
+import { VehicleBrand } from '../../../core/models/vehicle-brand.interface';
+import { VehicleModel } from '../../../core/models/vehicle-model.interface';
+
+interface VehicleCategory {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-vehicle-list',
@@ -34,15 +43,22 @@ export class VehicleList implements OnInit {
 
   // Filter properties
   searchTerm = '';
-  selectedVehicleType: string | null = null;
+  selectedCategory: number | null = null;
   selectedStatus: string | null = null;
   selectedFuelType: string | null = null;
+  selectedBrand: number | null = null;
+  selectedModel: number | null = null;
+  minPrice: number | null = null;
   maxPrice: number | null = null;
   minYear: number | null = null;
+  maxYear: number | null = null;
+  minMileage: number | null = null;
   maxMileage: number | null = null;
 
-  // Enums for dropdowns
-  readonly VehicleType = Object.values(VehicleType);
+  // Data for select dropdowns
+  categories: VehicleCategory[] = [];
+  brands: VehicleBrand[] = [];
+  models: VehicleModel[] = [];
   readonly FuelType = Object.values(FuelType);
   readonly VehicleStatus = Object.values(VehicleStatus);
 
@@ -53,15 +69,32 @@ export class VehicleList implements OnInit {
     private vehicleService: VehicleService,
     private favoriteService: FavoriteService,
     private authService: AuthService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private apiService: ApiService
   ) {}
 
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isAuthenticated();
+    this.loadFilterOptions();
     this.loadVehicles();
     if (this.isLoggedIn) {
       this.loadFavorites();
     }
+  }
+
+  private loadFilterOptions(): void {
+    this.vehicleService.getAllVehicleCategories().subscribe({
+      next: (page) => this.categories = page.content,
+      error: (error) => console.error('Error loading categories:', error)
+    });
+    this.vehicleService.getAllVehicleBrands().subscribe({
+      next: (page) => this.brands = page.content,
+      error: (error) => console.error('Error loading brands:', error)
+    });
+    this.vehicleService.getAllVehicleModels().subscribe({
+      next: (page) => this.models = page.content,
+      error: (error) => console.error('Error loading models:', error)
+    });
   }
 
   private loadVehicles(): void {
@@ -74,22 +107,25 @@ export class VehicleList implements OnInit {
       sortDirection: this.sortBy.includes('_desc') ? 'DESC' : 'ASC'
     };
 
-    const filters = {
-      brand: this.searchTerm || null,
-      model: this.searchTerm || null, // Assuming search term can apply to brand or model
-      vehicleType: this.selectedVehicleType,
-      fuelType: this.selectedFuelType,
-      status: this.selectedStatus,
-      minPrice: null, // minPrice is not used in the current UI dropdowns
-      maxPrice: this.maxPrice,
-      minYear: this.minYear,
-      maxMileage: this.maxMileage
+    const filters: VehicleFilter = {
+      search: this.searchTerm || undefined,
+      brandId: this.selectedBrand || undefined,
+      modelId: this.selectedModel || undefined,
+      categoryId: this.selectedCategory || undefined,
+      fuelType: this.selectedFuelType || undefined,
+      status: this.selectedStatus || undefined,
+      minPrice: this.minPrice || undefined,
+      maxPrice: this.maxPrice || undefined,
+      minYear: this.minYear || undefined,
+      maxYear: this.maxYear || undefined,
+      minMileage: this.minMileage || undefined,
+      maxMileage: this.maxMileage || undefined
     };
 
-    // Remove null or empty string filters to avoid sending them to backend
-    Object.keys(filters).forEach(key => (filters[key as keyof typeof filters] === null || filters[key as keyof typeof filters] === '') && delete filters[key as keyof typeof filters]);
-
-    this.vehicleService.getVehicles({ ...pageable, ...filters }).subscribe({
+    this.vehicleService.getVehicles(
+      pageable,
+      filters
+    ).subscribe({
       next: (page) => {
         this.vehiclesPage = page;
         this.loading = false;
@@ -134,11 +170,16 @@ export class VehicleList implements OnInit {
 
   clearFilters(): void {
     this.searchTerm = '';
-    this.selectedVehicleType = null;
+    this.selectedCategory = null;
     this.selectedStatus = null;
     this.selectedFuelType = null;
+    this.selectedBrand = null;
+    this.selectedModel = null;
+    this.minPrice = null;
     this.maxPrice = null;
     this.minYear = null;
+    this.maxYear = null;
+    this.minMileage = null;
     this.maxMileage = null;
     this.sortBy = 'createdAt';
     this.currentPage = 0;
