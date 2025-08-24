@@ -83,31 +83,51 @@
         <div class="col-span-2">
           <button (click)="onSort('transactionId')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
             <span>Transaction ID</span>
-            <span [class]="getSortIconClass('transactionId')" class="text-lg">{{ getSortIcon('transactionId') }}</span>
+            <span [class]="getSortIconClass('transactionId')">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('transactionId')"></path>
+              </svg>
+            </span>
           </button>
         </div>
         <div class="col-span-2">
           <button (click)="onSort('amount')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
             <span>Amount</span>
-            <span [class]="getSortIconClass('amount')" class="text-lg">{{ getSortIcon('amount') }}</span>
+            <span [class]="getSortIconClass('amount')">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('amount')"></path>
+              </svg>
+            </span>
           </button>
         </div>
         <div class="col-span-2">
           <button (click)="onSort('status')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
             <span>Status</span>
-            <span [class]="getSortIconClass('status')" class="text-lg">{{ getSortIcon('status') }}</span>
+            <span [class]="getSortIconClass('status')">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('status')"></path>
+              </svg>
+            </span>
           </button>
         </div>
         <div class="col-span-2">
           <button (click)="onSort('provider')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
             <span>Provider</span>
-            <span [class]="getSortIconClass('provider')" class="text-lg">{{ getSortIcon('provider') }}</span>
+            <span [class]="getSortIconClass('provider')">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('provider')"></path>
+              </svg>
+            </span>
           </button>
         </div>
         <div class="col-span-2">
           <button (click)="onSort('createdAt')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
             <span>Date</span>
-            <span [class]="getSortIconClass('createdAt')" class="text-lg">{{ getSortIcon('createdAt') }}</span>
+            <span [class]="getSortIconClass('createdAt')">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getSortIcon('createdAt')"></path>
+              </svg>
+            </span>
           </button>
         </div>
         <div class="col-span-2 text-sm font-semibold text-gray-300">Actions</div>
@@ -115,7 +135,7 @@
 
       <!-- Table Body -->
       <div class="divide-y divide-white/10">
-        @for (payment of payments; track payment.id) {
+        @for (payment of paymentsPage.content; track payment.id) {
         <div (click)="onPaymentClick(payment)" class="grid grid-cols-12 gap-4 p-6 hover:bg-white/5 transition-all duration-200 cursor-pointer">
           <div class="col-span-2">
             <div class="text-sm font-medium text-white">{{ payment.transactionId || 'N/A' }}</div>
@@ -136,7 +156,7 @@
           </div>
           <div class="col-span-2">
             <div class="flex space-x-2">
-              <button class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition-all duration-200">View</button>
+              <button (click)="openPaymentDetailModal(payment); $event.stopPropagation()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition-all duration-200">View</button>
               @if (payment.status === 'COMPLETED') {
               <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-all duration-200">Refund</button>
               }
@@ -147,7 +167,7 @@
       </div>
 
       <!-- Empty State -->
-      @if (payments.length === 0 && !loading) {
+      @if (paymentsPage.content.length === 0 && !loading) {
       <div class="text-center py-20">
         <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -160,44 +180,102 @@
     }
 
     <!-- Pagination -->
-    @if (totalPages > 1) {
-    <div class="mt-8 flex items-center justify-between">
-      <!-- Page Size Selector -->
-      <div class="flex items-center space-x-2">
-        <label class="text-sm text-gray-300">Show:</label>
-        <select #pageSizeSelect (change)="onPageSizeChange(+pageSizeSelect.value)" class="px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400">
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-        <span class="text-sm text-gray-300">per page</span>
+    @if (paymentsPage && paymentsPage.totalPages > 1) {
+      <div class="mt-8 flex justify-center">
+        <app-pagination
+          [currentPage]="paymentsPage.number"
+          [totalPages]="paymentsPage.totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
       </div>
+    }
 
-                        <!-- Pagination Info -->
-                  <div class="text-sm text-gray-300">
-                    Showing {{ currentPage * pageSize + 1 }} to {{ getMaxPageElement() }} of {{ totalElements }} results
-                  </div>
+    <!-- Payment Detail Modal -->
+    @if (showPaymentDetailModal && selectedPayment) {
+    <app-modal 
+      [title]="'Payment Details'" 
+      (close)="closePaymentDetailModal()">
+      @if (selectedPayment) {
+        <div class="space-y-6">
+          <!-- Payment Information -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Payment ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.id }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Transaction ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.transactionId || 'N/A' }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                <p class="text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedPayment.amount, selectedPayment.currency) }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.currency }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white" [class]="getStatusColor(selectedPayment.status)">
+                  {{ getStatusText(selectedPayment.status) }}
+                </span>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.provider }}</p>
+              </div>
+            </div>
+          </div>
 
-      <!-- Pagination Controls -->
-      <div class="flex items-center space-x-2">
-        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0" class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed border border-white/20 rounded-lg text-white text-sm transition-all duration-200">
-          Previous
-        </button>
-        
-        <div class="flex items-center space-x-1">
-          @for (page of getPageNumbers(); track page) {
-          <button (click)="onPageChange(page)" [class]="page === currentPage ? 'bg-indigo-600 text-white' : 'bg-white/5 text-gray-300 hover:bg-white/10'" class="px-3 py-2 border border-white/20 rounded-lg text-sm transition-all duration-200">
-            {{ page + 1 }}
-          </button>
-          }
+          <!-- Reservation Information -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Reservation Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Reservation ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.reservationId }}</p>
+              </div>
+              @if (selectedPayment.captureId) {
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Capture ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.captureId }}</p>
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Timestamps -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Timeline</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Created At</label>
+                <p class="text-sm text-gray-900">{{ formatDate(selectedPayment.createdAt) }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Last Updated</label>
+                <p class="text-sm text-gray-900">{{ formatDate(selectedPayment.updatedAt) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            @if (selectedPayment.status === 'COMPLETED') {
+            <button (click)="onRefundRequest(selectedPayment)" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium">
+              Request Refund
+            </button>
+            }
+            <button (click)="closePaymentDetailModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium">
+              Close
+            </button>
+          </div>
         </div>
-        
-        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages - 1" class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed border border-white/20 rounded-lg text-white text-sm transition-all duration-200">
-          Next
-        </button>
-      </div>
-    </div>
+      }
+    </app-modal>
     }
   </div>
 </div>

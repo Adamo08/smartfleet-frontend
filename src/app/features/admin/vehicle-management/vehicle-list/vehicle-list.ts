@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { VehicleService } from '../../../../core/services/vehicle';
+import { EnumService, EnumOption } from '../../../../core/services/enum.service';
 import { Vehicle } from '../../../../core/models/vehicle.interface';
 import { Page, Pageable, Sort } from '../../../../core/models/pagination.interface';
 import { Modal } from '../../../../shared/components/modal/modal';
@@ -9,11 +11,20 @@ import { Pagination } from '../../../../shared/components/pagination/pagination'
 import { RouterModule } from '@angular/router';
 import { VehicleDetail } from '../vehicle-detail/vehicle-detail';
 import { VehicleForm } from '../vehicle-form/vehicle-form';
+import { ApiService } from '../../../../core/services/api';
+import { VehicleFilter } from '../../../../core/models/vehicle-filter.interface';
+import { VehicleBrand } from '../../../../core/models/vehicle-brand.interface';
+import { VehicleModel } from '../../../../core/models/vehicle-model.interface';
+
+interface VehicleCategory {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-vehicle-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, Modal, ConfigrmDialog, Pagination, VehicleDetail, VehicleForm],
+  imports: [CommonModule, FormsModule, RouterModule, Modal, ConfigrmDialog, Pagination, VehicleDetail, VehicleForm],
   templateUrl: './vehicle-list.html',
   styleUrl: './vehicle-list.css'
 })
@@ -25,6 +36,28 @@ export class VehicleList implements OnInit {
   sortBy = 'id';
   sortDirection: 'ASC' | 'DESC' = 'ASC';
 
+  // Dynamic enum options
+  categories: VehicleCategory[] = [];
+  fuelTypes: EnumOption[] = [];
+  vehicleStatuses: EnumOption[] = [];
+  brands: VehicleBrand[] = [];
+  models: VehicleModel[] = [];
+
+  filters = {
+    search: '',
+    categoryId: undefined as number | undefined,
+    fuelType: '',
+    status: '',
+    brandId: undefined as number | undefined,
+    modelId: undefined as number | undefined,
+    minPrice: undefined as number | undefined,
+    maxPrice: undefined as number | undefined,
+    minYear: undefined as number | undefined,
+    maxYear: undefined as number | undefined,
+    minMileage: undefined as number | undefined,
+    maxMileage: undefined as number | undefined
+  };
+
   selectedVehicle: Vehicle | null = null;
   showVehicleDetailModal = false;
   showAddVehicleModal = false;
@@ -35,10 +68,36 @@ export class VehicleList implements OnInit {
   // Expose DialogActionType to the template
   readonly DialogActionType = DialogActionType;
 
-  constructor(private vehicleService: VehicleService) {}
+  constructor(
+    private vehicleService: VehicleService,
+    private enumService: EnumService,
+    private apiService: ApiService
+  ) {}
 
   ngOnInit(): void {
+    this.loadEnumOptions();
+    this.loadFilterOptions();
     this.loadVehicles();
+  }
+
+  loadEnumOptions(): void {
+    this.enumService.getFuelTypes().subscribe(types => this.fuelTypes = types);
+    this.enumService.getVehicleStatuses().subscribe(statuses => this.vehicleStatuses = statuses);
+  }
+
+  private loadFilterOptions(): void {
+    this.vehicleService.getAllVehicleCategories().subscribe({
+      next: (page) => this.categories = page.content,
+      error: (error) => console.error('Error loading categories:', error)
+    });
+    this.vehicleService.getAllVehicleBrands().subscribe({
+      next: (page) => this.brands = page.content,
+      error: (error) => console.error('Error loading brands:', error)
+    });
+    this.vehicleService.getAllVehicleModels().subscribe({
+      next: (page) => this.models = page.content,
+      error: (error) => console.error('Error loading models:', error)
+    });
   }
 
   loadVehicles(): void {
@@ -50,7 +109,25 @@ export class VehicleList implements OnInit {
       sortDirection: this.sortDirection
     };
 
-    this.vehicleService.getVehicles(pageable).subscribe({
+    const filters: VehicleFilter = {
+      search: this.filters.search || undefined,
+      categoryId: this.filters.categoryId || undefined,
+      fuelType: this.filters.fuelType || undefined,
+      status: this.filters.status || undefined,
+      brandId: this.filters.brandId || undefined,
+      modelId: this.filters.modelId || undefined,
+      minPrice: this.filters.minPrice || undefined,
+      maxPrice: this.filters.maxPrice || undefined,
+      minYear: this.filters.minYear || undefined,
+      maxYear: this.filters.maxYear || undefined,
+      minMileage: this.filters.minMileage || undefined,
+      maxMileage: this.filters.maxMileage || undefined
+    };
+
+    this.vehicleService.getVehicles(
+      pageable,
+      filters
+    ).subscribe({
       next: (page) => {
         this.vehiclesPage = page;
         this.isLoading = false;
@@ -68,6 +145,35 @@ export class VehicleList implements OnInit {
     this.sortBy = sortBy;
     this.sortDirection = sortDirection;
     this.loadVehicles();
+  }
+
+  applyFilters(): void {
+    this.currentPage = 0; // Reset to first page when filters change
+    this.loadVehicles();
+  }
+
+  clearFilters(): void {
+    this.filters = {
+      search: '',
+      categoryId: undefined,
+      fuelType: '',
+      status: '',
+      brandId: undefined,
+      modelId: undefined,
+      minPrice: undefined,
+      maxPrice: undefined,
+      minYear: undefined,
+      maxYear: undefined,
+      minMileage: undefined,
+      maxMileage: undefined
+    };
+    this.currentPage = 0;
+    this.loadVehicles();
+  }
+
+  exportToCSV(): void {
+    // TODO: Implement CSV export functionality
+    console.log('Exporting to CSV...');
   }
 
   viewVehicle(vehicle: Vehicle): void {

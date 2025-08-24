@@ -62,6 +62,7 @@ export interface ReservationFilter {
   status?: ReservationStatus;
   startDate?: Date;
   endDate?: Date;
+  searchTerm?: string;
 }
 
 export interface AdminReservationUpdateRequest {

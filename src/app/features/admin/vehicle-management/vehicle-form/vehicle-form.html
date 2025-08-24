@@ -1,12 +1,31 @@
 <h2 class="text-xl font-semibold text-white mb-6">{{ editMode ? 'Edit Vehicle' : 'Add New Vehicle' }}</h2>
 <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
   <div>
+    <label class="block text-sm text-gray-300 mb-1">Category</label>
+    <select formControlName="categoryId" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white">
+      <option [value]="null" disabled>Select Category</option>
+      @for (category of categories; track category.id) {
+        <option [value]="category.id">{{ category.name }}</option>
+      }
+    </select>
+  </div>
+  <div>
     <label class="block text-sm text-gray-300 mb-1">Brand</label>
-    <input formControlName="brand" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="Toyota"/>
+    <select formControlName="brandId" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white">
+      <option [value]="null" disabled>Select Brand</option>
+      @for (brand of brands; track brand.id) {
+        <option [value]="brand.id">{{ brand.name }}</option>
+      }
+    </select>
   </div>
   <div>
     <label class="block text-sm text-gray-300 mb-1">Model</label>
-    <input formControlName="model" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="Camry"/>
+    <select formControlName="modelId" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white">
+      <option [value]="null" disabled>Select Model</option>
+      @for (model of models; track model.id) {
+        <option [value]="model.id">{{ model.name }}</option>
+      }
+    </select>
   </div>
   <div>
     <label class="block text-sm text-gray-300 mb-1">Year</label>
@@ -15,14 +34,6 @@
   <div>
     <label class="block text-sm text-gray-300 mb-1">License Plate</label>
     <input formControlName="licensePlate" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white" placeholder="ABC-123"/>
-  </div>
-  <div>
-    <label class="block text-sm text-gray-300 mb-1">Vehicle Type</label>
-    <select formControlName="vehicleType" class="w-full p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-white">
-      @for (type of vehicleTypes; track type) {
-        <option [value]="type">{{ type }}</option>
-      }
-    </select>
   </div>
   <div>
     <label class="block text-sm text-gray-300 mb-1">Fuel Type</label>

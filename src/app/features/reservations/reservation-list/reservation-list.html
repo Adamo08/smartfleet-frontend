@@ -191,7 +191,7 @@
 
       <!-- Table Body -->
       <div class="divide-y divide-white/10">
-        @for (reservation of reservations; track reservation.id) {
+        @for (reservation of reservationsPage.content; track reservation.id) {
         <div
              (click)="onReservationClick(reservation)"
              class="grid grid-cols-12 gap-4 p-4 hover:bg-white/5 cursor-pointer transition-all duration-200">
@@ -256,7 +256,7 @@
       </div>
 
       <!-- No Reservations Message -->
-      @if (reservations.length === 0) {
+      @if (reservationsPage.content.length === 0) {
       <div class="text-center py-20">
         <svg class="w-16 h-16 mx-auto mb-4 text-gray-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -275,68 +275,13 @@
     }
 
     <!-- Pagination -->
-    @if (!loading && !error && totalPages > 1) {
+    @if (!loading && !error && reservationsPage && reservationsPage.totalPages > 1) {
       <div class="mt-8 flex justify-center">
-        <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-2xl shadow-xl p-4">
-          <div class="flex items-center space-x-2">
-            <!-- Previous Page -->
-            <button
-              (click)="onPageChange(currentPage - 1)"
-              [disabled]="currentPage === 0"
-              class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-gray-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-              </svg>
-            </button>
-
-            <!-- Page Numbers -->
-            <div class="flex items-center space-x-1">
-              @for (page of getPageNumbers(); track page) {
-              <button
-                (click)="onPageChange(page)"
-                [class]="page === currentPage ? 'bg-indigo-600 text-white' : 'bg-white/5 hover:bg-white/10 text-white'"
-                class="px-3 py-2 rounded-lg transition-all duration-200 font-medium"
-              >
-                {{ page + 1 }}
-              </button>
-              }
-            </div>
-
-            <!-- Next Page -->
-            <button
-              (click)="onPageChange(currentPage + 1)"
-              [disabled]="currentPage === totalPages - 1"
-              class="px-3 py-2 bg-white/5 hover:bg-white/10 disabled:bg-gray-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </button>
-          </div>
-
-          <!-- Page Size Selector -->
-          <div class="mt-4 flex items-center justify-center space-x-2">
-            <span class="text-sm text-gray-300">Show:</span>
-            <select
-              #pageSizeSelect
-              (change)="onPageSizeChange(+pageSizeSelect.value)"
-              [value]="pageSize"
-              class="px-3 py-1 bg-white/5 border border-white/20 rounded-lg text-white text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </select>
-            <span class="text-sm text-gray-300">per page</span>
-          </div>
-
-          <!-- Total Count -->
-          <div class="mt-2 text-center text-sm text-gray-400">
-            Showing {{ (currentPage * pageSize) + 1 }} to {{ getMaxPageElement() }} of {{ totalElements }} reservations
-          </div>
-        </div>
+        <app-pagination
+          [currentPage]="reservationsPage.number"
+          [totalPages]="reservationsPage.totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
       </div>
     }
   </div>

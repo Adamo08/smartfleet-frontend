@@ -1,75 +1,57 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Subject, takeUntil, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
 import { ReservationService } from '../../../core/services/reservation.service';
-import { AdminAuditService } from '../../../core/services/admin-audit.service';
-import { AdminConfirmationService } from '../../../core/services/admin-confirmation.service';
-import { 
-  ReservationSummaryDto, 
-  ReservationFilter,
-  AdminReservationUpdateRequest
-} from '../../../core/models/reservation.interface';
+import { ReservationSummaryDto, ReservationFilter } from '../../../core/models/reservation.interface';
 import { Page, Pageable } from '../../../core/models/pagination.interface';
 import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
+import { Pagination } from '../../../shared/components/pagination/pagination';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-reservation-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, Pagination],
   templateUrl: './reservation-management.html',
   styleUrl: './reservation-management.css'
 })
 export class ReservationManagement implements OnInit, OnDestroy {
-  // Math reference for template
-  Math = Math;
+  reservationsPage!: Page<ReservationSummaryDto>;
+  loading = false;
+  error: string | null = null;
   
-  reservations: ReservationSummaryDto[] = [];
+  // Pagination
   currentPage = 0;
   pageSize = 10;
-  totalElements = 0;
-  totalPages = 0;
-  isLoading = false;
-  errorMessage = '';
-
-  // Filter form
-  filterForm: FormGroup;
-  
-  // Status options
-  statusOptions = Object.values(ReservationStatus);
-  
-  // Bulk operations
-  selectedReservations: Set<number> = new Set();
-  selectAll = false;
-
-  // Sorting
   sortBy = 'createdAt';
   sortDirection: 'ASC' | 'DESC' = 'DESC';
-
+  
+  // Filtering
+  filterForm: FormGroup;
+  selectedStatus: ReservationStatus | '' = '';
+  searchTerm = '';
+  
   private destroy$ = new Subject<void>();
 
   constructor(
     private reservationService: ReservationService,
-    private adminAuditService: AdminAuditService,
-    private adminConfirmationService: AdminConfirmationService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     this.filterForm = this.fb.group({
-      userId: [''],
-      vehicleId: [''],
       status: [''],
+      searchTerm: [''],
       startDate: [''],
       endDate: ['']
     });
   }
 
   ngOnInit(): void {
-    this.loadReservations();
     this.setupFilterListener();
+    this.loadReservations();
   }
 
   ngOnDestroy(): void {
@@ -80,9 +62,9 @@ export class ReservationManagement implements OnInit, OnDestroy {
   private setupFilterListener(): void {
     this.filterForm.valueChanges
       .pipe(
-        takeUntil(this.destroy$),
         debounceTime(500),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
       )
       .subscribe(() => {
         this.currentPage = 0;
@@ -90,11 +72,10 @@ export class ReservationManagement implements OnInit, OnDestroy {
       });
   }
 
-  private loadReservations(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
+  loadReservations(): void {
+    this.loading = true;
+    this.error = null;
 
-    const filter: ReservationFilter = this.filterForm.value;
     const pageable: Pageable = {
       page: this.currentPage,
       size: this.pageSize,
@@ -102,22 +83,26 @@ export class ReservationManagement implements OnInit, OnDestroy {
       sortDirection: this.sortDirection
     };
 
-    this.reservationService.getAllReservations(filter, pageable)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (page: Page<ReservationSummaryDto>) => {
-          this.reservations = page.content;
-          this.totalElements = page.totalElements;
-          this.totalPages = page.totalPages;
-          this.currentPage = page.number;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = 'Failed to load reservations';
-          console.error('Error loading reservations:', error);
-        }
-      });
+    const filter: ReservationFilter = {
+      status: this.filterForm.value.status || undefined,
+      startDate: this.filterForm.value.startDate ? new Date(this.filterForm.value.startDate) : undefined,
+      endDate: this.filterForm.value.endDate ? new Date(this.filterForm.value.endDate) : undefined,
+      searchTerm: this.filterForm.value.searchTerm || undefined
+    };
+
+    // Use the filtered endpoint for better search capabilities
+    this.reservationService.getUserReservationsWithFilter(filter, pageable).subscribe({
+      next: (page) => {
+        this.reservationsPage = page;
+        this.currentPage = page.number;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading reservations:', error);
+        this.error = 'Failed to load reservations';
+        this.loading = false;
+      }
+    });
   }
 
   onPageChange(page: number): void {
@@ -125,21 +110,80 @@ export class ReservationManagement implements OnInit, OnDestroy {
     this.loadReservations();
   }
 
-  onPageSizeChange(size: number): void {
-    this.pageSize = size;
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = newSize;
     this.currentPage = 0;
     this.loadReservations();
   }
 
-  onSort(property: string): void {
-    if (this.sortBy === property) {
-      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      this.sortBy = property;
-      this.sortDirection = 'ASC';
-    }
-    this.loadReservations();
+  // Helper for template page info
+  getMaxPageElement(): number {
+    return Math.min((this.currentPage + 1) * this.pageSize, this.reservationsPage?.totalElements || 0);
   }
+
+  // Methods needed by the template
+  getStatusColor(status: ReservationStatus): string {
+    switch (status) {
+      case ReservationStatus.PENDING:
+        return 'bg-yellow-500';
+      case ReservationStatus.CONFIRMED:
+        return 'bg-green-500';
+      case ReservationStatus.CANCELLED:
+        return 'bg-red-500';
+      case ReservationStatus.COMPLETED:
+        return 'bg-blue-500';
+      default:
+        return 'bg-gray-500';
+    }
+  }
+
+  getStatusText(status: ReservationStatus): string {
+    switch (status) {
+      case ReservationStatus.PENDING:
+        return 'Pending';
+      case ReservationStatus.CONFIRMED:
+        return 'Confirmed';
+      case ReservationStatus.CANCELLED:
+        return 'Cancelled';
+      case ReservationStatus.COMPLETED:
+        return 'Completed';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  formatDate(date: Date | string): string {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  }
+
+  getTotalDays(startDate: Date | string, endDate: Date | string): number {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  hasSelectedReservations(): boolean {
+    return this.selectedReservations.size > 0;
+  }
+
+  // Additional properties and methods needed by the template
+  errorMessage: string | null = null;
+  statusOptions = Object.values(ReservationStatus);
+  selectedReservations = new Set<number>();
 
   onFilterReset(): void {
     this.filterForm.reset();
@@ -147,287 +191,136 @@ export class ReservationManagement implements OnInit, OnDestroy {
     this.loadReservations();
   }
 
-  onStatusUpdate(reservationId: number, newStatus: ReservationStatus): void {
-    const reservation = this.reservations.find(r => r.id === reservationId);
-    if (!reservation) return;
+  getSelectedCount(): number {
+    return this.selectedReservations.size;
+  }
 
-    this.adminConfirmationService.confirmStatusUpdate(
-      'Reservation',
-      reservationId,
-      reservation.status,
-      newStatus
-    ).pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result.confirmed) {
-        const request: AdminReservationUpdateRequest = { status: newStatus };
-        
-        this.reservationService.updateReservationStatus(reservationId, request)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (updatedReservation) => {
-              // Update the reservation in the list
-              const index = this.reservations.findIndex(r => r.id === reservationId);
-              if (index !== -1) {
-                this.reservations[index] = updatedReservation;
-              }
-              
-              // Remove from selected if it was selected
-              this.selectedReservations.delete(reservationId);
+  onBulkStatusUpdateFromUI(statusString: string): void {
+    if (this.selectedReservations.size === 0) {
+      this.errorMessage = 'Please select at least one reservation to update';
+      return;
+    }
 
-              // Log admin action
-              this.adminAuditService.logAction({
-                action: 'UPDATE_STATUS',
-                resource: 'RESERVATION',
-                resourceId: reservationId,
-                details: `Status changed to ${newStatus}${result.reason ? ` - Reason: ${result.reason}` : ''}`
-              }).subscribe();
-            },
-            error: (error) => {
-              console.error('Error updating reservation status:', error);
-              this.errorMessage = 'Failed to update reservation status';
-            }
-          });
+    // Convert string to ReservationStatus enum
+    const status = statusString as ReservationStatus;
+    if (!Object.values(ReservationStatus).includes(status)) {
+      this.errorMessage = 'Invalid status selected';
+      return;
+    }
+
+    const reservationIds = Array.from(this.selectedReservations);
+    this.loading = true;
+    this.errorMessage = null;
+
+    // Update each selected reservation
+    const updateObservables = reservationIds.map(id => 
+      this.reservationService.updateReservationStatus(id, { status })
+    );
+
+    forkJoin(updateObservables).subscribe({
+      next: () => {
+        this.toastr.success(`Successfully updated ${reservationIds.length} reservation(s) to ${status}`);
+        this.selectedReservations.clear();
+        this.loadReservations();
+      },
+      error: (error) => {
+        console.error('Error updating reservations:', error);
+        this.errorMessage = 'Failed to update some reservations';
+        this.loading = false;
       }
     });
   }
 
-  onDeleteReservation(reservationId: number): void {
-    this.adminConfirmationService.confirmDangerousAction(
-      'delete',
-      'Reservation',
-      reservationId
-    ).pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result.confirmed) {
-        this.reservationService.deleteReservation(reservationId)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              // Remove from the list
-              this.reservations = this.reservations.filter(r => r.id !== reservationId);
-              this.selectedReservations.delete(reservationId);
-              this.totalElements--;
+  onBulkDelete(): void {
+    if (this.selectedReservations.size === 0) {
+      this.errorMessage = 'Please select at least one reservation to delete';
+      return;
+    }
 
-              // Log admin action
-              this.adminAuditService.logAction({
-                action: 'DELETE',
-                resource: 'RESERVATION',
-                resourceId: reservationId,
-                details: `Reservation deleted${result.reason ? ` - Reason: ${result.reason}` : ''}`
-              }).subscribe();
-            },
-            error: (error) => {
-              console.error('Error deleting reservation:', error);
-              this.errorMessage = 'Failed to delete reservation';
-            }
-          });
-      }
-    });
+    if (confirm(`Are you sure you want to delete ${this.selectedReservations.size} reservation(s)?`)) {
+      const reservationIds = Array.from(this.selectedReservations);
+      this.loading = true;
+      this.errorMessage = null;
+
+      // Delete each selected reservation
+      const deleteObservables = reservationIds.map(id => 
+        this.reservationService.deleteReservation(id)
+      );
+
+      forkJoin(deleteObservables).subscribe({
+        next: () => {
+          this.toastr.success(`Successfully deleted ${reservationIds.length} reservation(s)`);
+          this.selectedReservations.clear();
+          this.loadReservations();
+        },
+        error: (error) => {
+          console.error('Error deleting reservations:', error);
+          this.errorMessage = 'Failed to delete some reservations';
+          this.loading = false;
+        }
+      });
+    }
   }
 
-  // Bulk operations
+  isAllSelected(): boolean {
+    return this.reservationsPage?.content?.length > 0 && 
+           this.selectedReservations.size === this.reservationsPage.content.length;
+  }
+
   onSelectAll(checked: boolean): void {
-    this.selectAll = checked;
     if (checked) {
-      this.reservations.forEach(r => this.selectedReservations.add(r.id));
+      this.reservationsPage?.content?.forEach(reservation => {
+        this.selectedReservations.add(reservation.id);
+      });
     } else {
       this.selectedReservations.clear();
     }
   }
 
-  onSelectReservation(reservationId: number, checked: boolean): void {
+  isSelected(id: number): boolean {
+    return this.selectedReservations.has(id);
+  }
+
+  onSelectReservation(id: number, checked: boolean): void {
     if (checked) {
-      this.selectedReservations.add(reservationId);
+      this.selectedReservations.add(id);
     } else {
-      this.selectedReservations.delete(reservationId);
+      this.selectedReservations.delete(id);
     }
-    
-    // Update select all checkbox
-    this.selectAll = this.selectedReservations.size === this.reservations.length;
   }
 
-  onBulkStatusUpdate(newStatus: ReservationStatus): void {
-    if (this.selectedReservations.size === 0) {
-      alert('Please select at least one reservation');
-      return;
+  onViewReservation(id: number): void {
+    const reservation = this.reservationsPage?.content?.find(r => r.id === id);
+    if (reservation) {
+      // Open reservation detail modal or navigate to detail page
+      this.router.navigate(['/reservations', id]);
     }
+  }
 
-    if (confirm(`Are you sure you want to update ${this.selectedReservations.size} reservation(s) to ${newStatus}?`)) {
-      const promises = Array.from(this.selectedReservations).map(id =>
-        this.reservationService.updateReservationStatus(id, { status: newStatus }).toPromise()
-      );
+  onEditReservation(id: number): void {
+    const reservation = this.reservationsPage?.content?.find(r => r.id === id);
+    if (reservation) {
+      // Navigate to edit page or open edit modal
+      this.router.navigate(['/reservations', id, 'edit']);
+    }
+  }
 
-      Promise.all(promises)
-        .then(() => {
+  onDeleteReservation(id: number): void {
+    if (confirm('Are you sure you want to delete this reservation?')) {
+      this.loading = true;
+      this.errorMessage = null;
+
+      this.reservationService.deleteReservation(id).subscribe({
+        next: () => {
+          this.toastr.success('Reservation deleted successfully');
           this.loadReservations();
-          this.selectedReservations.clear();
-          this.selectAll = false;
-        })
-        .catch((error) => {
-          console.error('Error in bulk status update:', error);
-          this.errorMessage = 'Some reservations failed to update';
-        });
+        },
+        error: (error) => {
+          console.error('Error deleting reservation:', error);
+          this.errorMessage = 'Failed to delete reservation';
+          this.loading = false;
+        }
+      });
     }
-  }
-
-  // Helper for template to safely convert string to ReservationStatus
-  onBulkStatusUpdateFromUI(value: string): void {
-    if (!value) return;
-    const status = value as unknown as ReservationStatus;
-    this.onBulkStatusUpdate(status);
-  }
-
-  onBulkDelete(): void {
-    if (this.selectedReservations.size === 0) {
-      alert('Please select at least one reservation');
-      return;
-    }
-
-    if (confirm(`Are you sure you want to delete ${this.selectedReservations.size} reservation(s)? This action cannot be undone.`)) {
-      const promises = Array.from(this.selectedReservations).map(id =>
-        this.reservationService.deleteReservation(id).toPromise()
-      );
-
-      Promise.all(promises)
-        .then(() => {
-          this.loadReservations();
-          this.selectedReservations.clear();
-          this.selectAll = false;
-        })
-        .catch((error) => {
-          console.error('Error in bulk delete:', error);
-          this.errorMessage = 'Some reservations failed to delete';
-        });
-    }
-  }
-
-  // Export functionality
-  onExportCSV(): void {
-    if (this.reservations.length === 0) {
-      alert('No reservations to export');
-      return;
-    }
-
-    const headers = ['ID', 'Vehicle', 'Start Date', 'End Date', 'Status', 'User'];
-    const csvContent = [
-      headers.join(','),
-      ...this.reservations.map(r => [
-        r.id,
-        `${r.vehicle.brand} ${r.vehicle.model}`,
-        new Date(r.startDate).toLocaleDateString(),
-        new Date(r.endDate).toLocaleDateString(),
-        r.status,
-        'N/A' // User info not available in summary
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `reservations_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
-  // Helper methods for template
-  getStatusClass(status: ReservationStatus): string {
-    switch (status) {
-      case ReservationStatus.PENDING: return 'status-pending';
-      case ReservationStatus.CONFIRMED: return 'status-confirmed';
-      case ReservationStatus.COMPLETED: return 'status-completed';
-      case ReservationStatus.CANCELLED: return 'status-cancelled';
-      default: return 'status-default';
-    }
-  }
-
-  getStatusIcon(status: ReservationStatus): string {
-    switch (status) {
-      case ReservationStatus.PENDING: return '⏳';
-      case ReservationStatus.CONFIRMED: return '✅';
-      case ReservationStatus.COMPLETED: return '🎉';
-      case ReservationStatus.CANCELLED: return '❌';
-      default: return '❓';
-    }
-  }
-
-  canUpdateStatus(currentStatus: ReservationStatus): boolean {
-    return currentStatus === ReservationStatus.PENDING || 
-           currentStatus === ReservationStatus.CONFIRMED;
-  }
-
-  canDeleteStatus(currentStatus: ReservationStatus): boolean {
-    return currentStatus === ReservationStatus.CANCELLED || 
-           currentStatus === ReservationStatus.COMPLETED;
-  }
-
-  getSelectedCount(): number {
-    return this.selectedReservations.size;
-  }
-
-  hasSelectedReservations(): boolean {
-    return this.selectedReservations.size > 0;
-  }
-
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxVisiblePages = 5;
-    
-    if (this.totalPages <= maxVisiblePages) {
-      for (let i = 0; i < this.totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      const start = Math.max(0, this.currentPage - Math.floor(maxVisiblePages / 2));
-      const end = Math.min(this.totalPages - 1, start + maxVisiblePages - 1);
-      
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-    }
-    
-    return pages;
-  }
-
-  // Methods needed by the template
-  getStatusColor(status: ReservationStatus): string {
-    switch (status) {
-      case ReservationStatus.PENDING: return 'bg-yellow-500';
-      case ReservationStatus.CONFIRMED: return 'bg-green-500';
-      case ReservationStatus.COMPLETED: return 'bg-blue-500';
-      case ReservationStatus.CANCELLED: return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  }
-
-  getStatusText(status: ReservationStatus): string {
-    switch (status) {
-      case ReservationStatus.PENDING: return 'Pending';
-      case ReservationStatus.CONFIRMED: return 'Confirmed';
-      case ReservationStatus.COMPLETED: return 'Completed';
-      case ReservationStatus.CANCELLED: return 'Cancelled';
-      default: return 'Unknown';
-    }
-  }
-
-  isSelected(reservationId: number): boolean {
-    return this.selectedReservations.has(reservationId);
-  }
-
-  isAllSelected(): boolean {
-    return this.selectedReservations.size > 0 && this.selectedReservations.size === this.reservations.length;
-  }
-
-  getMaxPageElement(): number {
-    return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
-  }
-
-  // Methods needed by the template
-  onViewReservation(reservationId: number): void {
-    // Navigate to reservation detail page
-    this.router.navigate(['/reservations', reservationId]);
-  }
-
-  onEditReservation(reservationId: number): void {
-    // Navigate to edit reservation page
-    this.router.navigate(['/reservations/edit', reservationId]);
   }
 }

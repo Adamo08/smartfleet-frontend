@@ -3,17 +3,23 @@ import { Routes } from '@angular/router';
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
+    redirectTo: 'dashboard', // Redirect empty path to dashboard
+    pathMatch: 'full'
+  },
+  {
+    path: 'dashboard',
     loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard)
   },
   {
     path: 'vehicles',
     children: [
       { path: '', loadComponent: () => import('./vehicle-management/vehicle-list/vehicle-list').then(m => m.VehicleList) },
+      { path: 'categories', loadComponent: () => import('./vehicle-management/vehicle-categories/vehicle-categories').then(m => m.VehicleCategories) },
+      { path: 'brands', loadComponent: () => import('./vehicle-management/vehicle-brands/vehicle-brands').then(m => m.VehicleBrands) },
+      { path: 'models', loadComponent: () => import('./vehicle-management/vehicle-models/vehicle-models').then(m => m.VehicleModels) },
       { path: 'create', loadComponent: () => import('./vehicle-management/vehicle-form/vehicle-form').then(m => m.VehicleForm) },
       { path: ':id', loadComponent: () => import('./vehicle-management/vehicle-detail/vehicle-detail').then(m => m.VehicleDetail) },
       { path: ':id/edit', loadComponent: () => import('./vehicle-management/vehicle-form/vehicle-form').then(m => m.VehicleForm) },
-      { path: 'categories', loadComponent: () => import('./vehicle-management/categories/categories').then(m => m.Categories) },
-      { path: 'models', loadComponent: () => import('./vehicle-management/models/models').then(m => m.Models) },
       { path: 'maintenance', loadComponent: () => import('./vehicle-management/maintenance/maintenance-list/maintenance-list').then(m => m.MaintenanceList) },
       { path: 'maintenance/create', loadComponent: () => import('./vehicle-management/maintenance/maintenance-form/maintenance-form').then(m => m.MaintenanceForm) },
       { path: 'maintenance/:id', loadComponent: () => import('./vehicle-management/maintenance/maintenance-detail/maintenance-detail').then(m => m.MaintenanceDetail) },
@@ -82,7 +88,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'analytics',
     children: [
-      { path: '', redirectTo: 'reservations', pathMatch: 'full' },
+      { path: '', loadComponent: () => import('./analytics/analytics').then(m => m.Analytics) },
       { path: 'reservations', loadComponent: () => import('./analytics/reservation-stats/reservation-stats').then(m => m.ReservationStats) },
       { path: 'revenue', loadComponent: () => import('./analytics/revenue-chart/revenue-chart').then(m => m.RevenueChart) },
       { path: 'vehicle-utilization', loadComponent: () => import('./analytics/vehicle-utilization/vehicle-utilization').then(m => m.VehicleUtilization) },

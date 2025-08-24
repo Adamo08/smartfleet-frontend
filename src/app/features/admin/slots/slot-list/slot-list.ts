@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { SlotService } from '../../../../core/services/slot.service';
 import { Page } from '../../../../core/models/pagination.interface';
 import { SlotDto } from '../../../../core/models/slot.interface';
+import { Pagination } from '../../../../shared/components/pagination/pagination';
+import { CeilPipe } from '../../../../shared/pipes/ceil.pipe';
 
 @Component({
   selector: 'app-slot-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Pagination, CeilPipe], // Use Pagination
   templateUrl: './slot-list.html',
   styleUrl: './slot-list.css'
 })

@@ -1,10 +1,15 @@
 export interface Vehicle {
   id: number;
+  categoryId: number;
+  categoryName: string;
+  brandId: number;
+  brandName: string;
+  modelId: number;
+  modelName: string;
   brand: string;
   model: string;
   year: number;
   licensePlate: string;
-  vehicleType: VehicleType;
   fuelType: FuelType;
   status: VehicleStatus;
   mileage: number;
@@ -13,14 +18,6 @@ export interface Vehicle {
   description?: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export enum VehicleType {
-  SEDAN = 'SEDAN',
-  SUV = 'SUV',
-  TRUCK = 'TRUCK',
-  VAN = 'VAN',
-  MOTORCYCLE = 'MOTORCYCLE'
 }
 
 export enum FuelType {

@@ -1,147 +1,177 @@
-<div class="fixed inset-y-0 left-0 z-50 bg-slate-900/90 backdrop-blur-xl border-r border-white/10 shadow-2xl transition-all duration-200 text-gray-200" [class.w-64]="!collapsed" [class.w-20]="collapsed">
-  <!-- Logo -->
-  <div class="flex h-16 items-center justify-between px-6 border-b border-white/10">
-    <div class="flex items-center space-x-3">
-      <div class="w-8 h-8 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-lg flex items-center justify-center">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-        </svg>
-      </div>
-      <div [class.hidden]="collapsed">
-        <div class="text-lg font-bold">SmartFleet</div>
-        <div class="text-xs text-gray-500">Admin Panel</div>
+<div class="fixed inset-y-0 left-0 z-50 transition-all duration-300 ease-in-out
+     md:left-0"
+     [class.md:w-64]="!collapsed"
+     [class.md:w-20]="collapsed"
+     [class.w-screen]="!collapsed && isMobile"
+     [class.-translate-x-full]="collapsed && isMobile"
+     [class.translate-x-0]="!collapsed && isMobile || !isMobile">
+
+  <!-- Sidebar Content -->
+  <div class="flex h-full flex-col bg-slate-900/95 backdrop-blur-xl border-r border-white/10"
+       [class.hidden]="collapsed && isMobile"
+       [class.block]="!collapsed || !isMobile">
+
+    <!-- Header -->
+    <div class="flex h-16 shrink-0 items-center border-b border-white/10 px-4">
+      <div class="flex items-center space-x-3">
+        <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">SF</span>
+        </div>
+        @if (!collapsed) { <span class="text-white font-semibold">SmartFleet</span> }
       </div>
     </div>
-    <button (click)="toggleCollapse()" class="p-2 rounded-md hover:bg-gray-100">
-      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16M4 6h16M4 18h16" />
-      </svg>
-    </button>
-  </div>
 
-  <!-- Navigation -->
-  <nav class="mt-6 px-3">
-    <div class="space-y-1">
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1 px-2 py-4">
       <!-- Dashboard -->
-      <a routerLink="/admin"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         [routerLinkActiveOptions]="{ exact: true }"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+      <a routerLink="/admin/dashboard"
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Dashboard' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
         </svg>
-        <span [class.hidden]="collapsed">Dashboard</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">Dashboard</span>
-        }
+        @if (!collapsed) { <span>Dashboard</span> }
       </a>
 
       <!-- Analytics -->
       <a routerLink="/admin/analytics"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Analytics' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4m-4-6h6m-6 0l-4 4m6-6l-4 4m-4-6h-2a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m-8-2h-2m-2-2h-2m2 4h-2m-2 2h2m-2-4h2"/>
         </svg>
-        <span [class.hidden]="collapsed">Analytics</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">Analytics</span>
-        }
+        @if (!collapsed) { <span>Analytics</span> }
       </a>
 
-      <!-- Vehicle Management -->
-      <a routerLink="/admin/vehicles"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-        </svg>
-        <span [class.hidden]="collapsed">Vehicle Management</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">Vehicle Management</span>
-        }
-      </a>
+      <!-- Vehicles -->
+      <div class="space-y-1">
+        <a routerLink="/admin/vehicles"
+           routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+           [title]="collapsed && !isMobile ? 'Vehicles' : ''"
+           class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          @if (!collapsed) { <span>Vehicles</span> }
+        </a>
 
-      <!-- User Management -->
-      <a routerLink="/admin/users"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+        <!-- Vehicle Management Submenu -->
+        @if (!collapsed) { <div class="ml-6 space-y-1">
+          <a routerLink="/admin/vehicles/categories"
+             routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+             [title]="collapsed && !isMobile ? 'Categories' : ''"
+             class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+            <svg class="mr-3 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+            </svg>
+            <span>Categories</span>
+          </a>
+
+          <a routerLink="/admin/vehicles/brands"
+             routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+             [title]="collapsed && !isMobile ? 'Brands' : ''"
+             class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+            <svg class="mr-3 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <span>Brands</span>
+          </a>
+
+          <a routerLink="/admin/vehicles/models"
+             routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+             [title]="collapsed && !isMobile ? 'Models' : ''"
+             class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+            <svg class="mr-3 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span>Models</span>
+          </a>
+        </div> }
+      </div>
+
+      <!-- Slots -->
+      <a routerLink="/admin/slots"
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Slots' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
-        <span [class.hidden]="collapsed">User Management</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">User Management</span>
-        }
+        @if (!collapsed) { <span>Slots</span> }
       </a>
 
       <!-- Reservations -->
       <a routerLink="/admin/reservations"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 0h8m-8 0a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2"/>
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Reservations' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <span [class.hidden]="collapsed">Reservations</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">Reservations</span>
-        }
+        @if (!collapsed) { <span>Reservations</span> }
+      </a>
+
+      <!-- Users -->
+      <a routerLink="/admin/users"
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Users' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+        @if (!collapsed) { <span>Users</span> }
       </a>
 
       <!-- Payments -->
       <a routerLink="/admin/payments"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Payments' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
         </svg>
-        <span [class.hidden]="collapsed">Payments</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">Payments</span>
-        }
+        @if (!collapsed) { <span>Payments</span> }
       </a>
 
       <!-- Testimonials -->
       <a routerLink="/admin/testimonials"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Testimonials' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
         </svg>
-        <span [class.hidden]="collapsed">Testimonials</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">Testimonials</span>
-        }
+        @if (!collapsed) { <span>Testimonials</span> }
       </a>
 
-      <!-- System Settings -->
+      <!-- Settings -->
       <a routerLink="/admin/settings"
-         routerLinkActive="bg-white/10 text-white border-white/20"
-         class="group relative flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-transparent text-gray-300 hover:bg-white/5 hover:text-white transition-all duration-200">
-        <svg class="h-5 w-5 text-gray-400 group-hover:text-indigo-300" [class.mr-3]="!collapsed" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         routerLinkActive="bg-indigo-600/20 text-indigo-300 border-indigo-500/50"
+         [title]="collapsed && !isMobile ? 'Settings' : ''"
+         class="group flex items-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200 border border-transparent">
+        <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-        <span [class.hidden]="collapsed">System Settings</span>
-        @if (collapsed) {
-        <span class="pointer-events-none absolute left-16 z-50 rounded-md bg-slate-800/95 border border-white/10 text-gray-100 text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl">System Settings</span>
-        }
+        @if (!collapsed) { <span>Settings</span> }
       </a>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- Bottom Section -->
-  <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-    <div class="flex items-center space-x-3">
-      <div class="w-8 h-8 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-        {{ currentUser?.firstName?.charAt(0) }}{{ currentUser?.lastName?.charAt(0) }}
-      </div>
-      <div class="flex-1 min-w-0" [class.hidden]="collapsed">
-        <p class="text-sm font-medium truncate">
-          {{ currentUser?.firstName }} {{ currentUser?.lastName }}
-        </p>
-        <p class="text-xs truncate">Administrator</p>
-      </div>
+    <!-- Footer -->
+    <div class="border-t border-white/10 p-4">
+      <button (click)="toggleCollapse()"
+              [title]="collapsed && !isMobile ? (collapsed ? 'Expand' : 'Collapse') : ''"
+              class="flex w-full items-center justify-center px-2 py-2 text-sm font-medium rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-200">
+        @if (!collapsed) { <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+        </svg> }
+        @if (collapsed) { <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+        </svg> }
+        @if (!collapsed) { <span class="ml-2">Collapse</span> }
+      </button>
     </div>
   </div>
 </div>

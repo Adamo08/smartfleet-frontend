@@ -44,7 +44,8 @@ export class TransactionList implements OnInit {
       minAmount: [null],
       maxAmount: [null],
       startDate: [null],
-      endDate: [null]
+      endDate: [null],
+      searchTerm: ['']
     });
   }
 
@@ -68,7 +69,8 @@ export class TransactionList implements OnInit {
       minAmount: this.filterForm.value.minAmount || undefined,
       maxAmount: this.filterForm.value.maxAmount || undefined,
       startDate: this.filterForm.value.startDate ? new Date(this.filterForm.value.startDate) : undefined,
-      endDate: this.filterForm.value.endDate ? new Date(this.filterForm.value.endDate) : undefined
+      endDate: this.filterForm.value.endDate ? new Date(this.filterForm.value.endDate) : undefined,
+      searchTerm: this.filterForm.value.searchTerm || undefined
     };
 
     this.paymentService.getAllPaymentsAdmin(filter, pageable).subscribe({
@@ -105,15 +107,7 @@ export class TransactionList implements OnInit {
   }
 
   clearFilters(): void {
-    this.filterForm.reset({
-      userId: null,
-      reservationId: null,
-      status: '',
-      minAmount: null,
-      maxAmount: null,
-      startDate: null,
-      endDate: null
-    });
+    this.filterForm.reset();
     this.currentPage = 0;
     this.loadPayments();
   }
