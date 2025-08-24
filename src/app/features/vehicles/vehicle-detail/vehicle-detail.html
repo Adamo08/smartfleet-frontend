@@ -86,7 +86,7 @@
             <div class="grid grid-cols-2 gap-4 mb-6">
               <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
                 <div class="text-sm text-gray-400 mb-1">Vehicle Type</div>
-                <div class="font-semibold text-white">{{ vehicle.vehicleType }}</div>
+                <div class="font-semibold text-white">{{ vehicle.categoryName }}</div>
               </div>
               <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
                 <div class="text-sm text-gray-400 mb-1">Fuel Type</div>
@@ -204,7 +204,7 @@
                 </div>
                 <div class="p-4">
                   <h3 class="font-semibold text-white mb-2">{{ similarVehicle.brand }} {{ similarVehicle.model }}</h3>
-                  <p class="text-sm text-gray-400 mb-2">{{ similarVehicle.year }} • {{ similarVehicle.vehicleType }}</p>
+                  <p class="text-sm text-gray-400 mb-2">{{ similarVehicle.year }} • {{ similarVehicle.categoryName }}</p>
                   <div class="flex items-center justify-between">
                     <span class="font-bold text-indigo-400">${{ similarVehicle.pricePerDay }}/day</span>
                     <a 

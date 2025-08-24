@@ -1,0 +1,240 @@
+<div class="p-6 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-white">Vehicle Categories</h2>
+    <button 
+      (click)="openAddModal()" 
+      class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200">
+      New Category
+    </button>
+  </div>
+
+  <!-- Message Display -->
+  @if (message) {
+    <div class="mb-6 p-4 rounded-xl border" 
+         [ngClass]="{
+           'bg-green-500/20 border-green-500/30 text-green-300': messageType === 'success',
+           'bg-red-500/20 border-red-500/30 text-red-300': messageType === 'error'
+         }">
+      <div class="flex items-center justify-between">
+        <span>{{ message }}</span>
+        <button (click)="clearMessage()" class="text-white/70 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="text-center py-8">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      <p class="text-gray-300 mt-2">Loading categories...</p>
+    </div>
+  } @else if (categoriesPage && categoriesPage.content.length > 0) {
+    <div class="overflow-x-auto rounded-lg shadow-xl">
+      <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+        <thead>
+          <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
+            <th class="p-3 text-white">ID</th>
+            <th class="p-3 text-white">Name</th>
+            <th class="p-3 text-white">Description</th>
+            <th class="p-3 text-white">Icon</th>
+            <th class="p-3 text-white">Status</th>
+            <th class="p-3 text-white">Created</th>
+            <th class="p-3 text-white">Updated</th>
+            <th class="p-3 text-white">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of categoriesPage.content; track category.id) {
+            <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
+              <td class="p-3">{{ category.id }}</td>
+              <td class="p-3 font-medium">{{ category.name }}</td>
+              <td class="p-3 text-gray-300">{{ category.description || 'No description' }}</td>
+              <td class="p-3">
+                @if (category.iconUrl) {
+                  <img [src]="category.iconUrl" alt="{{ category.name }} Icon" class="h-8 w-auto object-contain">
+                } @else {
+                  <span>N/A</span>
+                }
+              </td>
+              <td class="p-3">
+                <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
+                  'bg-green-500/20 text-green-300': category.isActive,
+                  'bg-red-500/20 text-red-300': !category.isActive
+                }">
+                  {{ category.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="p-3 text-gray-300">{{ category.createdAt | date:'short' }}</td>
+              <td class="p-3 text-gray-300">{{ category.updatedAt | date:'short' }}</td>
+              <td class="p-3 flex space-x-2">
+                <button 
+                  class="text-yellow-400 hover:text-yellow-300 transition-colors duration-200" 
+                  (click)="openEditModal(category)" 
+                  title="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487zm0 0L19.5 7.125" />
+                  </svg>
+                </button>
+                <button 
+                  class="text-red-400 hover:text-red-300 transition-colors duration-200" 
+                  (click)="openDeleteModal(category)" 
+                  title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.92c-1.01 0-1.93-.61-2.243-1.673L4.4 6.392m9.165 0c.66-.089 1.309-.178 1.964-.267m-9.964 0a48.11 48.11 0 01-3.478-.397m-1.559 0c.567.067 1.123.134 1.68.201m-.15.909.475 2.85a1.5 1.5 0 001.488 1.36h5.25a1.5 1.5 0 001.488-1.36l.476-2.85m-11.77-.55a22.354 22.354 0 00-.733-1.469C3.722 7.555 3 6.81 3 6h-.003L4.4 6.392V6c0-.528.288-.992.733-1.469a22.354 22.354 0 00.732-1.469A1.751 1.751 0 015.405 2.5C6.07 2.5 6.643 2.76 7 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5C18.27 2.5 18.843 2.76 19.2 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5C21.722 7.555 21 6.81 21 6h-.003L19.6 6.392V6c0-.528-.288-.992-.733-1.469a22.354 22.354 0 00-.732-1.469A1.751 1.751 0 0118.595 2.5C17.93 2.5 17.357 2.76 17 3c-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5C6.27 2.5 5.722 7.555 5.722 7.555z" />
+                  </svg>
+                </button>
+                <button 
+                  class="px-2 py-1 rounded text-xs font-medium transition-colors duration-200" 
+                  [ngClass]="{
+                    'bg-red-500/20 text-red-300 hover:bg-red-500/30': category.isActive,
+                    'bg-green-500/20 text-green-300 hover:bg-green-500/30': !category.isActive
+                  }"
+                  (click)="toggleCategoryStatus(category)" 
+                  title="{{ category.isActive ? 'Deactivate' : 'Activate' }}">
+                  {{ category.isActive ? 'Deactivate' : 'Activate' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (categoriesPage && categoriesPage.totalPages > 1) {
+      <div class="mt-6 flex justify-center">
+        <app-pagination
+          [currentPage]="categoriesPage.number"
+          [totalPages]="categoriesPage.totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </div>
+    }
+  } @else if (!isLoading) {
+    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-xl bg-slate-900/40">
+      No categories found. Create your first category to get started.
+    </div>
+  }
+
+  <!-- Add Category Modal -->
+  @if (showAddModal) {
+    <app-modal [title]="'Add New Category'" (close)="closeAddModal()">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentCategory.name"
+            placeholder="Enter category name"
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <textarea 
+            [(ngModel)]="currentCategory.description"
+            placeholder="Enter category description"
+            rows="3"
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Icon URL</label>
+          <input 
+            type="url" 
+            [(ngModel)]="currentCategory.iconUrl"
+            placeholder="Enter icon URL (optional)"
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div class="flex items-center space-x-2">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="currentCategory.isActive"
+            id="isActive"
+            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white/20 rounded focus:ring-indigo-500 focus:ring-2">
+          <label for="isActive" class="text-sm text-gray-300">Active</label>
+        </div>
+      </div>
+      <div modal-actions class="flex justify-end space-x-2 mt-4">
+        <button 
+          (click)="closeAddModal()" 
+          class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
+          Cancel
+        </button>
+        <button 
+          (click)="saveCategory()" 
+          [disabled]="isSaving"
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+          {{ isSaving ? 'Saving...' : 'Save Category' }}
+        </button>
+      </div>
+    </app-modal>
+  }
+
+  <!-- Edit Category Modal -->
+  @if (showEditModal) {
+    <app-modal [title]="'Edit Category'" (close)="closeEditModal()">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentCategory.name"
+            placeholder="Enter category name"
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <textarea 
+            [(ngModel)]="currentCategory.description"
+            placeholder="Enter category description"
+            rows="3"
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Icon URL</label>
+          <input 
+            type="url" 
+            [(ngModel)]="currentCategory.iconUrl"
+            placeholder="Enter icon URL (optional)"
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div class="flex items-center space-x-2">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="currentCategory.isActive"
+            id="editIsActive"
+            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white/20 rounded focus:ring-indigo-500 focus:ring-2">
+          <label for="editIsActive" class="text-sm text-gray-300">Active</label>
+        </div>
+      </div>
+      <div modal-actions class="flex justify-end space-x-2 mt-4">
+        <button 
+          (click)="closeEditModal()" 
+          class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
+          Cancel
+        </button>
+        <button 
+          (click)="saveCategory()" 
+          [disabled]="isSaving"
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+          {{ isSaving ? 'Saving...' : 'Update Category' }}
+        </button>
+      </div>
+    </app-modal>
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteModal && categoryToDelete) {
+    <app-configrm-dialog
+      [title]="'Confirm Deletion'"
+      [message]="'Are you sure you want to delete category \'' + categoryToDelete.name + '\'? This action cannot be undone.'"
+      [confirmButtonText]="'Delete'"
+      [cancelButtonText]="'Cancel'"
+      [actionType]="DialogActionType.DELETE"
+      (confirmed)="confirmDeleteCategory()"
+      (cancelled)="closeDeleteModal()">
+    </app-configrm-dialog>
+  }
+</div>

@@ -8,33 +8,30 @@ import { AuthService } from '../../../core/services/auth';
 import { ReservationSummaryDto, ReservationFilter } from '../../../core/models/reservation.interface';
 import { Pageable, Page } from '../../../core/models/pagination.interface';
 import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
+import { Pagination } from '../../../shared/components/pagination/pagination';
 
 @Component({
   selector: 'app-reservation-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, Pagination],
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css'
 })
 export class ReservationList implements OnInit, OnDestroy {
-  reservations: ReservationSummaryDto[] = [];
+  reservationsPage!: Page<ReservationSummaryDto>;
   loading: boolean = false;
   error: string | null = null;
   
   // Pagination
   currentPage: number = 0;
   pageSize: number = 10;
-  totalElements: number = 0;
-  totalPages: number = 0;
+  sortBy: string = 'createdAt';
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
   
   // Filtering
   filterForm: FormGroup;
   selectedStatus: ReservationStatus | '' = '';
   searchTerm: string = '';
-  
-  // Sorting
-  sortBy: string = 'createdAt';
-  sortDirection: 'ASC' | 'DESC' = 'DESC';
   
   private destroy$ = new Subject<void>();
 
@@ -63,25 +60,21 @@ export class ReservationList implements OnInit, OnDestroy {
   }
 
   private setupFilterListener(): void {
-    this.filterForm.valueChanges.pipe(
-      takeUntil(this.destroy$),
-      debounceTime(300),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.currentPage = 0;
-      this.loadReservations();
-    });
+    this.filterForm.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.currentPage = 0;
+        this.loadReservations();
+      });
   }
 
-  private loadReservations(): void {
+  loadReservations(): void {
     this.loading = true;
     this.error = null;
-
-    const filter: ReservationFilter = {
-      status: this.filterForm.get('status')?.value || undefined,
-      startDate: this.filterForm.get('startDate')?.value || undefined,
-      endDate: this.filterForm.get('endDate')?.value || undefined
-    };
 
     const pageable: Pageable = {
       page: this.currentPage,
@@ -90,14 +83,18 @@ export class ReservationList implements OnInit, OnDestroy {
       sortDirection: this.sortDirection
     };
 
-    // Always load user's own reservations (both customers and admins)
-    this.reservationService.getReservationsForCurrentUser(pageable).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (page: Page<ReservationSummaryDto>) => {
-        this.reservations = page.content;
-        this.totalElements = page.totalElements;
-        this.totalPages = page.totalPages;
+    const filter: ReservationFilter = {
+      status: this.filterForm.value.status || undefined,
+      startDate: this.filterForm.value.startDate ? new Date(this.filterForm.value.startDate) : undefined,
+      endDate: this.filterForm.value.endDate ? new Date(this.filterForm.value.endDate) : undefined,
+      searchTerm: this.filterForm.value.searchTerm || undefined
+    };
+
+    // Use the filtered endpoint for better search capabilities
+    this.reservationService.getUserReservationsWithFilter(filter, pageable).subscribe({
+      next: (page) => {
+        this.reservationsPage = page;
+        this.currentPage = page.number;
         this.loading = false;
       },
       error: (error) => {
@@ -113,8 +110,22 @@ export class ReservationList implements OnInit, OnDestroy {
     this.loadReservations();
   }
 
-  onPageSizeChange(size: number): void {
-    this.pageSize = size;
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = newSize;
+    this.currentPage = 0;
+    this.loadReservations();
+  }
+
+  onCreateReservation(): void {
+    this.router.navigate(['/reservations/create']);
+  }
+
+  getMaxPageElement(): number {
+    return Math.min((this.currentPage + 1) * this.pageSize, this.reservationsPage?.totalElements || 0);
+  }
+
+  onFilterReset(): void {
+    this.filterForm.reset();
     this.currentPage = 0;
     this.loadReservations();
   }
@@ -126,29 +137,52 @@ export class ReservationList implements OnInit, OnDestroy {
       this.sortBy = property;
       this.sortDirection = 'ASC';
     }
-    this.loadReservations();
-  }
-
-  onFilterReset(): void {
-    this.filterForm.reset();
     this.currentPage = 0;
     this.loadReservations();
   }
 
-  onReservationClick(reservation: ReservationSummaryDto): void {
-    this.router.navigate(['/reservations', reservation.id]);
+  getSortIconClass(property: string): string {
+    if (this.sortBy !== property) return 'text-gray-400';
+    return this.sortDirection === 'ASC' ? 'text-blue-500' : 'text-blue-500';
   }
 
-  onCreateReservation(): void {
-    this.router.navigate(['/reservations/create']);
+  getSortIcon(property: string): string {
+    if (this.sortBy !== property) return 'M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4';
+    return this.sortDirection === 'ASC' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7';
+  }
+
+  onReservationClick(reservation: ReservationSummaryDto): void {
+    // Handle reservation click - could open a modal or navigate to detail page
+    console.log('Reservation clicked:', reservation);
+    // You can implement navigation or modal opening here
+    // this.router.navigate(['/reservations', reservation.id]);
+  }
+
+  formatDate(date: Date | string): string {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getTotalDays(startDate: Date | string, endDate: Date | string): number {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
   getStatusColor(status: ReservationStatus): string {
     switch (status) {
-      case ReservationStatus.PENDING:
-        return 'bg-yellow-500';
       case ReservationStatus.CONFIRMED:
         return 'bg-green-500';
+      case ReservationStatus.PENDING:
+        return 'bg-yellow-500';
       case ReservationStatus.CANCELLED:
         return 'bg-red-500';
       case ReservationStatus.COMPLETED:
@@ -160,10 +194,10 @@ export class ReservationList implements OnInit, OnDestroy {
 
   getStatusText(status: ReservationStatus): string {
     switch (status) {
-      case ReservationStatus.PENDING:
-        return 'Pending';
       case ReservationStatus.CONFIRMED:
         return 'Confirmed';
+      case ReservationStatus.PENDING:
+        return 'Pending';
       case ReservationStatus.CANCELLED:
         return 'Cancelled';
       case ReservationStatus.COMPLETED:
@@ -171,75 +205,5 @@ export class ReservationList implements OnInit, OnDestroy {
       default:
         return 'Unknown';
     }
-  }
-
-  formatDate(date: Date | string): string {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  }
-
-  getTotalDays(startDate: Date | string, endDate: Date | string): number {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxVisiblePages = 5;
-    
-    if (this.totalPages <= maxVisiblePages) {
-      for (let i = 0; i < this.totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      const startPage = Math.max(0, this.currentPage - Math.floor(maxVisiblePages / 2));
-      const endPage = Math.min(this.totalPages - 1, startPage + maxVisiblePages - 1);
-      
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
-      }
-    }
-    
-    return pages;
-  }
-
-  canGoToPage(page: number): boolean {
-    return page >= 0 && page < this.totalPages;
-  }
-
-  getSortIcon(property: string): string {
-    if (this.sortBy !== property) {
-      return 'M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4';
-    }
-    
-    return this.sortDirection === 'ASC' 
-      ? 'M5 15l7-7 7 7' 
-      : 'M19 9l-7 7-7-7';
-  }
-
-  getSortIconClass(property: string): string {
-    if (this.sortBy !== property) {
-      return 'text-gray-400';
-    }
-    
-    return this.sortDirection === 'ASC' ? 'text-indigo-400' : 'text-indigo-400 rotate-180';
-  }
-
-  getMaxPageElement(): number {
-    return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
   }
 }

@@ -41,7 +41,8 @@ export class ReservationList implements OnInit {
       vehicleId: [null],
       status: [''],
       startDate: [null],
-      endDate: [null]
+      endDate: [null],
+      searchTerm: ['']
     });
   }
 
@@ -63,7 +64,8 @@ export class ReservationList implements OnInit {
       vehicleId: this.filterForm.value.vehicleId || undefined,
       status: this.filterForm.value.status || undefined,
       startDate: this.filterForm.value.startDate ? new Date(this.filterForm.value.startDate) : undefined,
-      endDate: this.filterForm.value.endDate ? new Date(this.filterForm.value.endDate) : undefined
+      endDate: this.filterForm.value.endDate ? new Date(this.filterForm.value.endDate) : undefined,
+      searchTerm: this.filterForm.value.searchTerm || undefined
     };
 
     this.reservationService.getAllReservations(filter, pageable).subscribe({
@@ -100,13 +102,7 @@ export class ReservationList implements OnInit {
   }
 
   clearFilters(): void {
-    this.filterForm.reset({
-      userId: null,
-      vehicleId: null,
-      status: '',
-      startDate: null,
-      endDate: null
-    });
+    this.filterForm.reset();
     this.currentPage = 0;
     this.loadReservations();
   }

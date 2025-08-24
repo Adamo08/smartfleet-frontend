@@ -4,25 +4,27 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../../core/services/notification';
 import { Notification, UserNotificationPreferences, NotificationType } from '../../../core/services/notification';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { Pagination } from '../../../shared/components/pagination/pagination';
+import { Page, Pageable } from '../../../core/models/pagination.interface';
 
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, Pagination],
   templateUrl: './notification-list.html',
   styleUrl: './notification-list.css'
 })
 export class NotificationList implements OnInit, OnDestroy {
-  notifications: Notification[] = [];
+  notificationsPage!: Page<Notification>;
   preferences: UserNotificationPreferences | null = null;
   loading = false;
   preferencesLoading = false;
   currentPage = 0;
   pageSize = 10;
-  totalNotifications = 0;
-  unreadCount = 0;
+  sortBy = 'createdAt';
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
 
   private subscriptions: Subscription[] = [];
 
@@ -42,30 +44,34 @@ export class NotificationList implements OnInit, OnDestroy {
 
   loadNotifications(): void {
     this.loading = true;
-    const sub = this.notificationService.getNotifications(this.currentPage, this.pageSize).subscribe({
-      next: (response) => {
-        this.notifications = response.content;
-        this.totalNotifications = response.totalElements;
-        this.unreadCount = this.notifications.filter(n => !n.read).length;
+    const pageable: Pageable = {
+      page: this.currentPage,
+      size: this.pageSize,
+      sortBy: this.sortBy,
+      sortDirection: this.sortDirection
+    };
+
+    this.notificationService.getNotifications(this.currentPage, this.pageSize).subscribe({
+      next: (response: any) => {
+        this.notificationsPage = response;
+        this.currentPage = response.number;
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading notifications:', error);
-        this.toastr.error('Failed to load notifications');
         this.loading = false;
       }
     });
-    this.subscriptions.push(sub);
   }
 
   loadPreferences(): void {
     this.preferencesLoading = true;
     const sub = this.notificationService.getUserNotificationPreferences().subscribe({
-      next: (preferences) => {
-        this.preferences = preferences;
+      next: (prefs: UserNotificationPreferences) => {
+        this.preferences = prefs;
         this.preferencesLoading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading preferences:', error);
         this.preferencesLoading = false;
       }
@@ -73,70 +79,16 @@ export class NotificationList implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  markAsRead(notificationId: number): void {
-    const sub = this.notificationService.markAsRead(notificationId).subscribe({
-      next: (updatedNotification) => {
-        const index = this.notifications.findIndex(n => n.id === notificationId);
-        if (index !== -1) {
-          this.notifications[index] = updatedNotification;
-          this.unreadCount = this.notifications.filter(n => !n.read).length;
-        }
-        this.toastr.success('Notification marked as read');
-      },
-      error: (error) => {
-        console.error('Error marking notification as read:', error);
-        this.toastr.error('Failed to mark notification as read');
-      }
-    });
-    this.subscriptions.push(sub);
-  }
-
-  markAllAsRead(): void {
-    const sub = this.notificationService.markAllAsRead().subscribe({
-      next: (response) => {
-        this.notifications.forEach(n => n.read = true);
-        this.unreadCount = 0;
-        this.toastr.success(response.message || 'All notifications marked as read');
-      },
-      error: (error) => {
-        console.error('Error marking all notifications as read:', error);
-        this.toastr.error('Failed to mark all notifications as read');
-      }
-    });
-    this.subscriptions.push(sub);
-  }
-
-  deleteNotification(notificationId: number): void {
-    if (confirm('Are you sure you want to delete this notification?')) {
-      const sub = this.notificationService.deleteNotification(notificationId).subscribe({
-        next: () => {
-          this.notifications = this.notifications.filter(n => n.id !== notificationId);
-          this.totalNotifications--;
-          if (!this.notifications.find(n => n.id === notificationId)?.read) {
-            this.unreadCount = Math.max(0, this.unreadCount - 1);
-          }
-          this.toastr.success('Notification deleted');
-        },
-        error: (error) => {
-          console.error('Error deleting notification:', error);
-          this.toastr.error('Failed to delete notification');
-        }
-      });
-      this.subscriptions.push(sub);
-    }
-  }
-
   updatePreferences(): void {
     if (!this.preferences) return;
-
+    
     const sub = this.notificationService.updateUserNotificationPreferences(this.preferences).subscribe({
-      next: (updatedPreferences) => {
-        this.preferences = updatedPreferences;
-        this.toastr.success('Notification preferences updated');
+      next: () => {
+        this.toastr.success('Notification preferences updated successfully');
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error updating preferences:', error);
-        this.toastr.error('Failed to update preferences');
+        this.toastr.error('Failed to update notification preferences');
       }
     });
     this.subscriptions.push(sub);
@@ -147,9 +99,61 @@ export class NotificationList implements OnInit, OnDestroy {
     this.loadNotifications();
   }
 
-  getPageNumbers(): number[] {
-    const totalPages = Math.ceil(this.totalNotifications / this.pageSize);
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  deleteNotification(id: number): void {
+    const sub = this.notificationService.deleteNotification(id).subscribe({
+      next: () => {
+        this.toastr.success('Notification deleted successfully');
+        this.loadNotifications(); // Reload to update the list
+      },
+      error: (error) => {
+        console.error('Error deleting notification:', error);
+        this.toastr.error('Failed to delete notification');
+      }
+    });
+    this.subscriptions.push(sub);
+  }
+
+  markAsRead(id: number): void {
+    const sub = this.notificationService.markAsRead(id).subscribe({
+      next: () => {
+        this.toastr.success('Notification marked as read');
+        this.loadNotifications(); // Reload to update the list
+      },
+      error: (error) => {
+        console.error('Error marking notification as read:', error);
+        this.toastr.error('Failed to mark notification as read');
+      }
+    });
+    this.subscriptions.push(sub);
+  }
+
+  markAllAsRead(): void {
+    const unreadNotifications = this.notificationsPage?.content?.filter(n => !n.read) || [];
+    if (unreadNotifications.length === 0) {
+      this.toastr.info('No unread notifications to mark');
+      return;
+    }
+
+    // Use forkJoin for parallel execution
+    const markObservables = unreadNotifications.map(notification => 
+      this.notificationService.markAsRead(notification.id)
+    );
+
+    const sub = forkJoin(markObservables).subscribe({
+      next: () => {
+        this.toastr.success('All notifications marked as read');
+        this.loadNotifications(); // Reload to update the list
+      },
+      error: (error) => {
+        console.error('Error marking all notifications as read:', error);
+        this.toastr.error('Failed to mark all notifications as read');
+      }
+    });
+    this.subscriptions.push(sub);
+  }
+
+  get unreadCount(): number {
+    return this.notificationsPage?.content?.filter(n => !n.read).length || 0;
   }
 
   getNotificationIcon(type: NotificationType): string {

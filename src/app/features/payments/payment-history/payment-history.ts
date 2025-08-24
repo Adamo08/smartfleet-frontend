@@ -3,42 +3,40 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
-import { PaymentService } from '../../../core/services/payment.service';
+import { PaymentService, PaymentFilter } from '../../../core/services/payment.service';
 import { PaymentDto } from '../../../core/models/payment.interface';
-import { Pageable, Page } from '../../../core/models/pagination.interface';
+import { Page, Pageable } from '../../../core/models/pagination.interface';
 import { PaymentStatus } from '../../../core/enums/payment-status.enum';
+import { Pagination } from '../../../shared/components/pagination/pagination';
+import { Modal } from '../../../shared/components/modal/modal';
 
 @Component({
   selector: 'app-payment-history',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, Pagination, Modal],
   templateUrl: './payment-history.html',
   styleUrl: './payment-history.css'
 })
 export class PaymentHistory implements OnInit, OnDestroy {
-  // Helper for template page info
-  getMaxPageElement(): number {
-    return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
-  }
-  payments: PaymentDto[] = [];
-  loading: boolean = false;
+  paymentsPage!: Page<PaymentDto>;
+  loading = false;
   error: string | null = null;
-
+  
   // Pagination
-  currentPage: number = 0;
-  pageSize: number = 10;
-  totalElements: number = 0;
-  totalPages: number = 0;
-
+  currentPage = 0;
+  pageSize = 10;
+  sortBy = 'createdAt';
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
+  
   // Filtering
   filterForm: FormGroup;
   selectedStatus: PaymentStatus | '' = '';
-  searchTerm: string = '';
-
-  // Sorting
-  sortBy: string = 'createdAt';
-  sortDirection: 'ASC' | 'DESC' = 'DESC';
-
+  searchTerm = '';
+  
+  // Modal state
+  showPaymentDetailModal = false;
+  selectedPayment: PaymentDto | null = null;
+  
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -64,17 +62,19 @@ export class PaymentHistory implements OnInit, OnDestroy {
   }
 
   private setupFilterListener(): void {
-    this.filterForm.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.currentPage = 0;
-      this.loadPayments();
-    });
+    this.filterForm.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.currentPage = 0;
+        this.loadPayments();
+      });
   }
 
-  private loadPayments(): void {
+  loadPayments(): void {
     this.loading = true;
     this.error = null;
 
@@ -85,17 +85,23 @@ export class PaymentHistory implements OnInit, OnDestroy {
       sortDirection: this.sortDirection
     };
 
-    this.paymentService.getPaymentHistory(pageable).subscribe({
-      next: (response: Page<PaymentDto>) => {
-        this.payments = response.content;
-        this.totalElements = response.totalElements;
-        this.totalPages = response.totalPages;
-        this.currentPage = response.number;
+    const filter: PaymentFilter = {
+      status: this.filterForm.value.status || undefined,
+      startDate: this.filterForm.value.startDate ? new Date(this.filterForm.value.startDate) : undefined,
+      endDate: this.filterForm.value.endDate ? new Date(this.filterForm.value.endDate) : undefined,
+      searchTerm: this.filterForm.value.searchTerm || undefined
+    };
+
+    // Use the filtered endpoint for better search capabilities
+    this.paymentService.getUserPaymentHistoryWithFilter(filter, pageable).subscribe({
+      next: (page: Page<PaymentDto>) => {
+        this.paymentsPage = page;
+        this.currentPage = page.number;
         this.loading = false;
       },
       error: (error: any) => {
         console.error('Error loading payments:', error);
-        this.error = 'Failed to load payment history';
+        this.error = 'Failed to load payments';
         this.loading = false;
       }
     });
@@ -106,31 +112,22 @@ export class PaymentHistory implements OnInit, OnDestroy {
     this.loadPayments();
   }
 
-  onPageSizeChange(size: number): void {
-    this.pageSize = size;
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = newSize;
     this.currentPage = 0;
     this.loadPayments();
   }
 
-  onSort(property: string): void {
-    if (this.sortBy === property) {
-      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      this.sortBy = property;
-      this.sortDirection = 'ASC';
-    }
-    this.loadPayments();
+  // Helper for template page info
+  getMaxPageElement(): number {
+    return Math.min((this.currentPage + 1) * this.pageSize, this.paymentsPage?.totalElements || 0);
   }
 
-  onFilterReset(): void {
-    this.filterForm.reset();
-    this.currentPage = 0;
-    this.loadPayments();
-  }
-
-  onPaymentClick(payment: PaymentDto): void {
-    // Navigate to payment details or open modal
-    console.log('Payment clicked:', payment);
+  formatCurrency(amount: number, currency: string = 'USD'): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency
+    }).format(amount);
   }
 
   getStatusColor(status: PaymentStatus): string {
@@ -141,8 +138,6 @@ export class PaymentHistory implements OnInit, OnDestroy {
         return 'bg-yellow-500';
       case PaymentStatus.FAILED:
         return 'bg-red-500';
-      case PaymentStatus.REFUNDED:
-        return 'bg-blue-500';
       case PaymentStatus.CANCELLED:
         return 'bg-gray-500';
       default:
@@ -158,8 +153,6 @@ export class PaymentHistory implements OnInit, OnDestroy {
         return 'Pending';
       case PaymentStatus.FAILED:
         return 'Failed';
-      case PaymentStatus.REFUNDED:
-        return 'Refunded';
       case PaymentStatus.CANCELLED:
         return 'Cancelled';
       default:
@@ -167,7 +160,56 @@ export class PaymentHistory implements OnInit, OnDestroy {
     }
   }
 
+  onFilterReset(): void {
+    this.filterForm.reset();
+    this.currentPage = 0;
+    this.loadPayments();
+  }
+
+  onSort(property: string): void {
+    if (this.sortBy === property) {
+      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortBy = property;
+      this.sortDirection = 'ASC';
+    }
+    this.currentPage = 0;
+    this.loadPayments();
+  }
+
+  getSortIconClass(property: string): string {
+    if (this.sortBy !== property) return 'text-gray-400';
+    return this.sortDirection === 'ASC' ? 'text-blue-500' : 'text-blue-500';
+  }
+
+  getSortIcon(property: string): string {
+    if (this.sortBy !== property) return 'M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4';
+    return this.sortDirection === 'ASC' ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7';
+  }
+
+  onPaymentClick(payment: PaymentDto): void {
+    this.openPaymentDetailModal(payment);
+  }
+
+  openPaymentDetailModal(payment: PaymentDto): void {
+    this.selectedPayment = payment;
+    this.showPaymentDetailModal = true;
+  }
+
+  closePaymentDetailModal(): void {
+    this.showPaymentDetailModal = false;
+    this.selectedPayment = null;
+  }
+
+  onRefundRequest(payment: PaymentDto): void {
+    // Future implementation for refund functionality
+    console.log('Refund requested for payment:', payment.id);
+    // You can implement refund logic here
+    // this.paymentService.requestRefund(payment.id, refundData).subscribe(...)
+  }
+
   formatDate(date: Date | string): string {
+    if (!date) return '';
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -175,47 +217,5 @@ export class PaymentHistory implements OnInit, OnDestroy {
       hour: '2-digit',
       minute: '2-digit'
     });
-  }
-
-  formatCurrency(amount: number, currency: string = 'USD'): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
-  }
-
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(0, this.currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(this.totalPages - 1, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(0, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    return pages;
-  }
-
-  canGoToPage(page: number): boolean {
-    return page >= 0 && page < this.totalPages;
-  }
-
-  getSortIcon(property: string): string {
-    if (this.sortBy !== property) {
-      return '↕';
-    }
-    return this.sortDirection === 'ASC' ? '↑' : '↓';
-  }
-
-  getSortIconClass(property: string): string {
-    if (this.sortBy !== property) {
-      return 'text-gray-400';
-    }
-    return this.sortDirection === 'ASC' ? 'text-indigo-400' : 'text-indigo-400';
   }
 }

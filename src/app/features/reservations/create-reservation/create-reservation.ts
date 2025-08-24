@@ -17,6 +17,8 @@ import { Vehicle } from '../../../core/models/vehicle.interface';
 import { PaymentRequestDto } from '../../../core/models/payment.interface';
 import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
 import { Page } from '../../../core/models/pagination.interface';
+import { VehicleFilter } from '../../../core/models/vehicle-filter.interface';
+import { Pageable } from '../../../core/models/pagination.interface';
 
 @Component({
   selector: 'app-create-reservation',
@@ -109,7 +111,9 @@ export class CreateReservation implements OnInit, OnDestroy {
             return this.vehicleService.getVehicleById(vehicleId);
           }
           // Provide default Pageable for getVehicles()
-          return this.vehicleService.getVehicles({ page: 0, size: 100, sortBy: 'id', sortDirection: 'ASC' });
+          const pageable: Pageable = { page: 0, size: 100, sortBy: 'id', sortDirection: 'ASC' };
+          const filters: VehicleFilter = {};
+          return this.vehicleService.getVehicles(pageable, filters);
         })
       )
       .subscribe({

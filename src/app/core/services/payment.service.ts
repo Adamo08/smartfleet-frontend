@@ -24,6 +24,7 @@ export interface PaymentFilter {
   maxAmount?: number;
   startDate?: Date;
   endDate?: Date;
+  searchTerm?: string;
 }
 
 @Injectable({
@@ -71,6 +72,38 @@ export class PaymentService {
     }
 
     return this.http.get<Page<PaymentDto>>(`${this.baseUrl}/history`, { params });
+  }
+
+  /**
+   * Get filtered payment history for the current user
+   */
+  getUserPaymentHistoryWithFilter(filter: PaymentFilter, pageable: Pageable): Observable<Page<PaymentDto>> {
+    let params = new HttpParams()
+      .set('page', pageable.page.toString())
+      .set('size', pageable.size.toString())
+      .set('sortBy', pageable.sortBy || 'createdAt')
+      .set('sortDirection', pageable.sortDirection || 'DESC');
+
+    if (filter.status) {
+      params = params.set('status', filter.status);
+    }
+    if (filter.minAmount) {
+      params = params.set('minAmount', filter.minAmount.toString());
+    }
+    if (filter.maxAmount) {
+      params = params.set('maxAmount', filter.maxAmount.toString());
+    }
+    if (filter.startDate) {
+      params = params.set('startDate', filter.startDate.toISOString());
+    }
+    if (filter.endDate) {
+      params = params.set('endDate', filter.endDate.toISOString());
+    }
+    if (filter.searchTerm && filter.searchTerm.trim() !== '') {
+      params = params.set('searchTerm', filter.searchTerm.trim());
+    }
+
+    return this.http.get<Page<PaymentDto>>(`${this.baseUrl}/history/filtered`, { params });
   }
 
   /**
@@ -167,6 +200,9 @@ export class PaymentService {
     }
     if (filter.endDate) {
       params = params.set('endDate', filter.endDate.toISOString());
+    }
+    if (filter.searchTerm && filter.searchTerm.trim() !== '') {
+      params = params.set('searchTerm', filter.searchTerm.trim());
     }
 
     return this.http.get<Page<PaymentDetailsDto>>(`${this.baseUrl}/admin`, { params });

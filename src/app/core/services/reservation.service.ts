@@ -48,6 +48,32 @@ export class ReservationService {
   }
 
   /**
+   * Get filtered reservations for the current user with pagination
+   */
+  getUserReservationsWithFilter(filter: ReservationFilter, pageable: Pageable): Observable<Page<ReservationSummaryDto>> {
+    let params = new HttpParams()
+      .set('page', pageable.page.toString())
+      .set('size', pageable.size.toString())
+      .set('sortBy', pageable.sortBy || 'createdAt')
+      .set('sortDirection', pageable.sortDirection || 'DESC');
+
+    if (filter.status) {
+      params = params.set('status', filter.status);
+    }
+    if (filter.startDate) {
+      params = params.set('startDate', filter.startDate.toISOString());
+    }
+    if (filter.endDate) {
+      params = params.set('endDate', filter.endDate.toISOString());
+    }
+    if (filter.searchTerm && filter.searchTerm.trim() !== '') {
+      params = params.set('searchTerm', filter.searchTerm.trim());
+    }
+
+    return this.http.get<Page<ReservationSummaryDto>>(`${this.baseUrl}/filtered`, { params });
+  }
+
+  /**
    * Get a single reservation by ID for the current user
    */
   getReservationById(id: number): Observable<DetailedReservationDto> {
@@ -97,6 +123,9 @@ export class ReservationService {
     }
     if (filter.endDate) {
       params = params.set('endDate', filter.endDate.toISOString());
+    }
+    if (filter.searchTerm && filter.searchTerm.trim() !== '') {
+      params = params.set('searchTerm', filter.searchTerm.trim());
     }
 
     return this.http.get<Page<ReservationSummaryDto>>(`${environment.apiUrl}/admin/reservations`, { params });

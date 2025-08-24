@@ -15,6 +15,7 @@ import { PaymentService } from '../../../core/services/payment.service';
 import { SlotDto } from '../../../core/models/slot.interface';
 import { CreateReservationRequest } from '../../../core/models/reservation.interface';
 import { Input } from '@angular/core';
+import { VehicleFilter } from '../../../core/models/vehicle-filter.interface';
 
 @Component({
   selector: 'app-vehicle-detail',
@@ -144,18 +145,18 @@ export class VehicleDetail implements OnInit {
   private loadSimilarVehicles(currentVehicle: Vehicle): void {
     const pageable: Pageable = {
       page: 0,
-      size: 4, // Fetch one more than needed to ensure we can filter out the current vehicle
+      size: 4,
       sortBy: 'pricePerDay',
       sortDirection: 'ASC'
     };
 
-    const filters = {
-      vehicleType: currentVehicle.vehicleType,
-      minPrice: currentVehicle.pricePerDay * 0.7,
-      maxPrice: currentVehicle.pricePerDay * 1.3,
+    const filters: VehicleFilter = {
+      categoryId: currentVehicle.categoryId || undefined,
+      minPrice: currentVehicle.pricePerDay ? currentVehicle.pricePerDay * 0.7 : undefined,
+      maxPrice: currentVehicle.pricePerDay ? currentVehicle.pricePerDay * 1.3 : undefined,
     };
 
-    this.vehicleService.getVehicles({ ...pageable, ...filters }).subscribe({
+    this.vehicleService.getVehicles(pageable, filters).subscribe({
       next: (page: Page<Vehicle>) => { // Explicitly type 'page'
         this.similarVehicles = page.content.filter((v: Vehicle) => v.id !== currentVehicle.id).slice(0, 3); // Explicitly type 'v'
       },

@@ -7,6 +7,8 @@ import { Vehicle } from '../../core/models/vehicle.interface';
 import { VehicleCard } from '../vehicles/vehicle-card/vehicle-card';
 import { User } from '../../core/models/user.interface';
 import { Subscription } from 'rxjs';
+import { VehicleFilter } from '../../core/models/vehicle-filter.interface';
+import { Pageable } from '../../core/models/pagination.interface';
 
 @Component({
   selector: 'app-home',
@@ -71,7 +73,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private loadFeaturedVehicles(): void {
-    this.vehicleService.getVehicles({ page: 0, size: 6, sortBy: 'createdAt', sortDirection: 'DESC' }).subscribe({
+    const pageable: Pageable = { page: 0, size: 6, sortBy: 'createdAt', sortDirection: 'DESC' };
+    const filters: VehicleFilter = {};
+    this.vehicleService.getVehicles(pageable, filters).subscribe({
       next: (page) => {
         this.featuredVehicles = page.content;
         this.loading = false;
