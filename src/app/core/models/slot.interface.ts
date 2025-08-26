@@ -14,6 +14,8 @@ export interface SlotDto {
   startTime: Date;
   endTime: Date;
   available: boolean;
+  slotType?: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM';
+  price?: number;
   createdAt: Date;
   updatedAt: Date;
   vehicleBrand?: string;

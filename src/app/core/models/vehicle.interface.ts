@@ -20,6 +20,16 @@ export interface Vehicle {
   updatedAt: string;
 }
 
+export interface VehicleSummaryDto {
+  id: number;
+  brand: string;
+  model: string;
+  licensePlate: string;
+  year?: number;
+  imageUrl?: string;
+  pricePerDay: number;
+}
+
 export enum FuelType {
   GASOLINE = 'GASOLINE',
   DIESEL = 'DIESEL',
