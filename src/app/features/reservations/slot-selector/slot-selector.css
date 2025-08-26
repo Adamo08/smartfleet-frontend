@@ -1,37 +1,37 @@
 .slot-selector-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  color: white;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Error Message */
 .error-message {
-  background: #fee;
-  color: #c33;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
   padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #fcc;
+  border-radius: 0.75rem;
   margin-bottom: 1.5rem;
   text-align: center;
 }
 
 /* Loading Spinner */
 .loading-spinner {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 2rem;
+  color: #94a3b8;
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #475569;
+  border-top: 2px solid #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
+  margin-bottom: 1rem;
 }
 
 @keyframes spin {
@@ -39,241 +39,322 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Slot Type Selection */
+.slot-type-section {
+  margin-bottom: 1.5rem;
+}
+
+.slot-type-option {
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.slot-type-option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.slot-type-option.border-indigo-500 {
+  border-color: #6366f1;
+  background-color: rgba(99, 102, 241, 0.2);
+}
+
+/* Duration Selection */
+.duration-section {
+  margin-bottom: 1.5rem;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 0.5rem;
+  background: #374151;
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: #6366f1;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #4f46e5;
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: #6366f1;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #4f46e5;
+  transform: scale(1.1);
+}
+
 /* Calendar Section */
 .calendar-section {
-  margin-bottom: 2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .calendar-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .nav-btn {
-  background: #3498db;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  font-weight: bold;
   transition: all 0.2s ease;
+  font-weight: 600;
 }
 
 .nav-btn:hover {
-  background: #2980b9;
-  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .month-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
   margin: 0;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background: #e9ecef;
-  border-radius: 8px;
-  overflow: hidden;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
 }
 
 .day-header {
-  background: #f8f9fa;
-  padding: 1rem 0.5rem;
   text-align: center;
+  padding: 0.75rem 0.5rem;
   font-weight: 600;
-  color: #6c757d;
-  font-size: 0.9rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
 }
 
 .calendar-day {
-  background: white;
-  padding: 1rem 0.5rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
   position: relative;
-  min-height: 60px;
+  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-.calendar-day:hover {
-  background: #f8f9fa;
+.calendar-day:hover:not(.disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .calendar-day.current-month {
-  color: #2c3e50;
-}
-
-.calendar-day:not(.current-month) {
-  color: #bdc3c7;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .calendar-day.today {
-  background: #e3f2fd;
-  font-weight: bold;
+  background-color: rgba(99, 102, 241, 0.2);
+  border-color: #6366f1;
+  font-weight: 700;
 }
 
 .calendar-day.selected {
-  background: #3498db;
+  background-color: rgba(99, 102, 241, 0.3);
+  border-color: #6366f1;
   color: white;
+  font-weight: 700;
+}
+
+/* Other Month Styling */
+.calendar-day.other-month {
+  opacity: 0.4;
+  background-color: rgba(75, 85, 99, 0.1);
+}
+
+.calendar-day.other-month:hover {
+  opacity: 0.6;
+  background-color: rgba(75, 85, 99, 0.2);
+}
+
+.day-number.other-month-text {
+  color: #9ca3af;
+}
+
+/* Calendar Day States */
+.calendar-day.range-start {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-color: #60a5fa;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  opacity: 1 !important;
+}
+
+.calendar-day.range-end {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #34d399;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  opacity: 1 !important;
+}
+
+.calendar-day.selecting-range {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border-color: #a78bfa;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+}
+
+/* Selection Indicator */
+.selection-indicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 500;
+}
+
+/* Clear Selection Button */
+.clear-selection-btn {
+  background: #4b5563;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-selection-btn:hover {
+  background: #6b7280;
+  transform: translateY(-1px);
+}
+
+.clear-selection-btn:active {
+  transform: translateY(0);
+}
+
+.calendar-day.disabled {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .calendar-day.has-slots {
-  background: #d5f4e6;
+  border-color: rgba(34, 197, 94, 0.5);
+  background-color: rgba(34, 197, 94, 0.1);
 }
 
-.calendar-day.has-slots:hover {
-  background: #c8f0d8;
+.calendar-day.no-slots {
+  border-color: rgba(239, 68, 68, 0.3);
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
 }
 
 .day-number {
-  font-size: 1.1rem;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
 .slot-indicator {
   position: absolute;
-  bottom: 4px;
-  right: 4px;
-  background: #27ae60;
+  bottom: 0.25rem;
+  right: 0.25rem;
+  background-color: #22c55e;
   color: white;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
-  font-weight: bold;
-}
-
-/* Time Slots Section */
-.time-slots-section {
-  margin-bottom: 2rem;
-}
-
-.time-slots-section h4 {
-  color: #2c3e50;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #f0f0f0;
-}
-
-.time-slots-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.time-slot-card {
-  background: white;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-}
-
-.time-slot-card:hover {
-  border-color: #3498db;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
-}
-
-.time-slot-card.selected {
-  border-color: #27ae60;
-  background: #d5f4e6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15);
-}
-
-.slot-time-range {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.start-time, .end-time {
-  font-size: 1.2rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #2c3e50;
 }
 
-.time-separator {
-  color: #7f8c8d;
-  font-weight: 500;
-}
-
-.slot-duration {
-  background: #3498db;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  display: inline-block;
-}
-
-.slot-vehicle-info {
-  margin-bottom: 1rem;
-}
-
-.vehicle-brand {
-  display: block;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.25rem;
-}
-
-.vehicle-model {
-  display: block;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.slot-status {
+/* Date Range Summary */
+.date-range-summary {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
   margin-top: 1rem;
 }
 
-.status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.date-input-group {
+  display: flex;
+  flex-direction: column;
 }
 
-.status-badge.available {
-  background: #d5f4e6;
-  color: #27ae60;
+.date-input-group label {
+  display: block;
+  font-size: 0.875rem;
+  color: #cbd5e1;
+  margin-bottom: 0.25rem;
 }
 
-/* No Slots Available */
+.date-input-group input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.date-input-group input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.date-input-group input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* No Slots */
 .no-slots {
   text-align: center;
-  padding: 3rem 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px dashed #dee2e6;
+  padding: 2rem;
+  color: #94a3b8;
 }
 
 .no-slots-icon {
@@ -282,154 +363,78 @@
 }
 
 .no-slots h4 {
-  color: #6c757d;
-  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.5rem;
 }
 
 .no-slots p {
-  color: #6c757d;
-  margin-bottom: 0.5rem;
+  color: #cbd5e1;
+  line-height: 1.6;
 }
 
-/* Time Range Selector */
-.time-range-selector {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.time-range-selector h4 {
-  color: #2c3e50;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-}
-
-.time-range-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.time-input-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.time-input-group label {
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.5rem;
-}
-
-.time-select {
-  padding: 0.75rem;
-  border: 2px solid #e9ecef;
-  border-radius: 6px;
-  font-size: 1rem;
-  background: white;
-  cursor: pointer;
-}
-
-.time-select:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-/* Selected Slot Summary */
-.selected-slot-summary {
-  background: #d5f4e6;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 2px solid #27ae60;
-}
-
-.selected-slot-summary h4 {
-  color: #27ae60;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.selected-slot-details {
-  background: white;
+/* Available Slots Summary */
+.available-slots-summary {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(34, 197, 94, 0.2);
   padding: 1rem;
-  border-radius: 6px;
+  margin-top: 1.5rem;
 }
 
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.detail-row:last-child {
-  border-bottom: none;
-}
-
-.detail-row .label {
+.available-slots-summary h4 {
+  color: #4ade80;
   font-weight: 600;
-  color: #2c3e50;
+  margin-bottom: 0.5rem;
 }
 
-.detail-row .value {
-  color: #27ae60;
-  font-weight: 500;
+.available-slots-summary p {
+  color: #86efac;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .slot-selector-container {
-    padding: 1rem;
-  }
-  
   .calendar-grid {
-    gap: 0;
+    gap: 0.125rem;
   }
   
   .calendar-day {
-    padding: 0.75rem 0.25rem;
-    min-height: 50px;
-  }
-  
-  .time-slots-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .time-range-inputs {
-    grid-template-columns: 1fr;
-  }
-  
-  .month-title {
-    font-size: 1.2rem;
-  }
-  
-  .nav-btn {
-    width: 35px;
-    height: 35px;
-  }
-}
-
-@media (max-width: 480px) {
-  .slot-selector-container {
-    padding: 0.5rem;
-  }
-  
-  .calendar-day {
-    padding: 0.5rem 0.1rem;
-    min-height: 40px;
+    padding: 0.25rem;
   }
   
   .day-number {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
   }
   
   .slot-indicator {
-    width: 16px;
-    height: 16px;
-    font-size: 0.6rem;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.625rem;
+  }
+  
+  .slot-type-option {
+    padding: 0.75rem;
+  }
+  
+  .slot-type-option .text-xs {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .calendar-section {
+    padding: 1rem;
+  }
+  
+  .month-title {
+    font-size: 1.125rem;
+  }
+  
+  .nav-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
   }
 }

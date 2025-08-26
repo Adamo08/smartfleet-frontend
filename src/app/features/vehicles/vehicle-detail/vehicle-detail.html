@@ -34,7 +34,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
               </svg>
             }
-            
+
             <!-- Status Badge -->
             <div class="absolute top-4 left-4">
               @if (vehicle.status === 'AVAILABLE') {
@@ -50,7 +50,7 @@
 
             <!-- Favorite Button -->
             @if (isLoggedIn) {
-              <button 
+              <button
                 (click)="toggleFavorite()"
                 class="absolute top-4 right-4 p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
               >
@@ -112,26 +112,12 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4">
-              @if (vehicle.status === 'AVAILABLE') {
-                <button 
-                  (click)="bookVehicle()"
-                  class="flex-1 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white py-3 px-6 rounded-2xl hover:shadow-xl transition-all duration-300 font-semibold"
-                >
-                  Book Now
-                </button>
-              } @else {
-                <button 
-                  disabled
-                  class="flex-1 bg-gray-600 text-white py-3 px-6 rounded-2xl cursor-not-allowed font-semibold"
-                >
-                  Not Available
-                </button>
-              }
-              <button 
-                (click)="checkAvailability()"
-                class="flex-1 border border-indigo-400 text-indigo-400 py-3 px-6 rounded-2xl hover:bg-indigo-400/10 transition-all duration-300 font-semibold"
+              <button
+                [disabled]="!bookNowEnabled || vehicle.status !== 'AVAILABLE'"
+                (click)="bookVehicle()"
+                class="flex-1 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white py-3 px-6 rounded-2xl hover:shadow-xl transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Check Availability
+                Book Now
               </button>
             </div>
           </div>
@@ -163,16 +149,16 @@
                       <p class="text-sm text-gray-400">{{ testimonial.vehicleBrand }} {{ testimonial.vehicleModel }}</p>
                     </div>
                   </div>
-                  
+
                   <div class="flex items-center mb-3">
                     @for (star of getStarRating(testimonial.rating); track $index) {
                       <span class="text-yellow-400 text-sm">{{ star }}</span>
                     }
                   </div>
-                  
+
                   <h5 class="font-semibold text-white mb-2 text-sm">{{ testimonial.title }}</h5>
                   <p class="text-gray-300 text-sm leading-relaxed">{{ testimonial.content }}</p>
-                  
+
                   @if (testimonial.adminReplyContent) {
                     <div class="mt-4 p-3 bg-indigo-500/10 rounded-2xl border-l-4 border-indigo-400">
                       <p class="text-xs text-indigo-300 font-medium mb-1">SmartFleet Response:</p>
@@ -207,7 +193,7 @@
                   <p class="text-sm text-gray-400 mb-2">{{ similarVehicle.year }} • {{ similarVehicle.categoryName }}</p>
                   <div class="flex items-center justify-between">
                     <span class="font-bold text-indigo-400">${{ similarVehicle.pricePerDay }}/day</span>
-                    <a 
+                    <a
                       [routerLink]="['/vehicles', similarVehicle.id]"
                       class="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors duration-200"
                     >
@@ -236,19 +222,387 @@
   </div>
 </div>
 
-<!-- Booking Modal -->
+<!-- Multi-Step Booking Modal -->
 @if (isBookingOpen && vehicle) {
   <app-modal>
     <div modal-close>
       <button (click)="closeBooking()" class="text-gray-300 hover:text-white">✕</button>
     </div>
-    <div>
-      <h3 class="text-2xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">Select a Time Slot</h3>
-      <app-slot-selector [vehicleId]="vehicle.id" (slotSelected)="onSlotSelected($event)"></app-slot-selector>
+
+    <!-- Step Header -->
+    <div class="mb-6">
+      <h3 class="text-2xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-2">
+        {{ getStepTitle() }}
+      </h3>
+      <p class="text-gray-300">{{ getStepDescription() }}</p>
+
+      <!-- Step Progress -->
+      <div class="flex items-center justify-center mt-4">
+        <div class="flex items-center space-x-2">
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
+                        {{ currentBookingStep === 'type' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+              1
+            </div>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'type' ? 'text-indigo-400' : 'text-gray-400' }}">Type</span>
+          </div>
+
+          <div class="w-8 h-1 {{ currentBookingStep === 'dates' || currentBookingStep === 'confirmation' ? 'bg-indigo-500' : 'bg-gray-600' }}"></div>
+
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
+                        {{ currentBookingStep === 'dates' ? 'bg-indigo-500 text-white' :
+                           currentBookingStep === 'confirmation' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+              2
+            </div>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'dates' ? 'text-indigo-400' :
+                                        currentBookingStep === 'confirmation' ? 'text-indigo-400' : 'text-gray-400' }}">Dates</span>
+          </div>
+
+          <div class="w-8 h-1 {{ currentBookingStep === 'confirmation' ? 'bg-indigo-500' : 'bg-gray-600' }}"></div>
+
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
+                        {{ currentBookingStep === 'confirmation' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+              3
+            </div>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'confirmation' ? 'text-indigo-400' : 'text-gray-400' }}">Confirm</span>
+          </div>
+
+          <div class="w-8 h-1 {{ currentBookingStep === 'payment' ? 'bg-indigo-500' : 'bg-gray-600' }}"></div>
+
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
+                        {{ currentBookingStep === 'payment' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+              4
+            </div>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'payment' ? 'text-indigo-400' : 'text-gray-400' }}">Payment</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div modal-actions class="flex items-center justify-end gap-3">
-      <button (click)="closeBooking()" class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5">Cancel</button>
-      <button [disabled]="!selectedSlot || isSubmitting" (click)="confirmBooking()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-semibold disabled:opacity-50">Confirm Reservation</button>
+
+    <!-- Step Content -->
+    <div class="min-h-[400px]">
+      <!-- Step 1: Booking Type Selection -->
+      @if (currentBookingStep === 'type') {
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              [class.border-indigo-500]="selectedSlotType === 'HOURLY'"
+              [class.border-white]="selectedSlotType !== 'HOURLY'"
+              [class.bg-indigo-500]="selectedSlotType === 'HOURLY'"
+              [class.bg-white]="selectedSlotType !== 'HOURLY'"
+              (click)="selectedSlotType = 'HOURLY'"
+            >
+              <div class="font-semibold text-white mb-2">🚗 Hourly Rental</div>
+              <div class="text-sm text-gray-300">Rent by the hour (1-23 hours)</div>
+              <div class="text-xs text-gray-400 mt-2">Perfect for short trips and errands</div>
+            </div>
+
+            <div
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              [class.border-indigo-500]="selectedSlotType === 'DAILY'"
+              [class.border-white]="selectedSlotType !== 'DAILY'"
+              [class.bg-indigo-500]="selectedSlotType === 'DAILY'"
+              [class.bg-white]="selectedSlotType !== 'DAILY'"
+              (click)="selectedSlotType = 'DAILY'"
+            >
+              <div class="font-semibold text-white mb-2">📅 Daily Rental</div>
+              <div class="text-sm text-gray-300">Rent by the day (1-7 days)</div>
+              <div class="text-xs text-gray-400 mt-2">Great for business trips and weekend getaways</div>
+            </div>
+
+            <div
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              [class.border-indigo-500]="selectedSlotType === 'WEEKLY'"
+              [class.border-white]="selectedSlotType !== 'WEEKLY'"
+              [class.bg-indigo-500]="selectedSlotType === 'WEEKLY'"
+              [class.bg-white]="selectedSlotType !== 'WEEKLY'"
+              (click)="selectedSlotType = 'WEEKLY'"
+            >
+              <div class="font-semibold text-white mb-2">📆 Weekly Rental</div>
+              <div class="text-sm text-gray-300">Rent by the week (7-30 days)</div>
+              <div class="text-xs text-gray-400 mt-2">Ideal for extended vacations and projects</div>
+            </div>
+
+            <div
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              [class.border-indigo-500]="selectedSlotType === 'CUSTOM'"
+              [class.border-white]="selectedSlotType !== 'CUSTOM'"
+              [class.bg-indigo-500]="selectedSlotType === 'CUSTOM'"
+              [class.bg-white]="selectedSlotType !== 'CUSTOM'"
+              (click)="selectedSlotType = 'CUSTOM'"
+            >
+              <div class="font-semibold text-white mb-2">⚙️ Custom Duration</div>
+              <div class="text-sm text-gray-300">Any time range you need</div>
+              <div class="text-xs text-gray-400 mt-2">Flexible booking for special requirements</div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Step 2: Date Selection -->
+      @if (currentBookingStep === 'dates') {
+        <div class="space-y-4">
+          <div class="text-center mb-4">
+            <p class="text-gray-300">You've selected: <span class="text-indigo-400 font-semibold">{{ selectedSlotType }}</span> rental</p>
+          </div>
+
+          <app-slot-selector
+            [vehicleId]="vehicle.id"
+            [selectedSlotType]="selectedSlotType"
+            (dateRangeSelected)="onDateRangeSelected($event)"
+          ></app-slot-selector>
+
+          @if (hasAvailableSlotsInDateRange) {
+            <div class="mt-4 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+              <div class="flex items-center text-green-400">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-semibold">Available for booking!</span>
+              </div>
+              <p class="text-green-300 text-sm mt-1">
+                Your selected range is available. You can proceed to the next step.
+              </p>
+            </div>
+          } @else if (selectedAvailabilityStartDate && selectedAvailabilityEndDate) {
+            <div class="mt-4 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+              <div class="flex items-center text-red-400">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-semibold">Not available</span>
+              </div>
+              <p class="text-red-300 text-sm mt-1">
+                The selected date range is not available. Please choose different dates.
+              </p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Step 3: Confirmation -->
+      @if (currentBookingStep === 'confirmation') {
+        <div class="space-y-4">
+          <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+            <h4 class="text-lg font-semibold text-white mb-3">Booking Summary</h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p class="text-gray-300 text-sm">Vehicle</p>
+                <p class="text-white font-medium">{{ vehicle.brand }} {{ vehicle.model }}</p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">License Plate</p>
+                <p class="text-white font-medium">{{ vehicle.licensePlate }}</p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">Booking Type</p>
+                <p class="text-white font-medium">{{ selectedSlotType }}</p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">Duration</p>
+                <p class="text-white font-medium">
+                  @if (selectedDuration < 24) {
+                    {{ selectedDuration }} hour{{ selectedDuration > 1 ? 's' : '' }}
+                  } @else if (selectedDuration < 168) {
+                    {{ Math.round(selectedDuration / 24) }} day{{ Math.round(selectedDuration / 24) > 1 ? 's' : '' }}
+                  } @else {
+                    {{ Math.round(selectedDuration / 168) }} week{{ Math.round(selectedDuration / 168) > 1 ? 's' : '' }}
+                  }
+                </p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">Start Date</p>
+                <p class="text-white font-medium">{{ formatDate(selectedAvailabilityStartDate) }}</p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">End Date</p>
+                <p class="text-white font-medium">{{ formatDate(selectedAvailabilityEndDate) }}</p>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-white/10">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-300">Estimated Total:</span>
+                <span class="text-2xl font-bold text-indigo-400">{{ formatCurrency(getTotalPaymentAmount()) }}</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">*Final price may vary based on actual duration and any additional fees</p>
+            </div>
+          </div>
+
+          <div class="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
+            <div class="flex items-start text-blue-400">
+              <svg class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+              </svg>
+              <div>
+                <p class="font-semibold">Important Information</p>
+                <ul class="text-blue-300 text-sm mt-1 space-y-1">
+                  <li>• Your reservation will be subject to approval</li>
+                  <li>• Payment will be processed after approval</li>
+                  <li>• Cancellation policy applies</li>
+                  <li>• Insurance coverage is included</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Step 4: Payment -->
+      @if (currentBookingStep === 'payment') {
+        <div class="space-y-4">
+          <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+            <h4 class="text-lg font-semibold text-white mb-3">Payment Summary</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <p class="text-gray-300 text-sm">Vehicle</p>
+                <p class="text-white font-medium">{{ vehicle.brand }} {{ vehicle.model }}</p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">Total Amount</p>
+                <p class="text-2xl font-bold text-indigo-400">{{ formatCurrency(getTotalPaymentAmount()) }}</p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">Duration</p>
+                <p class="text-white font-medium">{{ getDurationLabel() }}</p>
+              </div>
+              <div>
+                <p class="text-gray-300 text-sm">Date Range</p>
+                <p class="text-white font-medium">{{ formatDate(selectedAvailabilityStartDate) }} - {{ formatDate(selectedAvailabilityEndDate) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Methods -->
+          <div class="space-y-3">
+            <h4 class="text-lg font-semibold text-white">Select Payment Method</h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              @for (method of availablePaymentMethods; track method.id) {
+                <div 
+                  class="payment-method-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+                  [class.border-indigo-500]="selectedPaymentMethod === method.id"
+                  [class.border-white]="selectedPaymentMethod !== method.id"
+                  [class.bg-indigo-500]="selectedPaymentMethod === method.id"
+                  [class.bg-white]="selectedPaymentMethod !== method.id"
+                  [class.opacity-50]="!method.isActive"
+                  [class.cursor-not-allowed]="!method.isActive"
+                  (click)="method.isActive && selectPaymentMethod(method.id)"
+                >
+                  <div class="text-center">
+                    <div class="text-2xl mb-2">{{ method.icon }}</div>
+                    <div class="font-semibold text-white">{{ method.name }}</div>
+                    <div class="text-xs text-gray-400">{{ method.description }}</div>
+                    @if (!method.isActive) {
+                      <div class="text-xs text-red-400 mt-1">Unavailable</div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Payment Error -->
+          @if (paymentError) {
+            <div class="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+              <div class="flex items-center text-red-400">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <span class="font-semibold">{{ paymentError }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Step Actions -->
+    <div modal-actions class="flex items-center justify-between">
+      <div>
+        @if (currentBookingStep !== 'type') {
+          <button
+            (click)="previousBookingStep()"
+            class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
+          >
+            ← Previous
+          </button>
+        }
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          (click)="closeBooking()"
+          class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
+        >
+          Cancel
+        </button>
+
+        @if (currentBookingStep !== 'confirmation' && currentBookingStep !== 'payment') {
+          <button
+            [disabled]="!canProceedToNextStep()"
+            (click)="nextBookingStep()"
+            class="px-6 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            Next →
+          </button>
+        } @else if (currentBookingStep === 'confirmation') {
+          <button
+            [disabled]="isSubmitting"
+            (click)="confirmBooking()"
+            class="px-6 py-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            @if (isSubmitting) {
+              <span class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            } @else {
+              Confirm & Book Now
+            }
+          </button>
+        } @else if (currentBookingStep === 'payment') {
+          <div class="flex items-center gap-3">
+            <button 
+              (click)="cancelPayment()" 
+              class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
+            >
+              Cancel Payment
+            </button>
+            <button 
+              (click)="saveForLater()" 
+              class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
+            >
+              Save for Later
+            </button>
+            <button 
+              [disabled]="!selectedPaymentMethod || isProcessingPayment"
+              (click)="processPayment()" 
+              class="px-6 py-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              @if (isProcessingPayment) {
+                <span class="flex items-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              } @else {
+                Pay Now
+              }
+            </button>
+          </div>
+        }
+      </div>
     </div>
   </app-modal>
 }
@@ -257,8 +611,9 @@
   .animation-delay-2000 {
     animation-delay: 2s;
   }
-  
+
   .animation-delay-4000 {
     animation-delay: 4s;
   }
 </style>
+
