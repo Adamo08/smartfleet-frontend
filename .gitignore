@@ -48,5 +48,8 @@ guide.md
 ### Skip the puller bash script ###
 puller.sh
 
+### Skip the puller bash script ###
+pusher.sh
+
 ### Skip the git changes checker script ###
 check_branches.sh
