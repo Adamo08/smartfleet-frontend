@@ -70,7 +70,7 @@
           [(ngModel)]="filters.brandId"
           (change)="applyFilters()"
           class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
-          <option value="">All Brands</option>
+          <option value="" selected>All Brands</option>
           @for (brand of brands; track brand.id) {
             <option [value]="brand.id">{{ brand.name }}</option>
           }
@@ -84,7 +84,7 @@
           [(ngModel)]="filters.modelId"
           (change)="applyFilters()"
           class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
-          <option value="">All Models</option>
+          <option value="" selected>All Models</option>
           @for (model of models; track model.id) {
             <option [value]="model.id">{{ model.name }}</option>
           }
