@@ -1,0 +1,104 @@
+<app-modal 
+  (close)="onClose.emit()"
+  [title]="'Confirm Payment'"
+>
+  <div class="payment-confirmation-content">
+    <!-- Summary Section -->
+    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Reservation Summary</h3>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <span class="text-sm font-medium text-gray-500">Vehicle:</span>
+          <p class="text-sm text-gray-900">{{ confirmationData.vehicleInfo }}</p>
+        </div>
+        
+        <div>
+          <span class="text-sm font-medium text-gray-500">Duration:</span>
+          <p class="text-sm text-gray-900">{{ confirmationData.duration }}</p>
+        </div>
+        
+        <div>
+          <span class="text-sm font-medium text-gray-500">Start Date:</span>
+          <p class="text-sm text-gray-900">{{ formatDate(confirmationData.startDate) }}</p>
+        </div>
+        
+        <div>
+          <span class="text-sm font-medium text-gray-500">End Date:</span>
+          <p class="text-sm text-gray-900">{{ formatDate(confirmationData.endDate) }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Payment Details -->
+    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+      <h3 class="text-lg font-medium text-blue-900 mb-4">Payment Details</h3>
+      
+      <div class="flex justify-between items-center">
+        <span class="text-lg font-medium text-blue-900">Total Amount:</span>
+        <span class="text-2xl font-bold text-blue-900">
+          {{ formatCurrency(confirmationData.amount, confirmationData.currency) }}
+        </span>
+      </div>
+      
+      <div class="mt-2">
+        <span class="text-sm font-medium text-blue-700">Payment Method:</span>
+        <span class="text-sm text-blue-700 ml-2">{{ getMethodDisplayName(confirmationData.paymentMethod) }}</span>
+      </div>
+    </div>
+    
+    <!-- Terms and Conditions -->
+    <div class="mb-6">
+      <div class="flex items-start space-x-3">
+        <input 
+          type="checkbox" 
+          id="termsAccepted" 
+          [(ngModel)]="termsAccepted"
+          class="mt-1 h-4 w-4 border-gray-300 rounded"
+        />
+        <label for="termsAccepted" class="text-sm text-gray-700">
+          I agree to the 
+          <a href="/terms" target="_blank" class="text-blue-600 underline">
+            Terms and Conditions
+          </a> 
+          and 
+          <a href="/privacy" target="_blank" class="text-blue-600 underline">
+            Privacy Policy
+          </a>
+        </label>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex justify-end space-x-3">
+      <button 
+        (click)="onClose.emit()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+      >
+        Cancel
+      </button>
+      
+      <button 
+        (click)="confirmPayment()"
+        [disabled]="!termsAccepted || isProcessing"
+        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <span *ngIf="!isProcessing">Confirm Payment</span>
+        <span *ngIf="isProcessing" class="flex items-center">
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Processing...
+        </span>
+      </button>
+    </div>
+    
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+      {{ errorMessage }}
+    </div>
+  </div>
+</app-modal>
+
+

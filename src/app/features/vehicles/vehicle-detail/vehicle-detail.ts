@@ -1,30 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 import { VehicleService } from '../../../core/services/vehicle';
 import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { TestimonialService, Testimonial } from '../../../core/services/testimonial';
 import { AuthService } from '../../../core/services/auth';
-import { Vehicle } from '../../../core/models/vehicle.interface';
-import { Page, Pageable } from '../../../core/models/pagination.interface'; // Import Page and Pageable
+import { ReservationService } from '../../../core/services/reservation.service';
+import { PaymentProcessingService, PaymentMethod } from '../../../core/services/payment-processing.service';
+import { PaymentStateService } from '../../../core/services/payment-state.service';
+import { BookmarkService } from '../../../core/services/bookmark.service';
 import { ToastrService } from 'ngx-toastr';
+import { Vehicle } from '../../../core/models/vehicle.interface';
+import { Page, Pageable } from '../../../core/models/pagination.interface';
+import { VehicleFilter } from '../../../core/models/vehicle-filter.interface';
+import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
+import { CreateReservationRequest } from '../../../core/models/reservation.interface';
 import { Modal } from '../../../shared/components/modal/modal';
 import { SlotSelector } from '../../reservations/slot-selector/slot-selector';
-import { ReservationService } from '../../../core/services/reservation.service';
-import { PaymentService } from '../../../core/services/payment.service';
-import { SlotDto } from '../../../core/models/slot.interface';
-import { CreateReservationRequest } from '../../../core/models/reservation.interface';
-import { Input } from '@angular/core';
-import { VehicleFilter } from '../../../core/models/vehicle-filter.interface';
 
 @Component({
   selector: 'app-vehicle-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, Modal, SlotSelector],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, Modal, SlotSelector],
   templateUrl: './vehicle-detail.html',
   styleUrl: './vehicle-detail.css'
 })
-export class VehicleDetail implements OnInit {
+export class VehicleDetail implements OnInit, OnDestroy {
   @Input() vehicle: Vehicle | null = null;
   vehicleTestimonials: Testimonial[] = [];
   similarVehicles: Vehicle[] = [];
@@ -63,7 +66,9 @@ export class VehicleDetail implements OnInit {
   };
 
   // Check available payment methods
-  availablePaymentMethods: Array<{id: string, name: string, description: string, icon: string, isActive: boolean}> = [];
+  availablePaymentMethods: PaymentMethod[] = [];
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
@@ -73,7 +78,8 @@ export class VehicleDetail implements OnInit {
     private authService: AuthService,
     private toastr: ToastrService,
     private reservationService: ReservationService,
-    private paymentService: PaymentService
+    private paymentProcessingService: PaymentProcessingService,
+    private paymentStateService: PaymentStateService
   ) {}
 
   ngOnInit(): void {
@@ -98,43 +104,32 @@ export class VehicleDetail implements OnInit {
     this.checkPaymentReturnParams();
   }
 
-  // Load available payment methods from backend
-  loadAvailablePaymentMethods(): void {
-    this.paymentService.getPaymentMethods().subscribe({
-      next: (response: any) => {
-        if (response.methods && Array.isArray(response.methods)) {
-          // Map backend response to frontend format, handling 'active' vs 'isActive'
-          this.availablePaymentMethods = response.methods.map((method: any) => ({
-            id: method.id,
-            name: method.name,
-            description: method.description,
-            icon: this.getPaymentMethodIcon(method.icon),
-            isActive: method.active || method.isActive || false // Handle both field names
-          }));
-        }
-      },
-      error: (err: any) => {
-        console.error('Failed to load payment methods:', err);
-        // Fallback to default payment methods if backend fails
-        this.availablePaymentMethods = [
-          { id: 'paypal', name: 'PayPal', description: 'Pay with your PayPal account', icon: '💳', isActive: true },
-          { id: 'cmi', name: 'CMI', description: 'Pay securely with your card via CMI', icon: '🏦', isActive: true },
-          { id: 'onsite', name: 'On-site Payment', description: 'Pay in person at our location', icon: '🏪', isActive: true }
-        ];
-      }
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  // Helper method to get payment method icons
-  private getPaymentMethodIcon(iconName: string): string {
-    const iconMap: { [key: string]: string } = {
-      'paypal': '💳',
-      'credit-card': '🏦',
-      'store': '🏪',
-      'default': '💳'
-    };
-    return iconMap[iconName] || iconMap['default'];
+  // Load available payment methods from backend
+  loadAvailablePaymentMethods(): void {
+    this.paymentProcessingService.getAvailablePaymentMethods()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (methods: PaymentMethod[]) => {
+          this.availablePaymentMethods = methods;
+        },
+        error: (err: any) => {
+          console.error('Failed to load payment methods:', err);
+          // Fallback to default payment methods if backend fails
+          this.availablePaymentMethods = [
+            { id: 'paypal', name: 'PayPal', description: 'Pay with your PayPal account', icon: '💳', isActive: true, provider: 'paypalPaymentProvider' },
+            { id: 'cmi', name: 'CMI', description: 'Pay securely with your card via CMI', icon: '🏦', isActive: true, provider: 'cmiPaymentProvider' },
+            { id: 'onsite', name: 'On-site Payment', description: 'Pay in person at our location', icon: '🏪', isActive: true, provider: 'onSitePaymentProvider' }
+          ];
+        }
+      });
   }
+
+
 
   // Check for payment return parameters in URL
   private checkPaymentReturnParams(): void {
@@ -469,19 +464,21 @@ export class VehicleDetail implements OnInit {
       providerName: `${this.selectedPaymentMethod}PaymentProvider` || 'paypalPaymentProvider'
     };
 
-    this.paymentService.createPaymentSession(sessionRequest).subscribe({
-      next: (response: any) => {
-        this.toastr.success('Payment session created! Redirecting to payment...', 'Payment Session Created');
-        // Redirect to the payment provider
-        if (response.redirectUrl) {
-          window.location.href = response.redirectUrl;
+    this.paymentProcessingService.createPaymentSession(sessionRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.toastr.success('Payment session created! Redirecting to payment...', 'Payment Session Created');
+          // Redirect to the payment provider
+          if (response.redirectUrl) {
+            window.location.href = response.redirectUrl;
+          }
+        },
+        error: (err: any) => {
+          console.error('Failed to create payment session', err);
+          this.toastr.error(err?.error?.message || 'Failed to create payment session', 'Error');
         }
-      },
-      error: (err: any) => {
-        console.error('Failed to create payment session', err);
-        this.toastr.error(err?.error?.message || 'Failed to create payment session', 'Error');
-      }
-    });
+      });
   }
 
   // New payment methods
@@ -491,17 +488,19 @@ export class VehicleDetail implements OnInit {
 
     // Validate the selected payment method
     if (method !== 'onsite') {
-      this.paymentService.validatePaymentMethod(method).subscribe({
-        next: (response: any) => {
-          if (!response.isValid) {
-            this.paymentError = response.message || 'Payment method validation failed';
+      this.paymentProcessingService.validatePaymentMethod(method)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response: any) => {
+            if (!response.isValid) {
+              this.paymentError = response.message || 'Payment method validation failed';
+            }
+          },
+          error: (err: any) => {
+            console.error('Payment method validation error:', err);
+            this.paymentError = 'Failed to validate payment method';
           }
-        },
-        error: (err: any) => {
-          console.error('Payment method validation error:', err);
-          this.paymentError = 'Failed to validate payment method';
-        }
-      });
+        });
     }
   }
 
@@ -544,18 +543,20 @@ export class VehicleDetail implements OnInit {
         providerName: 'onsitePaymentProvider'
       };
 
-      this.paymentService.processPayment(paymentRequest).subscribe({
-        next: (response: any) => {
-          this.isProcessingPayment = false;
-          this.toastr.success('On-site payment recorded. Please complete payment at the location.', 'Payment Recorded');
-          this.closeBooking();
-        },
-        error: (err: any) => {
-          this.isProcessingPayment = false;
-          this.paymentError = err?.error?.message || 'Failed to record payment';
-          console.error('Payment error:', err);
-        }
-      });
+      this.paymentProcessingService.processDirectPayment(paymentRequest)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response: any) => {
+            this.isProcessingPayment = false;
+            this.toastr.success('On-site payment recorded. Please complete payment at the location.', 'Payment Recorded');
+            this.closeBooking();
+          },
+          error: (err: any) => {
+            this.isProcessingPayment = false;
+            this.paymentError = err?.error?.message || 'Failed to record payment';
+            console.error('Payment error:', err);
+          }
+        });
     } else {
       // For online payments, create a payment session
       if (this.selectedPaymentMethod) {
@@ -598,18 +599,26 @@ export class VehicleDetail implements OnInit {
   handlePaymentConfirmation(sessionId: string): void {
     if (!sessionId) return;
 
-    this.paymentService.confirmPayment(sessionId).subscribe({
-      next: (response: any) => {
-        this.toastr.success('Payment confirmed successfully! Your reservation is now active.', 'Payment Confirmed');
-        this.closeBooking();
-        // Optionally navigate to reservations page
-        // this.router.navigate(['/reservations']);
-      },
-      error: (err: any) => {
-        console.error('Payment confirmation failed:', err);
-        this.toastr.error('Payment confirmation failed. Please contact support.', 'Payment Error');
-      }
-    });
+    this.paymentProcessingService.confirmPayment(sessionId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.toastr.success('Payment confirmed successfully! Your reservation is now active.', 'Payment Confirmed');
+          
+          // Check reservation status after payment confirmation
+          if (this.currentReservationId) {
+            this.checkReservationStatus();
+          }
+          
+          this.closeBooking();
+          // Optionally navigate to reservations page
+          // this.router.navigate(['/reservations']);
+        },
+        error: (err: any) => {
+          console.error('Payment confirmation failed:', err);
+          this.toastr.error('Payment confirmation failed. Please contact support.', 'Payment Error');
+        }
+      });
   }
 
   // Complete payment flow after successful payment
@@ -646,20 +655,44 @@ export class VehicleDetail implements OnInit {
   checkPaymentStatus(): void {
     if (!this.currentReservationId) return;
 
-    this.paymentService.getPaymentByReservationId(this.currentReservationId).subscribe({
-      next: (payment: any) => {
-        if (payment.status === 'COMPLETED') {
-          this.toastr.success('Payment completed! Your reservation is confirmed.', 'Payment Status');
-          this.closeBooking();
-        } else if (payment.status === 'FAILED') {
-          this.paymentError = 'Payment failed. Please try again or contact support.';
-        } else if (payment.status === 'PENDING') {
-          this.toastr.info('Payment is pending. Please complete the payment process.', 'Payment Status');
+    this.paymentProcessingService.getPaymentStatus(this.currentReservationId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result: any) => {
+          if (result.success && !result.error) {
+            this.toastr.success('Payment completed! Your reservation is confirmed.', 'Payment Status');
+            this.closeBooking();
+          } else if (result.error) {
+            this.paymentError = 'Payment failed. Please try again or contact support.';
+          } else {
+            this.toastr.info('Payment is pending. Please complete the payment process.', 'Payment Status');
+          }
+        },
+        error: (err: any) => {
+          console.error('Failed to check payment status:', err);
+          // Payment might not exist yet, which is normal for new reservations
+        }
+      });
+  }
+
+  // Check reservation status after payment confirmation
+  checkReservationStatus(): void {
+    if (!this.currentReservationId) return;
+
+    this.reservationService.getReservationById(this.currentReservationId).subscribe({
+      next: (reservation: any) => {
+        console.log('Reservation status after payment:', reservation.status);
+        
+        if (reservation.status === 'CONFIRMED') {
+          this.toastr.success('Reservation confirmed! Your booking is now active.', 'Reservation Status');
+        } else if (reservation.status === 'PENDING') {
+          this.toastr.info('Reservation is still pending. Please wait for confirmation.', 'Reservation Status');
+        } else if (reservation.status === 'CANCELLED') {
+          this.toastr.error('Reservation was cancelled. Please contact support.', 'Reservation Status');
         }
       },
       error: (err: any) => {
-        console.error('Failed to check payment status:', err);
-        // Payment might not exist yet, which is normal for new reservations
+        console.error('Failed to check reservation status:', err);
       }
     });
   }
@@ -689,25 +722,27 @@ export class VehicleDetail implements OnInit {
       providerName: `${provider}PaymentProvider`
     };
 
-    this.paymentService.createPaymentSession(sessionRequest).subscribe({
-      next: (response: any) => {
-        this.toastr.success(`Payment session created for ${provider}! Redirecting...`, 'Payment Session Created');
-        if (response.redirectUrl) {
-          // Store session info for later confirmation
-          localStorage.setItem('currentPaymentSession', JSON.stringify({
-            sessionId: response.sessionId,
-            reservationId: this.currentReservationId,
-            provider: provider
-          }));
-          window.location.href = response.redirectUrl;
+    this.paymentProcessingService.createPaymentSession(sessionRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.toastr.success(`Payment session created for ${provider}! Redirecting...`, 'Payment Session Created');
+          if (response.redirectUrl) {
+            // Store session info for later confirmation
+            localStorage.setItem('currentPaymentSession', JSON.stringify({
+              sessionId: response.sessionId,
+              reservationId: this.currentReservationId,
+              provider: provider
+            }));
+            window.location.href = response.redirectUrl;
         }
-      },
-      error: (err: any) => {
-        console.error('Failed to create payment session:', err);
-        this.paymentError = err?.error?.message || 'Failed to create payment session';
-        this.isProcessingPayment = false;
-      }
-    });
+        },
+        error: (err: any) => {
+          console.error('Failed to create payment session:', err);
+          this.paymentError = err?.error?.message || 'Failed to create payment session';
+          this.isProcessingPayment = false;
+        }
+      });
   }
 
   getStarRating(rating: number): string[] {
@@ -721,20 +756,16 @@ export class VehicleDetail implements OnInit {
   // Calculate total payment amount
   getTotalPaymentAmount(): number {
     if (!this.vehicle || !this.selectedDuration) return 0;
-    return this.vehicle.pricePerDay * Math.ceil(this.selectedDuration / 24);
+    return this.paymentProcessingService.calculatePaymentAmountByHours(this.vehicle.pricePerDay, this.selectedDuration);
   }
 
   // Format currency for display
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+    return this.paymentProcessingService.formatCurrency(amount, 'USD');
   }
 
   // Check if payment method is available
   isPaymentMethodAvailable(methodId: string): boolean {
-    const method = this.availablePaymentMethods.find(m => m.id === methodId);
-    return method ? method.isActive : false;
+    return this.paymentProcessingService.isPaymentMethodAvailable(methodId, this.availablePaymentMethods);
   }
 }

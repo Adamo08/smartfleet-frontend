@@ -10,7 +10,9 @@ import { Pageable, Page } from '../../../core/models/pagination.interface';
 import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
 import { Pagination } from '../../../shared/components/pagination/pagination';
 import { PaymentDto } from '../../../core/models/payment.interface';
-import { PaymentService } from '../../../core/services/payment.service';
+import { PaymentStatus } from '../../../core/enums/payment-status.enum';
+import { PaymentProcessingService } from '../../../core/services/payment-processing.service';
+import { PaymentStateService } from '../../../core/services/payment-state.service';
 import { BookmarkService } from '../../../core/services/bookmark.service';
 import { ToastrService } from 'ngx-toastr';
 import { Modal } from '../../../shared/components/modal/modal';
@@ -48,7 +50,8 @@ export class ReservationList implements OnInit, OnDestroy {
 
   constructor(
     private reservationService: ReservationService,
-    private paymentService: PaymentService,
+    private paymentProcessingService: PaymentProcessingService,
+    private paymentStateService: PaymentStateService,
     private bookmarkService: BookmarkService,
     private router: Router,
     private fb: FormBuilder,
@@ -292,17 +295,33 @@ export class ReservationList implements OnInit, OnDestroy {
 
   // Payment information methods
   loadReservationPayment(reservationId: number): void {
-    this.paymentService.getPaymentByReservationId(reservationId).subscribe({
-      next: (payment) => {
-        this.reservationPayments.set(reservationId, payment);
-        this.selectedReservationPayment = payment;
-      },
-      error: (error: any) => {
-        console.error('Error loading payment info:', error);
-        // Set default payment info
-        this.selectedReservationPayment = null;
-      }
-    });
+    this.paymentProcessingService.getPaymentStatus(reservationId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result) => {
+          if (result.success) {
+            // Convert PaymentResult to PaymentDto format for compatibility
+            const payment: PaymentDto = {
+              id: 0, // Will be set from backend
+              reservationId: reservationId,
+              amount: 0, // Will be set from backend
+              currency: 'USD',
+              status: result.transactionId ? PaymentStatus.COMPLETED : PaymentStatus.PENDING,
+              transactionId: result.transactionId,
+              provider: 'Unknown',
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            this.reservationPayments.set(reservationId, payment);
+            this.selectedReservationPayment = payment;
+          }
+        },
+        error: (error: any) => {
+          console.error('Error loading payment info:', error);
+          // Set default payment info
+          this.selectedReservationPayment = null;
+        }
+      });
   }
 
   getPaymentStatus(reservationId: number): string {
@@ -313,5 +332,36 @@ export class ReservationList implements OnInit, OnDestroy {
   getPaymentAmount(reservationId: number): number {
     const payment = this.reservationPayments.get(reservationId);
     return payment ? payment.amount : 0;
+  }
+
+  // Helper methods using shared services
+  formatCurrency(amount: number): string {
+    return this.paymentProcessingService.formatCurrency(amount, 'USD');
+  }
+
+  getDurationLabel(startDate: Date | string, endDate: Date | string): string {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+    return this.paymentProcessingService.getDurationLabel(diffHours);
+  }
+
+  // Enhanced payment handling using shared state
+  onPayReservationEnhanced(reservation: ReservationSummaryDto): void {
+    // Set up payment state
+    const totalAmount = this.calculateReservationAmount(reservation);
+    this.paymentStateService.setReservationForPayment(reservation.id, totalAmount, 'USD');
+    
+    // Navigate to payment page
+    this.router.navigate(['/payments', 'process'], { 
+      queryParams: { reservationId: reservation.id } 
+    });
+  }
+
+  private calculateReservationAmount(reservation: ReservationSummaryDto): number {
+    // This would need to be implemented based on your business logic
+    // For now, return a placeholder amount
+    return 100.0;
   }
 }
