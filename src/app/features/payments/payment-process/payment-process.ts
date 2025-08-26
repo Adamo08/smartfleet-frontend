@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil, switchMap } from 'rxjs';
-import { PaymentService } from '../../../core/services/payment.service';
+import { PaymentProcessingService, PaymentMethod } from '../../../core/services/payment-processing.service';
+import { PaymentStateService } from '../../../core/services/payment-state.service';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { PaymentRequestDto, PaymentResponseDto, SessionRequestDto, SessionResponseDto } from '../../../core/models/payment.interface';
 import { ReservationSummaryDto } from '../../../core/models/reservation.interface';
-
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -27,13 +27,7 @@ export class PaymentProcess implements OnInit, OnDestroy {
   paymentForm: FormGroup;
 
   // Payment methods
-  availablePaymentMethods: Array<{
-    id: string;
-    name: string;
-    description: string;
-    icon: string;
-    isActive: boolean;
-  }> = [];
+  availablePaymentMethods: PaymentMethod[] = [];
 
   // Payment processing
   selectedPaymentMethod: string | null = null;
@@ -48,7 +42,8 @@ export class PaymentProcess implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private paymentService: PaymentService,
+    private paymentProcessingService: PaymentProcessingService,
+    private paymentStateService: PaymentStateService,
     private reservationService: ReservationService,
     private fb: FormBuilder,
     private toastr: ToastrService
@@ -119,23 +114,25 @@ export class PaymentProcess implements OnInit, OnDestroy {
   }
 
   private loadAvailablePaymentMethods(): void {
-    this.paymentService.getPaymentMethods().subscribe({
-      next: (response) => {
-        this.availablePaymentMethods = response.methods;
-        // Set default payment method
-        if (this.availablePaymentMethods.length > 0) {
-          const defaultMethod = this.availablePaymentMethods.find(m => m.isActive);
-          if (defaultMethod) {
-            this.paymentForm.patchValue({ paymentMethod: defaultMethod.id });
-            this.selectedPaymentMethod = defaultMethod.id;
+    this.paymentProcessingService.getAvailablePaymentMethods()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (methods: PaymentMethod[]) => {
+          this.availablePaymentMethods = methods;
+          // Set default payment method
+          if (this.availablePaymentMethods.length > 0) {
+            const defaultMethod = this.availablePaymentMethods.find(m => m.isActive);
+            if (defaultMethod) {
+              this.paymentForm.patchValue({ paymentMethod: defaultMethod.id });
+              this.selectedPaymentMethod = defaultMethod.id;
+            }
           }
+        },
+        error: (error: any) => {
+          console.error('Error loading payment methods:', error);
+          this.error = 'Failed to load payment methods';
         }
-      },
-      error: (error) => {
-        console.error('Error loading payment methods:', error);
-        this.error = 'Failed to load payment methods';
-      }
-    });
+      });
   }
 
   private updateValidationRules(method: string): void {
@@ -229,18 +226,20 @@ export class PaymentProcess implements OnInit, OnDestroy {
       providerName: 'onSitePaymentProvider'
     };
 
-    this.paymentService.processPayment(paymentRequest).subscribe({
-      next: (response) => {
-        this.isProcessingPayment = false;
-        this.toastr.success('On-site payment request submitted successfully');
-        this.router.navigate(['/reservations']);
-      },
-      error: (error) => {
-        console.error('On-site payment error:', error);
-        this.paymentError = 'Failed to submit on-site payment request';
-        this.isProcessingPayment = false;
-      }
-    });
+    this.paymentProcessingService.processDirectPayment(paymentRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.isProcessingPayment = false;
+          this.toastr.success('On-site payment request submitted successfully');
+          this.router.navigate(['/reservations']);
+        },
+        error: (error: any) => {
+          console.error('On-site payment error:', error);
+          this.paymentError = 'Failed to submit on-site payment request';
+          this.isProcessingPayment = false;
+        }
+      });
   }
 
   private createPaymentSession(method: string): void {
@@ -262,24 +261,26 @@ export class PaymentProcess implements OnInit, OnDestroy {
     console.log('Session request:', sessionRequest);
     console.log('Method:', method);
 
-    this.paymentService.createPaymentSession(sessionRequest).subscribe({
-      next: (response) => {
-        console.log('Payment session created successfully:', response);
-        this.isProcessingPayment = false;
-        if (response.redirectUrl) {
-          console.log('Redirecting to PayPal:', response.redirectUrl);
-          window.location.href = response.redirectUrl;
-        } else {
-          console.error('No redirect URL received from payment provider');
-          this.paymentError = 'No redirect URL received from payment provider';
+    this.paymentProcessingService.createPaymentSession(sessionRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          console.log('Payment session created successfully:', response);
+          this.isProcessingPayment = false;
+          if (response.redirectUrl) {
+            console.log('Redirecting to PayPal:', response.redirectUrl);
+            window.location.href = response.redirectUrl;
+          } else {
+            console.error('No redirect URL received from payment provider');
+            this.paymentError = 'No redirect URL received from payment provider';
+          }
+        },
+        error: (error: any) => {
+          console.error('Payment session error:', error);
+          this.paymentError = 'Failed to create payment session';
+          this.isProcessingPayment = false;
         }
-      },
-      error: (error) => {
-        console.error('Payment session error:', error);
-        this.paymentError = 'Failed to create payment session';
-        this.isProcessingPayment = false;
-      }
-    });
+      });
   }
 
   private processDirectPayment(): void {
@@ -297,31 +298,24 @@ export class PaymentProcess implements OnInit, OnDestroy {
       providerName: this.mapMethodToProvider(formValue.paymentMethod)
     };
 
-    this.paymentService.processPayment(paymentRequest).subscribe({
-      next: (response) => {
-        this.isProcessingPayment = false;
-        this.toastr.success('Payment processed successfully');
-        this.router.navigate(['/reservations']);
-      },
-      error: (error) => {
-        console.error('Direct payment error:', error);
-        this.paymentError = 'Payment failed. Please try again.';
-        this.isProcessingPayment = false;
-      }
-    });
+    this.paymentProcessingService.processDirectPayment(paymentRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.isProcessingPayment = false;
+          this.toastr.success('Payment processed successfully');
+          this.router.navigate(['/reservations']);
+        },
+        error: (error: any) => {
+          console.error('Direct payment error:', error);
+          this.paymentError = 'Payment failed. Please try again.';
+          this.isProcessingPayment = false;
+        }
+      });
   }
 
   private mapMethodToProvider(method: string): string {
-    switch (method) {
-      case 'paypal':
-        return 'paypalPaymentProvider';
-      case 'cmi':
-        return 'cmiPaymentProvider';
-      case 'onsite':
-        return 'onSitePaymentProvider';
-      default:
-        return 'onSitePaymentProvider';
-    }
+    return this.paymentProcessingService.mapMethodToProvider(method);
   }
 
   public calculateReservationAmount(): number {
@@ -366,10 +360,7 @@ export class PaymentProcess implements OnInit, OnDestroy {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+    return this.paymentProcessingService.formatCurrency(amount, 'USD');
   }
 
   getExpiryMonths(): string[] {
@@ -470,4 +461,21 @@ export class PaymentProcess implements OnInit, OnDestroy {
     }
     return null;
   }
+
+  // Helper methods using shared services
+  getDurationLabel(startDate: Date | string, endDate: Date | string): string {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+    return this.paymentProcessingService.getDurationLabel(diffHours);
+  }
+
+  // Enhanced payment handling using shared state
+  onPaymentMethodSelected(method: PaymentMethod): void {
+    this.paymentStateService.selectPaymentMethod(method);
+    this.paymentForm.patchValue({ paymentMethod: method.id });
+    this.selectedPaymentMethod = method.id;
+  }
+
 }
