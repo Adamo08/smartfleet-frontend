@@ -33,8 +33,37 @@ export class VehicleDetail implements OnInit {
   isLoggedIn = false;
   isFavorite = false;
   isBookingOpen = false;
-  selectedSlot: SlotDto | null = null;
   isSubmitting = false;
+
+  // New properties for availability check and booking
+  hasAvailableSlotsInDateRange: boolean = false;
+  selectedAvailabilityStartDate: Date | null = null;
+  selectedAvailabilityEndDate: Date | null = null;
+  selectedSlotType: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM' = 'DAILY';
+  selectedDuration: number = 24; // in hours
+  bookNowEnabled: boolean = false; // Controls 'Book Now' button
+
+  // Multi-step booking flow
+  currentBookingStep: 'type' | 'dates' | 'confirmation' | 'payment' = 'type';
+
+  // Expose Math for template use
+  readonly Math = Math;
+
+  // Payment related properties
+  selectedPaymentMethod: string | null = null;
+  isProcessingPayment = false;
+  paymentError: string | null = null;
+  currentReservationId: number | null = null; // Store the created reservation ID
+
+  // Payment method mapping
+  readonly paymentMethods = {
+    paypal: { id: 'paypal', name: 'PayPal', provider: 'paypal' },
+    cmi: { id: 'cmi', name: 'CMI', provider: 'cmi' },
+    onsite: { id: 'onsite', name: 'On-Site', provider: 'onsite' }
+  };
+
+  // Check available payment methods
+  availablePaymentMethods: Array<{id: string, name: string, description: string, icon: string, isActive: boolean}> = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -59,8 +88,66 @@ export class VehicleDetail implements OnInit {
     }
 
     this.isLoggedIn = this.authService.isAuthenticated();
+    this.updateBookNowButtonState(); // Initial state update
     if (this.isLoggedIn) {
       this.loadFavorites();
+      this.loadAvailablePaymentMethods();
+    }
+
+    // Check for payment return parameters
+    this.checkPaymentReturnParams();
+  }
+
+  // Load available payment methods from backend
+  loadAvailablePaymentMethods(): void {
+    this.paymentService.getPaymentMethods().subscribe({
+      next: (response: any) => {
+        if (response.methods && Array.isArray(response.methods)) {
+          // Map backend response to frontend format, handling 'active' vs 'isActive'
+          this.availablePaymentMethods = response.methods.map((method: any) => ({
+            id: method.id,
+            name: method.name,
+            description: method.description,
+            icon: this.getPaymentMethodIcon(method.icon),
+            isActive: method.active || method.isActive || false // Handle both field names
+          }));
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to load payment methods:', err);
+        // Fallback to default payment methods if backend fails
+        this.availablePaymentMethods = [
+          { id: 'paypal', name: 'PayPal', description: 'Pay with your PayPal account', icon: '💳', isActive: true },
+          { id: 'cmi', name: 'CMI', description: 'Pay securely with your card via CMI', icon: '🏦', isActive: true },
+          { id: 'onsite', name: 'On-site Payment', description: 'Pay in person at our location', icon: '🏪', isActive: true }
+        ];
+      }
+    });
+  }
+
+  // Helper method to get payment method icons
+  private getPaymentMethodIcon(iconName: string): string {
+    const iconMap: { [key: string]: string } = {
+      'paypal': '💳',
+      'credit-card': '🏦',
+      'store': '🏪',
+      'default': '💳'
+    };
+    return iconMap[iconName] || iconMap['default'];
+  }
+
+  // Check for payment return parameters in URL
+  private checkPaymentReturnParams(): void {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('sessionId');
+    const paymentStatus = urlParams.get('payment');
+
+    if (sessionId) {
+      // User returned from payment provider, confirm payment
+      this.handlePaymentConfirmation(sessionId);
+    } else if (paymentStatus === 'cancelled') {
+      // User cancelled payment
+      this.toastr.info('Payment was cancelled. Your reservation is saved for later completion.', 'Payment Cancelled');
     }
   }
 
@@ -210,46 +297,144 @@ export class VehicleDetail implements OnInit {
   }
 
   bookVehicle(): void {
-    if (!this.vehicle) return;
-    this.selectedSlot = null;
+    // This method will now primarily open the booking modal
+    if (!this.vehicle || !this.bookNowEnabled) return;
     this.isBookingOpen = true;
+    this.currentBookingStep = 'type'; // Start with booking type selection
   }
 
-  checkAvailability(): void {
-    if (!this.vehicle) return;
-
-    // Check vehicle availability for specific dates
-    console.log('Checking availability for vehicle:', this.vehicle.id);
-    // TODO: Implement availability check
-    alert('Availability check will be implemented soon!');
+  // Multi-step booking flow methods
+  nextBookingStep(): void {
+    switch (this.currentBookingStep) {
+      case 'type':
+        this.currentBookingStep = 'dates';
+        break;
+      case 'dates':
+        this.currentBookingStep = 'confirmation';
+        break;
+      case 'confirmation':
+        this.currentBookingStep = 'payment';
+        break;
+    }
   }
 
-  onSlotSelected(slot: SlotDto): void {
-    this.selectedSlot = slot;
+  previousBookingStep(): void {
+    switch (this.currentBookingStep) {
+      case 'dates':
+        this.currentBookingStep = 'type';
+        break;
+      case 'confirmation':
+        this.currentBookingStep = 'dates';
+        break;
+      case 'payment':
+        this.currentBookingStep = 'confirmation';
+        break;
+    }
+  }
+
+  canProceedToNextStep(): boolean {
+    switch (this.currentBookingStep) {
+      case 'type':
+        return this.selectedSlotType !== undefined;
+      case 'dates':
+        return this.selectedAvailabilityStartDate !== null &&
+               this.selectedAvailabilityEndDate !== null &&
+               this.hasAvailableSlotsInDateRange;
+      case 'confirmation':
+        return true;
+      case 'payment':
+        return true; // Payment step is the final step
+      default:
+        return false;
+    }
+  }
+
+  getStepTitle(): string {
+    switch (this.currentBookingStep) {
+      case 'type':
+        return 'Select Booking Type';
+      case 'dates':
+        return 'Choose Dates & Duration';
+      case 'confirmation':
+        return 'Confirm & Book';
+      case 'payment':
+        return 'Complete Payment';
+      default:
+        return 'Book Vehicle';
+    }
+  }
+
+  getStepDescription(): string {
+    switch (this.currentBookingStep) {
+      case 'type':
+        return 'Choose how you want to rent this vehicle';
+      case 'dates':
+        return 'Select your preferred dates and duration';
+      case 'confirmation':
+        return 'Review your booking details and confirm';
+      case 'payment':
+        return 'Complete the payment process to finalize your reservation.';
+      default:
+        return '';
+    }
+  }
+
+
+  onDateRangeSelected(event: {
+    startDate: Date,
+    endDate: Date,
+    hasSlots: boolean,
+    slotType: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM',
+    duration: number
+  }): void {
+    this.selectedAvailabilityStartDate = event.startDate;
+    this.selectedAvailabilityEndDate = event.endDate;
+    this.selectedSlotType = event.slotType;
+    this.selectedDuration = event.duration;
+    this.hasAvailableSlotsInDateRange = event.hasSlots;
+    this.updateBookNowButtonState();
+  }
+
+  private updateBookNowButtonState(): void {
+    // Book Now button is enabled for authenticated users
+    // The actual availability check happens when they click Book Now
+    this.bookNowEnabled = this.isLoggedIn;
   }
 
   closeBooking(): void {
     this.isBookingOpen = false;
-    this.selectedSlot = null;
+    this.currentReservationId = null;
+    this.selectedPaymentMethod = null;
+    this.paymentError = null;
+    this.isProcessingPayment = false;
+    // Reset to first step for next booking
+    this.currentBookingStep = 'type';
   }
 
   confirmBooking(): void {
-    if (!this.vehicle || !this.selectedSlot || this.isSubmitting) return;
+    // When confirming booking, we use the selected date range from SlotSelector,
+    // not necessarily a pre-selected 'SlotDto' from a list of granular slots.
+    if (!this.vehicle || !this.selectedAvailabilityStartDate || !this.selectedAvailabilityEndDate || this.isSubmitting) {
+      this.toastr.error('Please select valid start and end dates for your reservation.', 'Missing Information');
+      return;
+    }
     this.isSubmitting = true;
 
     const request: CreateReservationRequest = {
       vehicleId: this.vehicle.id,
-      slotId: this.selectedSlot.id,
-      startDate: new Date(this.selectedSlot.startTime),
-      endDate: new Date(this.selectedSlot.endTime),
-      comment: ''
+      // slotId: this.selectedSlot.id, // Slot ID will be determined by backend based on date range
+      startDate: this.selectedAvailabilityStartDate,
+      endDate: this.selectedAvailabilityEndDate,
+      comment: `Booking type: ${this.selectedSlotType}, Duration: ${this.selectedDuration} hours`
     };
 
     this.reservationService.createReservation(request).subscribe({
       next: (reservation: any) => { // Explicitly type 'reservation'
-        this.toastr.success('Reservation created. You can proceed to payment or wait for approval.', 'Reservation Pending');
+        this.currentReservationId = reservation.id; // Store the reservation ID
+        this.toastr.success('Reservation created successfully! Proceeding to payment...', 'Reservation Created');
         this.isSubmitting = false;
-        // Keep modal open and show actions
+        // Move to payment step instead of closing
+        this.currentBookingStep = 'payment';
       },
       error: (err: any) => { // Explicitly type 'err'
         console.error('Failed to create reservation', err);
@@ -259,10 +444,270 @@ export class VehicleDetail implements OnInit {
     });
   }
 
-  startPayment(provider: 'paypal' | 'cmi' | 'onsite'): void {
-    if (!this.vehicle || !this.selectedSlot) return;
-    // We need reservationId; in a full flow we’d fetch payment for latest reservation.
-    // For now, we’ll navigate users to reservations page after creation, or this method would be triggered with reservation context.
+  startPayment(provider: string): void {
+    if (!this.currentReservationId) {
+      this.toastr.error('No reservation ID available for payment.', 'Payment Error');
+      return;
+    }
+
+    // Calculate the total amount based on duration and vehicle price
+    const totalAmount = this.vehicle ? this.vehicle.pricePerDay * Math.ceil(this.selectedDuration / 24) : 0;
+
+    if (provider === 'onsite') {
+      // For onsite payments, we just mark it as pending
+      this.toastr.success('On-site payment selected. Please complete payment at the location.', 'Payment Method Selected');
+      return;
+    }
+
+    // For online payments (PayPal, CMI), create a payment session
+    const sessionRequest = {
+      amount: totalAmount,
+      currency: 'USD',
+      reservationId: this.currentReservationId,
+      successUrl: window.location.origin + '/reservations',
+      cancelUrl: window.location.origin + '/vehicles/' + this.vehicle?.id,
+      providerName: `${this.selectedPaymentMethod}PaymentProvider` || 'paypalPaymentProvider'
+    };
+
+    this.paymentService.createPaymentSession(sessionRequest).subscribe({
+      next: (response: any) => {
+        this.toastr.success('Payment session created! Redirecting to payment...', 'Payment Session Created');
+        // Redirect to the payment provider
+        if (response.redirectUrl) {
+          window.location.href = response.redirectUrl;
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to create payment session', err);
+        this.toastr.error(err?.error?.message || 'Failed to create payment session', 'Error');
+      }
+    });
+  }
+
+  // New payment methods
+  selectPaymentMethod(method: string): void {
+    this.selectedPaymentMethod = method;
+    this.paymentError = null; // Clear any previous errors
+
+    // Validate the selected payment method
+    if (method !== 'onsite') {
+      this.paymentService.validatePaymentMethod(method).subscribe({
+        next: (response: any) => {
+          if (!response.isValid) {
+            this.paymentError = response.message || 'Payment method validation failed';
+          }
+        },
+        error: (err: any) => {
+          console.error('Payment method validation error:', err);
+          this.paymentError = 'Failed to validate payment method';
+        }
+      });
+    }
+  }
+
+  // Validate payment method selection
+  validatePaymentMethodSelection(): boolean {
+    if (!this.selectedPaymentMethod) {
+      this.paymentError = 'Please select a payment method';
+      return false;
+    }
+
+    if (!this.isPaymentMethodAvailable(this.selectedPaymentMethod)) {
+      this.paymentError = 'Selected payment method is not available';
+      return false;
+    }
+
+    return true;
+  }
+
+  // Enhanced payment processing with validation
+  processPayment(): void {
+    if (!this.validatePaymentMethodSelection()) {
+      return;
+    }
+
+    if (!this.currentReservationId) {
+      this.paymentError = 'No reservation available for payment';
+      return;
+    }
+
+    this.isProcessingPayment = true;
+    this.paymentError = null;
+
+    if (this.selectedPaymentMethod === 'onsite') {
+      // For onsite payments, we create a pending payment record
+      const paymentRequest = {
+        reservationId: this.currentReservationId,
+        amount: this.getTotalPaymentAmount(),
+        currency: 'USD',
+        paymentMethodId: 'onsite',
+        providerName: 'onsitePaymentProvider'
+      };
+
+      this.paymentService.processPayment(paymentRequest).subscribe({
+        next: (response: any) => {
+          this.isProcessingPayment = false;
+          this.toastr.success('On-site payment recorded. Please complete payment at the location.', 'Payment Recorded');
+          this.closeBooking();
+        },
+        error: (err: any) => {
+          this.isProcessingPayment = false;
+          this.paymentError = err?.error?.message || 'Failed to record payment';
+          console.error('Payment error:', err);
+        }
+      });
+    } else {
+      // For online payments, create a payment session
+      if (this.selectedPaymentMethod) {
+        this.createPaymentSession(this.selectedPaymentMethod);
+      } else {
+        this.paymentError = 'Invalid payment method selected';
+        this.isProcessingPayment = false;
+      }
+    }
+  }
+
+  saveForLater(): void {
+    if (this.currentReservationId) {
+      this.toastr.success('Reservation saved successfully! You can complete the payment from your reservations page.', 'Saved for Later');
+      this.closeBooking();
+      // Optionally navigate to reservations page
+      // this.router.navigate(['/reservations']);
+    } else {
+      this.toastr.error('No reservation to save. Please complete the booking first.', 'Error');
+    }
+  }
+
+  // Helper to format date for display (can be moved to a pipe for reusability)
+  formatDate(date: Date | null): string {
+    return date ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
+  }
+
+  // Helper to get duration label
+  getDurationLabel(): string {
+    if (this.selectedDuration < 24) {
+      return `${this.selectedDuration} hour${this.selectedDuration > 1 ? 's' : ''}`;
+    } else if (this.selectedDuration < 168) {
+      return `${Math.round(this.selectedDuration / 24)} day${Math.round(this.selectedDuration / 24) > 1 ? 's' : ''}`;
+    } else {
+      return `${Math.round(this.selectedDuration / 168)} week${Math.round(this.selectedDuration / 168) > 1 ? 's' : ''}`;
+    }
+  }
+
+  // Handle payment confirmation when returning from payment provider
+  handlePaymentConfirmation(sessionId: string): void {
+    if (!sessionId) return;
+
+    this.paymentService.confirmPayment(sessionId).subscribe({
+      next: (response: any) => {
+        this.toastr.success('Payment confirmed successfully! Your reservation is now active.', 'Payment Confirmed');
+        this.closeBooking();
+        // Optionally navigate to reservations page
+        // this.router.navigate(['/reservations']);
+      },
+      error: (err: any) => {
+        console.error('Payment confirmation failed:', err);
+        this.toastr.error('Payment confirmation failed. Please contact support.', 'Payment Error');
+      }
+    });
+  }
+
+  // Complete payment flow after successful payment
+  completePaymentFlow(): void {
+    if (!this.currentReservationId) return;
+
+    // Check payment status
+    this.checkPaymentStatus();
+
+    // If payment is completed, close the booking
+    setTimeout(() => {
+      if (!this.paymentError) {
+        this.toastr.success('Payment completed successfully! Your reservation is confirmed.', 'Payment Complete');
+        this.closeBooking();
+      }
+    }, 1000);
+  }
+
+  // Handle payment completion from external provider
+  handleExternalPaymentCompletion(sessionId: string, status: string): void {
+    if (status === 'completed') {
+      this.toastr.success('Payment completed successfully! Your reservation is confirmed.', 'Payment Complete');
+      this.closeBooking();
+    } else if (status === 'failed') {
+      this.paymentError = 'Payment failed. Please try again or contact support.';
+      this.isProcessingPayment = false;
+    } else if (status === 'cancelled') {
+      this.toastr.info('Payment was cancelled. Your reservation is saved for later completion.', 'Payment Cancelled');
+      this.closeBooking();
+    }
+  }
+
+  // Check payment status for the current reservation
+  checkPaymentStatus(): void {
+    if (!this.currentReservationId) return;
+
+    this.paymentService.getPaymentByReservationId(this.currentReservationId).subscribe({
+      next: (payment: any) => {
+        if (payment.status === 'COMPLETED') {
+          this.toastr.success('Payment completed! Your reservation is confirmed.', 'Payment Status');
+          this.closeBooking();
+        } else if (payment.status === 'FAILED') {
+          this.paymentError = 'Payment failed. Please try again or contact support.';
+        } else if (payment.status === 'PENDING') {
+          this.toastr.info('Payment is pending. Please complete the payment process.', 'Payment Status');
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to check payment status:', err);
+        // Payment might not exist yet, which is normal for new reservations
+      }
+    });
+  }
+
+  // Handle payment cancellation
+  cancelPayment(): void {
+    if (this.currentReservationId) {
+      this.toastr.info('Payment cancelled. Your reservation is saved for later completion.', 'Payment Cancelled');
+      this.closeBooking();
+    } else {
+      this.toastr.error('No active payment to cancel.', 'Error');
+    }
+  }
+
+  // Create payment session with proper error handling
+  private createPaymentSession(provider: string): void {
+    if (!this.currentReservationId || !this.vehicle) return;
+
+    const totalAmount = this.vehicle.pricePerDay * Math.ceil(this.selectedDuration / 24);
+
+    const sessionRequest = {
+      amount: totalAmount,
+      currency: 'USD',
+      reservationId: this.currentReservationId,
+      successUrl: `${window.location.origin}/payments/success`,
+      cancelUrl: `${window.location.origin}/payments/cancel`,
+      providerName: `${provider}PaymentProvider`
+    };
+
+    this.paymentService.createPaymentSession(sessionRequest).subscribe({
+      next: (response: any) => {
+        this.toastr.success(`Payment session created for ${provider}! Redirecting...`, 'Payment Session Created');
+        if (response.redirectUrl) {
+          // Store session info for later confirmation
+          localStorage.setItem('currentPaymentSession', JSON.stringify({
+            sessionId: response.sessionId,
+            reservationId: this.currentReservationId,
+            provider: provider
+          }));
+          window.location.href = response.redirectUrl;
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to create payment session:', err);
+        this.paymentError = err?.error?.message || 'Failed to create payment session';
+        this.isProcessingPayment = false;
+      }
+    });
   }
 
   getStarRating(rating: number): string[] {
@@ -271,5 +716,25 @@ export class VehicleDetail implements OnInit {
       stars.push(i <= rating ? '★' : '☆');
     }
     return stars;
+  }
+
+  // Calculate total payment amount
+  getTotalPaymentAmount(): number {
+    if (!this.vehicle || !this.selectedDuration) return 0;
+    return this.vehicle.pricePerDay * Math.ceil(this.selectedDuration / 24);
+  }
+
+  // Format currency for display
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  }
+
+  // Check if payment method is available
+  isPaymentMethodAvailable(methodId: string): boolean {
+    const method = this.availablePaymentMethods.find(m => m.id === methodId);
+    return method ? method.isActive : false;
   }
 }

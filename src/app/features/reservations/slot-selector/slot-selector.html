@@ -14,164 +14,203 @@
   </div>
   }
 
+  <!-- Slot Type Selection -->
+  <div class="slot-type-section mb-6">
+    <h3 class="text-lg font-semibold text-white mb-3">Select Booking Type</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      @for (option of slotTypeOptions; track option.value) {
+        <div
+          class="slot-type-option cursor-pointer p-3 rounded-lg border transition-all duration-200"
+          [class.border-indigo-500]="selectedSlotType === option.value"
+          [class.border-white]="selectedSlotType !== option.value"
+          [class.bg-indigo-500]="selectedSlotType === option.value"
+          [class.bg-white]="selectedSlotType !== option.value"
+          (click)="selectedSlotType = option.value; onSlotTypeChange()"
+        >
+          <div class="font-medium text-white mb-1">{{ option.label }}</div>
+          <div class="text-xs text-gray-300">{{ option.description }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Duration Selection -->
+  <div class="duration-section mb-6">
+    <h3 class="text-lg font-semibold text-white mb-3">Select Duration</h3>
+    <p class="text-gray-300 text-sm mb-4">
+      Click on calendar days to select your rental duration. The duration will be automatically calculated based on your selection.
+    </p>
+    
+    <!-- Selection Status -->
+    @if (isSelectingRange) {
+      <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 mb-4">
+        <p class="text-blue-300 text-sm">
+          <span class="font-medium">Selecting range...</span> Click another date to complete your selection.
+        </p>
+      </div>
+    }
+    
+    <!-- Clear Selection Button -->
+    @if (selectedStartDate && selectedEndDate && selectedStartDate !== selectedEndDate) {
+      <div class="mb-4">
+        <button 
+          (click)="clearSelection()" 
+          class="px-3 py-2 text-sm bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
+        >
+          Clear Selection
+        </button>
+      </div>
+    }
+    
+    <div class="flex items-center gap-4">
+      <div class="flex-1">
+        <label class="block text-sm text-gray-300 mb-2">Selected Duration: {{ getDurationLabel() }}</label>
+        <div class="w-full h-2 bg-gray-700 rounded-lg flex items-center">
+          <div class="h-2 bg-indigo-500 rounded-lg transition-all duration-300" 
+               [style.width]="getDurationPercentage() + '%'"></div>
+        </div>
+        
+        <!-- Quick Duration Buttons -->
+        <div class="flex flex-wrap gap-2 mt-3">
+          @for (duration of getDurationOptions(); track duration) {
+            <button 
+              (click)="adjustDuration(duration)"
+              class="px-3 py-1 text-xs rounded-lg transition-all duration-200"
+              [class.bg-indigo-500]="selectedDuration === duration"
+              [class.bg-gray-600]="selectedDuration !== duration"
+              [class.text-white]="selectedDuration === duration"
+              [class.text-gray-300]="selectedDuration !== duration"
+              [class.hover:bg-indigo-400]="selectedDuration !== duration"
+            >
+              {{ duration < 24 ? duration + 'h' : Math.round(duration / 24) + 'd' }}
+            </button>
+          }
+        </div>
+      </div>
+      <div class="text-white font-medium min-w-[80px] text-right">
+        {{ getDurationLabel() }}
+      </div>
+    </div>
+  </div>
+
   <!-- Calendar View -->
   @if (showDatePicker) {
-  <div class="calendar-section">
-    <div class="calendar-header">
-      <button class="nav-btn" (click)="onPreviousMonth()" type="button">
-        <span>&lt;</span>
-      </button>
-      <h3 class="month-title">{{ getMonthName() }}</h3>
-      <button class="nav-btn" (click)="onNextMonth()" type="button">
-        <span>&gt;</span>
-      </button>
-    </div>
-
-    <div class="calendar-grid">
-      <!-- Day headers -->
-      @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
-      <div class="day-header">
-        {{ day }}
+    <div class="calendar-section">
+      <div class="calendar-header mb-4">
+        <button class="nav-btn" (click)="onPreviousMonth()" type="button">
+          <span>&lt;</span>
+        </button>
+        <h3 class="month-title">{{ getMonthName() }}</h3>
+        <button class="nav-btn" (click)="onNextMonth()" type="button">
+          <span>&gt;</span>
+        </button>
       </div>
-      }
 
-      <!-- Calendar days -->
-      @for (date of calendarDays; track date) {
-      <div 
-        class="calendar-day"
-        [class.current-month]="isCurrentMonth(date)"
-        [class.today]="isToday(date)"
-        [class.selected]="isSelectedDate(date)"
-        [class.has-slots]="hasAvailableSlots(date)"
-        (click)="onDateSelect(date)">
-        
-        <span class="day-number">{{ getDayNumber(date) }}</span>
-        
-        <!-- Slot indicator -->
-        @if (hasAvailableSlots(date)) {
-        <div class="slot-indicator">
-          <span class="slot-count">{{ getSlotCountForDate(date) }}</span>
-        </div>
+      <div class="calendar-grid">
+        <!-- Day headers -->
+        @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
+          <div class="day-header">
+            {{ day }}
+          </div>
+        }
+
+        <!-- Calendar days -->
+        @for (date of calendarDays; track date) {
+          <div
+            class="calendar-day"
+            [class.current-month]="isCurrentMonth(date)"
+            [class.other-month]="!isCurrentMonth(date)"
+            [class.today]="isToday(date)"
+            [class.selected]="isDateInRange(date)"
+            [class.selecting-range]="isInSelectionRange(date)"
+            [class.disabled]="isDateDisabled(date)"
+            [class.has-slots]="hasAvailableSlots(date)"
+            [class.no-slots]="!hasAvailableSlots(date) && isCurrentMonth(date)"
+            [class.range-start]="date.getTime() === selectedStartDate.getTime()"
+            [class.range-end]="date.getTime() === selectedEndDate.getTime()"
+            (click)="onDateSelect(date)">
+
+            <span class="day-number" [class.other-month-text]="!isCurrentMonth(date)">{{ getDayNumber(date) }}</span>
+
+            <!-- Selection indicator -->
+            @if (isDateInRange(date)) {
+              <div class="selection-indicator">
+                @if (date.getTime() === selectedStartDate.getTime()) {
+                  <span class="text-xs text-blue-300 font-medium">Start</span>
+                } @else if (date.getTime() === selectedEndDate.getTime()) {
+                  <span class="text-xs text-blue-300 font-medium">End</span>
+                }
+              </div>
+            }
+
+            <!-- Slot indicator -->
+            @if (hasAvailableSlots(date) && !isDateInRange(date)) {
+              <div class="slot-indicator">
+                <span class="slot-count">{{ getSlotCountForDate(date) }}</span>
+              </div>
+            }
+          </div>
         }
       </div>
-      }
-    </div>
-  </div>
-  }
 
-  <!-- Time Slots View -->
-  @if (showTimeSlots && availableSlots.length > 0) {
-  <div class="time-slots-section">
-    <h4>Available Time Slots for {{ formatDate(selectedDate) }}</h4>
-    
-    <div class="time-slots-grid">
-      @for (slot of getAvailableSlotsForDate(selectedDate); track slot.id) {
-      <div 
-        class="time-slot-card"
-        [class.selected]="selectedSlot?.id === slot.id"
-        (click)="onSlotSelect(slot)">
-        
-        <div class="slot-time-range">
-          <div class="start-time">{{ formatTime(slot.startTime) }}</div>
-          <div class="time-separator">-</div>
-          <div class="end-time">{{ formatTime(slot.endTime) }}</div>
+      <!-- Date Range Summary -->
+      <div class="date-range-summary mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-white font-medium">Selected Range:</span>
+          <span class="text-indigo-400 font-semibold">{{ getDurationLabel() }}</span>
         </div>
-        
-        <div class="slot-duration">
-          {{ getSlotDuration(slot) }}
+        <div class="grid grid-cols-2 gap-4">
+          <div class="date-input-group">
+            <label for="startDate" class="block text-sm text-gray-300 mb-1">Start Date:</label>
+            <input
+              type="date"
+              id="startDate"
+              [(ngModel)]="selectedStartDate"
+              (change)="loadAvailableSlots()"
+              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
+            />
+          </div>
+          <div class="date-input-group">
+            <label for="endDate" class="block text-sm text-gray-300 mb-1">End Date:</label>
+            <input
+              type="date"
+              id="endDate"
+              [(ngModel)]="selectedEndDate"
+              (change)="loadAvailableSlots()"
+              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
+            />
+          </div>
         </div>
-        
-        <div class="slot-vehicle-info">
-          <span class="vehicle-brand">{{ slot.vehicleBrand }}</span>
-          <span class="vehicle-model">{{ slot.vehicleModel }}</span>
-        </div>
-        
-        <div class="slot-status">
-          <span class="status-badge available">Available</span>
+
+        <!-- Price Estimate -->
+        <div class="mt-3 pt-3 border-t border-white/10">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-300">Estimated Total:</span>
+            <span class="text-xl font-bold text-indigo-400">{{ getTotalPrice() }}</span>
+          </div>
         </div>
       </div>
-      }
     </div>
-  </div>
   }
 
   <!-- No Slots Available -->
-  @if (showTimeSlots && availableSlots.length === 0 && !isLoading) {
-  <div class="no-slots">
-    <div class="no-slots-icon">📅</div>
-    <h4>No Available Slots</h4>
-    <p>There are no available time slots for the selected date.</p>
-    <p>Try selecting a different date or contact us for assistance.</p>
-  </div>
+  @if (availableSlots.length === 0 && !isLoading) {
+    <div class="no-slots">
+      <div class="no-slots-icon">📅</div>
+      <h4>No Available Slots</h4>
+      <p>There are no available time slots for the selected date range.</p>
+      <p>Try selecting a different date range or contact us for assistance.</p>
+    </div>
   }
 
-  <!-- Time Range Selector -->
-  @if (showTimeSlots && timeSlots.length > 0) {
-  <div class="time-range-selector">
-    <h4>Custom Time Range</h4>
-    
-    <div class="time-range-inputs">
-      <div class="time-input-group">
-        <label for="startTime">Start Time</label>
-        <select 
-          id="startTime" 
-          [(ngModel)]="selectedStartTime"
-          (change)="onTimeSelect(selectedStartTime, selectedEndTime)"
-          class="time-select">
-          <option value="">Select start time</option>
-          @for (time of timeSlots; track time) {
-          <option [value]="time">
-            {{ time }}
-          </option>
-          }
-        </select>
-      </div>
-      
-      <div class="time-input-group">
-        <label for="endTime">End Time</label>
-        <select 
-          id="endTime" 
-          [(ngModel)]="selectedEndTime"
-          (change)="onTimeSelect(selectedStartTime, selectedEndTime)"
-          class="time-select">
-          <option value="">Select end time</option>
-          @for (time of timeSlots; track time) {
-          <option [value]="time">
-            {{ time }}
-          </option>
-          }
-        </select>
-      </div>
+  <!-- Available Slots Summary -->
+  @if (availableSlots.length > 0 && !isLoading) {
+    <div class="available-slots-summary mt-6 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
+      <h4 class="text-green-400 font-semibold mb-2">✅ Available for Booking</h4>
+      <p class="text-green-300 text-sm">
+        Your selected range from {{ formatDate(selectedStartDate) }} to {{ formatDate(selectedEndDate) }}
+        ({{ getDurationLabel() }}) is available for booking.
+      </p>
     </div>
-  </div>
-  }
-
-  <!-- Selected Slot Summary -->
-  @if (selectedSlot) {
-  <div class="selected-slot-summary">
-    <h4>Selected Time Slot</h4>
-    
-    <div class="selected-slot-details">
-      <div class="detail-row">
-        <span class="label">Date:</span>
-        <span class="value">{{ formatDate(selectedSlot.startTime) }}</span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="label">Time:</span>
-        <span class="value">{{ formatTime(selectedSlot.startTime) }} - {{ formatTime(selectedSlot.endTime) }}</span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="label">Duration:</span>
-        <span class="value">{{ getSlotDuration(selectedSlot) }}</span>
-      </div>
-      
-      <div class="detail-row">
-        <span class="label">Vehicle:</span>
-        <span class="value">{{ selectedSlot.vehicleBrand }} {{ selectedSlot.vehicleModel }}</span>
-      </div>
-    </div>
-  </div>
   }
 </div>
