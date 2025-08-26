@@ -7,7 +7,6 @@ export interface Reservation {
   id: number;
   userId: number;
   vehicleId: number;
-  slotId: number;
   startDate: Date;
   endDate: Date;
   comment?: string;
@@ -30,7 +29,7 @@ export interface DetailedReservationDto {
   id: number;
   user: User;
   vehicle: Vehicle;
-  slot: SlotDto;
+  slots: SlotDto[];
   startDate: Date;
   endDate: Date;
   comment?: string;
@@ -40,7 +39,7 @@ export interface DetailedReservationDto {
 
 export interface ReservationSummaryDto {
   id: number;
-  user: UserSummaryDto; // Ensure this line is present
+  user: UserSummaryDto;
   vehicle: VehicleSummaryDto;
   startDate: Date;
   endDate: Date;
@@ -50,7 +49,6 @@ export interface ReservationSummaryDto {
 
 export interface CreateReservationRequest {
   vehicleId: number;
-  slotId: number;
   startDate: Date;
   endDate: Date;
   comment?: string;
@@ -77,9 +75,10 @@ export interface VehicleSummaryDto {
   licensePlate: string;
   year?: number;
   imageUrl?: string;
+  pricePerDay: number;
 }
 
-export interface UserSummaryDto { // Ensure this interface is present
+export interface UserSummaryDto {
   id: number;
   firstName: string;
   lastName: string;

@@ -59,7 +59,6 @@ export class CreateReservation implements OnInit, OnDestroy {
   ) {
     this.reservationForm = this.fb.group({
       vehicleId: ['', Validators.required],
-      slotId: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
       comment: ['', [Validators.maxLength(500)]]
@@ -191,7 +190,6 @@ export class CreateReservation implements OnInit, OnDestroy {
   onSlotSelect(slot: SlotDto): void {
     this.selectedSlot = slot;
     this.reservationForm.patchValue({
-      slotId: slot.id,
       startDate: slot.startTime,
       endDate: slot.endTime
     });
@@ -218,7 +216,7 @@ export class CreateReservation implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    if (this.reservationForm.valid && this.selectedSlot) {
+    if (this.reservationForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
       this.successMessage = '';

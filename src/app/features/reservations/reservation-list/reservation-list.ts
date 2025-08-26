@@ -9,11 +9,16 @@ import { ReservationSummaryDto, ReservationFilter } from '../../../core/models/r
 import { Pageable, Page } from '../../../core/models/pagination.interface';
 import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
 import { Pagination } from '../../../shared/components/pagination/pagination';
+import { PaymentDto } from '../../../core/models/payment.interface';
+import { PaymentService } from '../../../core/services/payment.service';
+import { BookmarkService } from '../../../core/services/bookmark.service';
+import { ToastrService } from 'ngx-toastr';
+import { Modal } from '../../../shared/components/modal/modal';
 
 @Component({
   selector: 'app-reservation-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, Pagination],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, Pagination, Modal],
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css'
 })
@@ -33,13 +38,22 @@ export class ReservationList implements OnInit, OnDestroy {
   selectedStatus: ReservationStatus | '' = '';
   searchTerm: string = '';
   
+  // Modal and payment handling
+  selectedReservation: ReservationSummaryDto | null = null;
+  selectedReservationPayment: PaymentDto | null = null;
+  isViewModalOpen = false;
+  reservationPayments = new Map<number, PaymentDto>();
+  
   private destroy$ = new Subject<void>();
 
   constructor(
     private reservationService: ReservationService,
+    private paymentService: PaymentService,
+    private bookmarkService: BookmarkService,
     private router: Router,
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: ToastrService
   ) {
     this.filterForm = this.fb.group({
       status: [''],
@@ -205,5 +219,99 @@ export class ReservationList implements OnInit, OnDestroy {
       default:
         return 'Unknown';
     }
+  }
+
+  // View reservation modal
+  onViewReservation(reservation: ReservationSummaryDto): void {
+    this.selectedReservation = reservation;
+    this.isViewModalOpen = true;
+    this.loadReservationPayment(reservation.id);
+  }
+
+  closeViewModal(): void {
+    this.isViewModalOpen = false;
+    this.selectedReservation = null;
+    this.selectedReservationPayment = null;
+  }
+
+  // Payment handling
+  onPayReservation(reservation: ReservationSummaryDto): void {
+    // Navigate to payment page or open payment modal
+    this.router.navigate(['/payments', 'process'], { 
+      queryParams: { reservationId: reservation.id } 
+    });
+  }
+
+  // Cancel reservation
+  onCancelReservation(reservation: ReservationSummaryDto): void {
+    if (confirm('Are you sure you want to cancel this reservation?')) {
+      this.reservationService.cancelReservation(reservation.id).subscribe({
+        next: () => {
+          this.toastr.success('Reservation cancelled successfully');
+          this.loadReservations(); // Refresh the list
+        },
+        error: (error: any) => {
+          console.error('Error cancelling reservation:', error);
+          this.toastr.error('Failed to cancel reservation');
+        }
+      });
+    }
+  }
+
+  // Bookmark handling
+  onBookmarkReservation(reservation: ReservationSummaryDto): void {
+    this.bookmarkService.toggleBookmark(reservation.id).subscribe({
+      next: () => {
+        this.toastr.success('Bookmark updated successfully');
+        // Refresh the list to update bookmark status
+        this.loadReservations();
+      },
+      error: (error: any) => {
+        console.error('Error updating bookmark:', error);
+        this.toastr.error('Failed to update bookmark');
+      }
+    });
+  }
+
+  // Helper methods for conditional display
+  canPayReservation(reservation: ReservationSummaryDto): boolean {
+    return reservation.status === ReservationStatus.CONFIRMED || 
+           reservation.status === ReservationStatus.PENDING;
+  }
+
+  canCancelReservation(reservation: ReservationSummaryDto): boolean {
+    return reservation.status === ReservationStatus.PENDING || 
+           reservation.status === ReservationStatus.CONFIRMED;
+  }
+
+  isReservationBookmarked(reservationId: number): boolean {
+    // This would need to be implemented based on the bookmark service
+    // For now, return false as a placeholder
+    return false;
+  }
+
+  // Payment information methods
+  loadReservationPayment(reservationId: number): void {
+    this.paymentService.getPaymentByReservationId(reservationId).subscribe({
+      next: (payment) => {
+        this.reservationPayments.set(reservationId, payment);
+        this.selectedReservationPayment = payment;
+      },
+      error: (error: any) => {
+        console.error('Error loading payment info:', error);
+        // Set default payment info
+        this.selectedReservationPayment = null;
+      }
+    });
+  }
+
+  getPaymentStatus(reservationId: number): string {
+    const payment = this.reservationPayments.get(reservationId);
+    return payment ? payment.status : 'No Payment';
+  }
+
+  getPaymentAmount(reservationId: number): number {
+    const payment = this.reservationPayments.get(reservationId);
+    return payment ? payment.amount : 0;
   }
 }

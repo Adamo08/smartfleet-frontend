@@ -69,7 +69,10 @@ export class SlotService {
     size: number = 10, 
     isAvailable?: boolean, 
     sortBy: string = 'createdAt', 
-    sortDirection: string = 'DESC'
+    sortDirection: string = 'DESC',
+    vehicleId?: number, // New filter parameter
+    startDate?: Date, // New filter parameter
+    endDate?: Date // New filter parameter
   ): Observable<Page<SlotDto>> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -81,6 +84,15 @@ export class SlotService {
       params = params.set('isAvailable', isAvailable.toString());
     }
 
+    if (vehicleId !== undefined && vehicleId !== null) {
+      params = params.set('vehicleId', vehicleId.toString());
+    }
+
+    if (startDate && endDate) {
+      params = params.set('startDate', startDate.toISOString());
+      params = params.set('endDate', endDate.toISOString());
+    }
+    
     return this.http.get<Page<SlotDto>>(this.baseUrl, { params });
   }
 
