@@ -57,8 +57,9 @@ export interface SessionRequestDto {
   amount: number;
   currency: string;
   reservationId: number;
-  returnUrl: string;
+  successUrl: string;
   cancelUrl: string;
+  providerName: string;
 }
 
 export interface SessionResponseDto {

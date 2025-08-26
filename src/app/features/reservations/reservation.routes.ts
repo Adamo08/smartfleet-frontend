@@ -31,10 +31,5 @@ export const RESERVATION_ROUTES: Routes = [
     path: 'slots',
     canActivate: [authGuard],
     loadComponent: () => import('./slot-selector/slot-selector').then(m => m.SlotSelector)
-  },
-  {
-    path: 'management',
-    canActivate: [authGuard],
-    loadComponent: () => import('./reservation-management/reservation-management').then(m => m.ReservationManagement)
   }
 ];

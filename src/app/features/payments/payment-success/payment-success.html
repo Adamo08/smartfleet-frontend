@@ -1,132 +1,73 @@
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
-  <!-- Background Effects -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
-    <div class="absolute top-40 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-20 left-1/2 w-72 h-72 bg-purple-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
-  </div>
-
-  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Success Header -->
-    <div class="text-center mb-12">
-      <div class="inline-flex items-center justify-center w-24 h-24 bg-green-500/20 border border-green-500/30 rounded-full mb-8">
-        <svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center py-12">
+      <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-blue-500 hover:bg-blue-400 transition ease-in-out duration-150 cursor-not-allowed">
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
+        Confirming your payment...
       </div>
-      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-green-200 to-cyan-200 bg-clip-text text-transparent mb-4">
-        Payment <span class="bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">Successful!</span>
-      </h1>
-      <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-        Your payment has been processed successfully. You will receive a confirmation email shortly.
-      </p>
     </div>
 
-    <!-- Payment Details Card -->
-    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-8 mb-8">
-      <h2 class="text-2xl font-semibold text-white mb-6 text-center">Payment Confirmation</h2>
+    <!-- Success State -->
+    <div *ngIf="success && !loading" class="bg-white shadow rounded-lg p-8 text-center">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+        <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-4">
-          <div>
-            <p class="text-sm text-gray-400">Payment ID</p>
-            <p class="text-white font-medium text-lg">{{ paymentId || 'N/A' }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-400">Amount Paid</p>
-            <p class="text-white font-bold text-2xl text-green-400">{{ formatCurrency(amount || 0) }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-400">Currency</p>
-            <p class="text-white font-medium">{{ currency }}</p>
-          </div>
-        </div>
-        
-        <div class="space-y-4">
-          <div>
-            <p class="text-sm text-gray-400">Transaction Date</p>
-            <p class="text-white font-medium">{{ transactionDate | date:'fullDate' }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-400">Status</p>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-              </svg>
-              Completed
-            </span>
-          </div>
-          <div>
-            <p class="text-sm text-gray-400">Payment Method</p>
-            <p class="text-white font-medium">Credit Card</p>
-          </div>
-        </div>
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h1>
+      <p class="text-gray-600 mb-6">Your payment has been confirmed and your reservation is now active.</p>
+      
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <p class="text-sm text-gray-600">Session ID: <span class="font-mono text-gray-800">{{ sessionId }}</span></p>
       </div>
-    </div>
-
-    <!-- Next Steps Card -->
-    <div class="backdrop-blur-2xl bg-blue-500/10 border border-blue-500/20 rounded-3xl p-8 mb-8">
-      <h3 class="text-xl font-semibold text-blue-400 mb-4">What Happens Next?</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="text-center">
-          <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span class="text-2xl">📧</span>
-          </div>
-          <h4 class="text-white font-medium mb-2">Confirmation Email</h4>
-          <p class="text-blue-300 text-sm">You'll receive a detailed confirmation email within minutes</p>
-        </div>
-        <div class="text-center">
-          <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span class="text-2xl">📱</span>
-          </div>
-          <h4 class="text-white font-medium mb-2">SMS Notification</h4>
-          <p class="text-blue-300 text-sm">A text message will confirm your payment was received</p>
-        </div>
-        <div class="text-center">
-          <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span class="text-2xl">🚗</span>
-          </div>
-          <h4 class="text-white font-medium mb-2">Reservation Confirmed</h4>
-          <p class="text-blue-300 text-sm">Your vehicle reservation is now confirmed and ready</p>
-        </div>
+      
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button 
+          (click)="onGoToReservations()"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          View My Reservations
+        </button>
+        <button 
+          (click)="onGoToPayments()"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Payment History
+        </button>
       </div>
+      
+      <p class="text-sm text-gray-500 mt-4">You will be redirected to your reservations in a few seconds...</p>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <button (click)="onViewReservation()" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="bg-white shadow rounded-lg p-8 text-center">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+        <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
-        View Reservation
-      </button>
-      <button (click)="onGoHome()" class="px-8 py-4 bg-gray-600 hover:bg-gray-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-        </svg>
-        Go Home
-      </button>
-    </div>
-
-    <!-- Additional Information -->
-    <div class="mt-12 text-center">
-      <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-6">
-        <h4 class="text-lg font-semibold text-white mb-3">Need Help?</h4>
-        <p class="text-gray-300 mb-4">If you have any questions about your payment or reservation, our support team is here to help.</p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="mailto:support@smartfleet.com" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 text-sm font-medium">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-            </svg>
-            Email Support
-          </a>
-          <a href="tel:+1-800-SMARTFLEET" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 text-sm font-medium">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-            </svg>
-            Call Support
-          </a>
-        </div>
+      </div>
+      
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">Payment Confirmation Failed</h1>
+      <p class="text-gray-600 mb-6">{{ error }}</p>
+      
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button 
+          (click)="onGoToReservations()"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Go to Reservations
+        </button>
+        <button 
+          (click)="onGoToPayments()"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Payment History
+        </button>
       </div>
     </div>
   </div>

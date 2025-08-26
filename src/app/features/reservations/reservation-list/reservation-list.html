@@ -185,7 +185,7 @@
               </svg>
             </button>
           </div>
-          <div class="col-span-1 text-center">Actions</div>
+          <div class="col-span-2 text-center">Actions</div>
         </div>
       </div>
 
@@ -240,16 +240,50 @@
           </div>
 
           <!-- Actions -->
-          <div class="col-span-1 text-center">
-            <button
-              (click)="onReservationClick(reservation); $event.stopPropagation()"
-              class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-              </svg>
-            </button>
+          <div class="col-span-2 text-center">
+            <div class="flex space-x-2 justify-center">
+              <!-- View Button -->
+              <button
+                (click)="onViewReservation(reservation); $event.stopPropagation()"
+                class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition-all duration-200"
+                title="View Details"
+              >
+                View
+              </button>
+              
+              <!-- Pay Button - only show if reservation can be paid -->
+              @if (canPayReservation(reservation)) {
+                <button
+                  (click)="onPayReservation(reservation); $event.stopPropagation()"
+                  class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded transition-all duration-200"
+                  title="Pay Now"
+                >
+                  Pay
+                </button>
+              }
+              
+              <!-- Cancel Button - only show if reservation can be cancelled -->
+              @if (canCancelReservation(reservation)) {
+                <button
+                  (click)="onCancelReservation(reservation); $event.stopPropagation()"
+                  class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded transition-all duration-200"
+                  title="Cancel Reservation"
+                >
+                  Cancel
+                </button>
+              }
+              
+              <!-- Bookmark Button -->
+              <button
+                (click)="onBookmarkReservation(reservation); $event.stopPropagation()"
+                class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded transition-all duration-200"
+                title="Bookmark"
+              >
+                <span [class]="isReservationBookmarked(reservation.id) ? 'text-yellow-300' : 'text-white'">
+                  {{ isReservationBookmarked(reservation.id) ? '★' : '☆' }}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
         }
@@ -286,3 +320,123 @@
     }
   </div>
 </div>
+
+<!-- View Reservation Modal -->
+@if (isViewModalOpen && selectedReservation) {
+  <app-modal>
+    <div modal-close>
+      <button (click)="closeViewModal()" class="text-gray-300 hover:text-white">✕</button>
+    </div>
+
+    <div class="mb-6">
+      <h3 class="text-2xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-2">
+        Reservation Details
+      </h3>
+      <p class="text-gray-300">View detailed information about your reservation</p>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Reservation Summary -->
+      <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+        <h4 class="text-lg font-semibold text-white mb-3">Reservation Summary</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="text-gray-300 text-sm">Reservation ID</p>
+            <p class="text-white font-medium">#{{ selectedReservation.id }}</p>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">Status</p>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white"
+                  [class]="getStatusColor(selectedReservation.status)">
+              {{ getStatusText(selectedReservation.status) }}
+            </span>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">Start Date</p>
+            <p class="text-white font-medium">{{ selectedReservation.startDate | date:'medium' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">End Date</p>
+            <p class="text-white font-medium">{{ selectedReservation.endDate | date:'medium' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Information -->
+      <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+        <h4 class="text-lg font-semibold text-white mb-3">Vehicle Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="text-gray-300 text-sm">Vehicle</p>
+            <p class="text-white font-medium">{{ selectedReservation.vehicle.brand }} {{ selectedReservation.vehicle.model }}</p>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">Year</p>
+            <p class="text-white font-medium">{{ selectedReservation.vehicle.year || 'N/A' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">License Plate</p>
+            <p class="text-white font-medium">{{ selectedReservation.vehicle.licensePlate || 'N/A' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">Category</p>
+            <p class="text-white font-medium">{{ selectedReservation.vehicle.model || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Information -->
+      <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+        <h4 class="text-lg font-semibold text-white mb-3">Payment Information</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="text-gray-300 text-sm">Payment Status</p>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [class]="getPaymentStatus(selectedReservation.id) === 'COMPLETED' ? 'bg-green-500 text-white' : 
+                           getPaymentStatus(selectedReservation.id) === 'PENDING' ? 'bg-yellow-500 text-white' : 
+                           getPaymentStatus(selectedReservation.id) === 'FAILED' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'">
+              {{ getPaymentStatus(selectedReservation.id) }}
+            </span>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">Amount</p>
+            <p class="text-white font-medium">{{ getPaymentAmount(selectedReservation.id) | currency:'USD':'symbol':'1.2-2' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">Payment Method</p>
+            <p class="text-white font-medium">{{ getPaymentStatus(selectedReservation.id) === 'No Payment' ? 'Not specified' : 'Online Payment' }}</p>
+          </div>
+          <div>
+            <p class="text-gray-300 text-sm">Transaction ID</p>
+            <p class="text-white font-medium">{{ getPaymentStatus(selectedReservation.id) === 'No Payment' ? 'N/A' : 'Generated on payment' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Actions -->
+      <div class="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
+        <h4 class="text-lg font-semibold text-blue-400 mb-3">Actions</h4>
+        <div class="flex flex-wrap gap-3">
+          <button
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 text-sm"
+            (click)="onPayReservation(selectedReservation)"
+          >
+            Pay Now
+          </button>
+          <button
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 text-sm"
+            (click)="onCancelReservation(selectedReservation)"
+          >
+            Cancel Reservation
+          </button>
+          <button
+            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 text-sm"
+            (click)="closeViewModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </app-modal>
+}

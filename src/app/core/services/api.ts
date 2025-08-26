@@ -11,14 +11,19 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  get<T>(endpoint: string, params?: any): Observable<T> {
-    let httpParams = new HttpParams();
-    if (params) {
-      Object.keys(params).forEach(key => {
-        if (params[key] !== null && params[key] !== undefined) {
-          httpParams = httpParams.set(key, params[key]);
-        }
-      });
+  get<T>(endpoint: string, params?: HttpParams | { [key: string]: any }): Observable<T> {
+    let httpParams: HttpParams;
+    if (params instanceof HttpParams) {
+      httpParams = params;
+    } else {
+      httpParams = new HttpParams();
+      if (params) {
+        Object.keys(params).forEach(key => {
+          if (params[key] !== null && params[key] !== undefined) {
+            httpParams = httpParams.set(key, params[key]);
+          }
+        });
+      }
     }
     return this.http.get<T>(`${this.baseUrl}${endpoint}`, { params: httpParams });
   }
