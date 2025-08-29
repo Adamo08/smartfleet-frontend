@@ -1,4 +1,5 @@
 import { PaymentStatus } from '../enums/payment-status.enum';
+import { RefundStatus } from '../enums/refund-status.enum';
 
 export interface Payment {
   id: number;
@@ -43,14 +44,17 @@ export interface PaymentResponseDto {
 
 export interface PaymentDetailsDto {
   id: number;
-  reservationId: number;
   amount: number;
   currency: string;
   status: PaymentStatus;
   provider: string;
   transactionId?: string;
+  captureId?: string;
   createdAt: Date;
   updatedAt: Date;
+  reservationId: number;
+  userId: number;
+  userEmail: string;
 }
 
 export interface SessionRequestDto {
@@ -79,15 +83,25 @@ export interface RefundRequestDto {
 
 export interface RefundResponseDto {
   id: number;
-  status: string;
+  status: RefundStatus;
   amount: number;
 }
 
 export interface RefundDetailsDto {
   id: number;
   paymentId: number;
+  refundTransactionId?: string;
   amount: number;
+  currency: string;
   reason: string;
-  status: string;
-  createdAt: Date;
+  refundMethod?: string;
+  additionalNotes?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  status: RefundStatus;
+  requestedAt: Date;
+  processedAt?: Date;
+  reservationId?: number;
+  userId?: number;
+  userEmail?: string;
 }

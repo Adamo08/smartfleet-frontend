@@ -6,17 +6,8 @@ import { Page, Pageable } from '../../../../core/models/pagination.interface';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
-
-interface VehicleBrand {
-  id?: number;
-  name: string;
-  description?: string;
-  logoUrl?: string;
-  countryOfOrigin?: string;
-  isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { VehicleBrand } from '../../../../core/models/vehicle-brand.interface';
+import { CreateVehicleBrandDto, UpdateVehicleBrandDto } from '../../../../core/models/vehicle-create-update.interface';
 
 @Component({
   selector: 'app-vehicle-brands',
@@ -39,7 +30,7 @@ export class VehicleBrands implements OnInit {
   showDeleteModal = false;
 
   // Form data
-  currentBrand: VehicleBrand = {
+  currentBrand: Partial<VehicleBrand> = {
     name: '',
     description: '',
     logoUrl: '',
@@ -123,7 +114,7 @@ export class VehicleBrands implements OnInit {
   }
 
   saveBrand(): void {
-    if (!this.currentBrand.name.trim()) {
+    if (!this.currentBrand.name?.trim()) {
       this.showMessage('Brand name is required', 'error');
       return;
     }
@@ -132,8 +123,16 @@ export class VehicleBrands implements OnInit {
     this.clearMessage();
 
     if (this.currentBrand.id) {
-      // Update existing
-      this.apiService.put<VehicleBrand>(`/admin/vehicle-brands/${this.currentBrand.id}`, this.currentBrand).subscribe({
+      // Update existing - use UpdateVehicleBrandDto
+      const updateDto: UpdateVehicleBrandDto = {
+        name: this.currentBrand.name,
+        description: this.currentBrand.description,
+        logoUrl: this.currentBrand.logoUrl,
+        countryOfOrigin: this.currentBrand.countryOfOrigin,
+        isActive: this.currentBrand.isActive
+      };
+      
+      this.apiService.put<VehicleBrand>(`/admin/vehicle-brands/${this.currentBrand.id}`, updateDto).subscribe({
         next: () => {
           this.showMessage('Brand updated successfully!', 'success');
           this.closeEditModal();
@@ -148,8 +147,15 @@ export class VehicleBrands implements OnInit {
         }
       });
     } else {
-      // Create new
-      this.apiService.post<VehicleBrand>('/admin/vehicle-brands', this.currentBrand).subscribe({
+      // Create new - use CreateVehicleBrandDto
+      const createDto: CreateVehicleBrandDto = {
+        name: this.currentBrand.name!,
+        description: this.currentBrand.description,
+        logoUrl: this.currentBrand.logoUrl,
+        countryOfOrigin: this.currentBrand.countryOfOrigin
+      };
+      
+      this.apiService.post<VehicleBrand>('/admin/vehicle-brands', createDto).subscribe({
         next: () => {
           this.showMessage('Brand created successfully!', 'success');
           this.closeAddModal();
@@ -189,8 +195,7 @@ export class VehicleBrands implements OnInit {
   toggleBrandStatus(brand: VehicleBrand): void {
     if (!brand.id) return;
 
-    const updatedBrand = { ...brand, isActive: !brand.isActive };
-    this.apiService.patch<VehicleBrand>(`/admin/vehicle-brands/${brand.id}/toggle-status`, updatedBrand).subscribe({
+    this.apiService.patch<VehicleBrand>(`/admin/vehicle-brands/${brand.id}/toggle-status`, {}).subscribe({
       next: () => {
         this.loadBrands();
       },

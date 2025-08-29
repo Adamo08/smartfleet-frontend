@@ -115,7 +115,7 @@
           <app-vehicle-card
             [vehicle]="vehicle"
             [isLoggedIn]="isLoggedIn"
-            [isFavorite]="false"
+            [isFavorite]="isFavorite(vehicle.id)"
             (favoriteToggled)="onFavoriteToggled($event)"
           ></app-vehicle-card>
         }

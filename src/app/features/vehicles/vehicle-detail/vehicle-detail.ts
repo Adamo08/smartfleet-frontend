@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { VehicleService } from '../../../core/services/vehicle';
 import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { TestimonialService, Testimonial } from '../../../core/services/testimonial';
@@ -16,7 +17,9 @@ import { Vehicle } from '../../../core/models/vehicle.interface';
 import { Page, Pageable } from '../../../core/models/pagination.interface';
 import { VehicleFilter } from '../../../core/models/vehicle-filter.interface';
 import { ReservationStatus } from '../../../core/enums/reservation-status.enum';
-import { CreateReservationRequest } from '../../../core/models/reservation.interface';
+import { CreateReservationRequest, ReservationBookingContext } from '../../../core/models/reservation.interface';
+import { BookingContextService } from '../../../core/services/booking-context.service';
+import { PaymentCalculationService } from '../../../core/services/payment-calculation.service';
 import { Modal } from '../../../shared/components/modal/modal';
 import { SlotSelector } from '../../reservations/slot-selector/slot-selector';
 
@@ -61,7 +64,7 @@ export class VehicleDetail implements OnInit, OnDestroy {
   // Payment method mapping
   readonly paymentMethods = {
     paypal: { id: 'paypal', name: 'PayPal', provider: 'paypal' },
-    cmi: { id: 'cmi', name: 'CMI', provider: 'cmi' },
+
     onsite: { id: 'onsite', name: 'On-Site', provider: 'onsite' }
   };
 
@@ -79,7 +82,10 @@ export class VehicleDetail implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private reservationService: ReservationService,
     private paymentProcessingService: PaymentProcessingService,
-    private paymentStateService: PaymentStateService
+    private paymentStateService: PaymentStateService,
+    private bookingContextService: BookingContextService,
+    private paymentCalculationService: PaymentCalculationService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -122,7 +128,7 @@ export class VehicleDetail implements OnInit, OnDestroy {
           // Fallback to default payment methods if backend fails
           this.availablePaymentMethods = [
             { id: 'paypal', name: 'PayPal', description: 'Pay with your PayPal account', icon: '💳', isActive: true, provider: 'paypalPaymentProvider' },
-            { id: 'cmi', name: 'CMI', description: 'Pay securely with your card via CMI', icon: '🏦', isActive: true, provider: 'cmiPaymentProvider' },
+
             { id: 'onsite', name: 'On-site Payment', description: 'Pay in person at our location', icon: '🏪', isActive: true, provider: 'onSitePaymentProvider' }
           ];
         }
@@ -415,17 +421,32 @@ export class VehicleDetail implements OnInit, OnDestroy {
     }
     this.isSubmitting = true;
 
+    // Create booking context to preserve booking details
+    const bookingContext: ReservationBookingContext = {
+      slotType: this.selectedSlotType,
+      duration: this.selectedDuration,
+      calculationMethod: 'DATE_RANGE', // Using date range for calculation
+      originalAmount: this.getTotalPaymentAmount(),
+      preferences: {
+        preferredPaymentMethod: this.selectedPaymentMethod || undefined
+      }
+    };
+
     const request: CreateReservationRequest = {
       vehicleId: this.vehicle.id,
-      // slotId: this.selectedSlot.id, // Slot ID will be determined by backend based on date range
       startDate: this.selectedAvailabilityStartDate,
       endDate: this.selectedAvailabilityEndDate,
-      comment: `Booking type: ${this.selectedSlotType}, Duration: ${this.selectedDuration} hours`
+      comment: `Booking type: ${this.selectedSlotType}, Duration: ${this.selectedDuration} hours`,
+      bookingContext: bookingContext
     };
 
     this.reservationService.createReservation(request).subscribe({
       next: (reservation: any) => { // Explicitly type 'reservation'
         this.currentReservationId = reservation.id; // Store the reservation ID
+        
+        // Save booking context for later retrieval
+        this.saveBookingContextForReservation(reservation.id);
+        
         this.toastr.success('Reservation created successfully! Proceeding to payment...', 'Reservation Created');
         this.isSubmitting = false;
         // Move to payment step instead of closing
@@ -439,6 +460,27 @@ export class VehicleDetail implements OnInit, OnDestroy {
     });
   }
 
+  private saveBookingContextForReservation(reservationId: number): void {
+    if (!this.vehicle) return;
+    
+    // Initialize booking context service with current booking details
+    const bookingContext = this.bookingContextService;
+    bookingContext.initializeBookingContext(this.vehicle.id, this.vehicle.pricePerDay);
+    bookingContext.setBookingDates(this.selectedAvailabilityStartDate!, this.selectedAvailabilityEndDate!);
+    bookingContext.setSlotType(this.selectedSlotType, this.selectedDuration);
+    bookingContext.setCalculationMethod('DATE_RANGE');
+    bookingContext.setTotalAmount(this.getTotalPaymentAmount());
+    
+    if (this.selectedPaymentMethod) {
+      bookingContext.setComment(`Preferred payment: ${this.selectedPaymentMethod}`);
+    }
+    
+    // Save to localStorage for retrieval during payment
+    bookingContext.saveContextForReservation(reservationId);
+    
+    console.log('✅ Booking context saved for reservation:', reservationId, bookingContext.currentContext);
+  }
+
   startPayment(provider: string): void {
     if (!this.currentReservationId) {
       this.toastr.error('No reservation ID available for payment.', 'Payment Error');
@@ -450,11 +492,11 @@ export class VehicleDetail implements OnInit, OnDestroy {
 
     if (provider === 'onsite') {
       // For onsite payments, we just mark it as pending
-      this.toastr.success('On-site payment selected. Please complete payment at the location.', 'Payment Method Selected');
+      this.toastr.success('On-site payment request created. Please complete payment at the location to confirm your reservation.', 'Payment Request Created');
       return;
     }
 
-    // For online payments (PayPal, CMI), create a payment session
+    // For online payments (PayPal), create a payment session
     const sessionRequest = {
       amount: totalAmount,
       currency: 'USD',
@@ -534,29 +576,8 @@ export class VehicleDetail implements OnInit, OnDestroy {
     this.paymentError = null;
 
     if (this.selectedPaymentMethod === 'onsite') {
-      // For onsite payments, we create a pending payment record
-      const paymentRequest = {
-        reservationId: this.currentReservationId,
-        amount: this.getTotalPaymentAmount(),
-        currency: 'USD',
-        paymentMethodId: 'onsite',
-        providerName: 'onsitePaymentProvider'
-      };
-
-      this.paymentProcessingService.processDirectPayment(paymentRequest)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (response: any) => {
-            this.isProcessingPayment = false;
-            this.toastr.success('On-site payment recorded. Please complete payment at the location.', 'Payment Recorded');
-            this.closeBooking();
-          },
-          error: (err: any) => {
-            this.isProcessingPayment = false;
-            this.paymentError = err?.error?.message || 'Failed to record payment';
-            console.error('Payment error:', err);
-          }
-        });
+      // For onsite payments, we need to handle the case where a payment might already exist
+      this.handleOnsitePayment();
     } else {
       // For online payments, create a payment session
       if (this.selectedPaymentMethod) {
@@ -568,12 +589,86 @@ export class VehicleDetail implements OnInit, OnDestroy {
     }
   }
 
+  // Handle onsite payment with duplicate prevention
+  private handleOnsitePayment(): void {
+    const amount = this.formatAmountForApi(this.getTotalPaymentAmount());
+    
+    // First, check if a payment already exists for this reservation
+    this.paymentProcessingService.getPaymentStatus(this.currentReservationId!)
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap((paymentResult: any) => {
+          // If payment already exists and is completed, show success
+          if (paymentResult.success && paymentResult.status === 'COMPLETED') {
+            this.toastr.success('Payment already completed for this reservation.', 'Payment Complete');
+            this.closeBooking();
+            return of({ skipProcessing: true });
+          }
+          
+          // If payment exists but is pending, show message (don't process - admin must complete)
+          if (paymentResult.success && paymentResult.status === 'PENDING') {
+            this.toastr.info('On-site payment request already created for this reservation. Please complete payment at the location. An administrator will confirm your payment.', 'Payment Pending');
+            this.closeBooking();
+            return of({ skipProcessing: true });
+          }
+          
+          // If no payment exists, create a new one
+          return this.createNewOnsitePayment(amount);
+        }),
+        catchError((error: any) => {
+          // If getPaymentStatus fails, it means no payment exists yet - proceed with creating one
+          console.log('No existing payment found, creating new one:', error);
+          return this.createNewOnsitePayment(amount);
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          this.isProcessingPayment = false;
+          // Only show success toast if we actually created a payment (not skipped processing)
+          if (response && !response.skipProcessing) {
+            this.toastr.success('On-site payment request created. Please complete payment at the location to confirm your reservation.', 'Payment Request Created');
+            this.closeBooking();
+          }
+        },
+        error: (err: any) => {
+          this.isProcessingPayment = false;
+          this.paymentError = err?.error?.message || 'Failed to create payment request';
+          this.toastr.error(this.paymentError || 'Failed to create payment request', 'Payment Error');
+          console.error('Payment error:', err);
+        }
+      });
+  }
+
+  // Process an existing pending payment
+  private processExistingPayment(amount: number): Observable<any> {
+    // Use the service method to process existing payment
+    return this.paymentProcessingService.processExistingPayment(this.currentReservationId!);
+  }
+
+  // Create a new onsite payment
+  private createNewOnsitePayment(amount: number): Observable<any> {
+    const sessionRequest = {
+      reservationId: this.currentReservationId!,
+      amount: amount,
+      currency: 'USD',
+      successUrl: `${window.location.origin}/reservations`,
+      cancelUrl: `${window.location.origin}/vehicles/${this.vehicle?.id}`,
+      providerName: 'onSitePaymentProvider'
+    };
+
+    // Only create payment session (creates Payment entity in PENDING status)
+    // DO NOT automatically process the payment - it requires admin approval
+    return this.paymentProcessingService.createPaymentSession(sessionRequest);
+  }
+
   saveForLater(): void {
     if (this.currentReservationId) {
-      this.toastr.success('Reservation saved successfully! You can complete the payment from your reservations page.', 'Saved for Later');
+      // Ensure booking context is saved when saving for later
+      this.saveBookingContextForReservation(this.currentReservationId);
+      
+      this.toastr.success('Reservation saved with booking preferences. You can complete payment from your reservations page.', 'Saved for Later');
       this.closeBooking();
-      // Optionally navigate to reservations page
-      // this.router.navigate(['/reservations']);
+      this.router.navigate(['/reservations']);
     } else {
       this.toastr.error('No reservation to save. Please complete the booking first.', 'Error');
     }
@@ -604,12 +699,12 @@ export class VehicleDetail implements OnInit, OnDestroy {
       .subscribe({
         next: (response: any) => {
           this.toastr.success('Payment confirmed successfully! Your reservation is now active.', 'Payment Confirmed');
-          
+
           // Check reservation status after payment confirmation
           if (this.currentReservationId) {
             this.checkReservationStatus();
           }
-          
+
           this.closeBooking();
           // Optionally navigate to reservations page
           // this.router.navigate(['/reservations']);
@@ -617,6 +712,36 @@ export class VehicleDetail implements OnInit, OnDestroy {
         error: (err: any) => {
           console.error('Payment confirmation failed:', err);
           this.toastr.error('Payment confirmation failed. Please contact support.', 'Payment Error');
+        }
+      });
+  }
+
+  // Check and display current payment status
+  checkPaymentStatus(): void {
+    if (!this.currentReservationId) return;
+    
+    this.paymentProcessingService.getPaymentStatus(this.currentReservationId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (paymentResult: any) => {
+          if (paymentResult.success) {
+            switch (paymentResult.status) {
+              case 'PENDING':
+                this.toastr.info('Payment is pending. Please complete payment at the location to confirm your reservation.', 'Payment Status');
+                break;
+              case 'COMPLETED':
+                this.toastr.success('Payment completed! Your reservation is confirmed.', 'Payment Status');
+                break;
+              case 'FAILED':
+                this.toastr.error('Payment failed. Please try again or contact support.', 'Payment Status');
+                break;
+              default:
+                this.toastr.info(`Payment status: ${paymentResult.status}`, 'Payment Status');
+            }
+          }
+        },
+        error: (err: any) => {
+          console.error('Failed to check payment status:', err);
         }
       });
   }
@@ -651,30 +776,6 @@ export class VehicleDetail implements OnInit, OnDestroy {
     }
   }
 
-  // Check payment status for the current reservation
-  checkPaymentStatus(): void {
-    if (!this.currentReservationId) return;
-
-    this.paymentProcessingService.getPaymentStatus(this.currentReservationId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (result: any) => {
-          if (result.success && !result.error) {
-            this.toastr.success('Payment completed! Your reservation is confirmed.', 'Payment Status');
-            this.closeBooking();
-          } else if (result.error) {
-            this.paymentError = 'Payment failed. Please try again or contact support.';
-          } else {
-            this.toastr.info('Payment is pending. Please complete the payment process.', 'Payment Status');
-          }
-        },
-        error: (err: any) => {
-          console.error('Failed to check payment status:', err);
-          // Payment might not exist yet, which is normal for new reservations
-        }
-      });
-  }
-
   // Check reservation status after payment confirmation
   checkReservationStatus(): void {
     if (!this.currentReservationId) return;
@@ -682,7 +783,7 @@ export class VehicleDetail implements OnInit, OnDestroy {
     this.reservationService.getReservationById(this.currentReservationId).subscribe({
       next: (reservation: any) => {
         console.log('Reservation status after payment:', reservation.status);
-        
+
         if (reservation.status === 'CONFIRMED') {
           this.toastr.success('Reservation confirmed! Your booking is now active.', 'Reservation Status');
         } else if (reservation.status === 'PENDING') {
@@ -711,7 +812,7 @@ export class VehicleDetail implements OnInit, OnDestroy {
   private createPaymentSession(provider: string): void {
     if (!this.currentReservationId || !this.vehicle) return;
 
-    const totalAmount = this.vehicle.pricePerDay * Math.ceil(this.selectedDuration / 24);
+    const totalAmount = this.formatAmountForApi(this.vehicle.pricePerDay * Math.ceil(this.selectedDuration / 24));
 
     const sessionRequest = {
       amount: totalAmount,
@@ -756,7 +857,9 @@ export class VehicleDetail implements OnInit, OnDestroy {
   // Calculate total payment amount
   getTotalPaymentAmount(): number {
     if (!this.vehicle || !this.selectedDuration) return 0;
-    return this.paymentProcessingService.calculatePaymentAmountByHours(this.vehicle.pricePerDay, this.selectedDuration);
+    const amount = this.paymentProcessingService.calculatePaymentAmountByHours(this.vehicle.pricePerDay, this.selectedDuration);
+    // Ensure consistent decimal precision (2 decimal places for currency)
+    return this.formatAmountForApi(amount);
   }
 
   // Format currency for display
@@ -767,5 +870,10 @@ export class VehicleDetail implements OnInit, OnDestroy {
   // Check if payment method is available
   isPaymentMethodAvailable(methodId: string): boolean {
     return this.paymentProcessingService.isPaymentMethodAvailable(methodId, this.availablePaymentMethods);
+  }
+
+  // Helper to format amount for API (e.g., to 2 decimal places)
+  private formatAmountForApi(amount: number): number {
+    return Number(amount.toFixed(2));
   }
 }

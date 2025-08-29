@@ -5,4 +5,6 @@ export interface VehicleModel {
   brandName: string;
   description?: string;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

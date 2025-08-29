@@ -43,6 +43,13 @@ export class PaymentService {
   }
 
   /**
+   * Process an existing payment for a reservation
+   */
+  processExistingPayment(reservationId: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/process-existing/${reservationId}`, {});
+  }
+
+  /**
    * Get payment details by ID
    */
   getPaymentById(id: number): Observable<PaymentDto> {
@@ -145,26 +152,49 @@ export class PaymentService {
     return this.http.post<RefundResponseDto>(`${this.baseUrl}/refund`, request);
   }
 
-  /**
-   * Get refund details
-   */
-  getRefundDetails(refundId: number): Observable<RefundDetailsDto> {
-    return this.http.get<RefundDetailsDto>(`${this.baseUrl}/refund/${refundId}`);
-  }
+
 
   /**
    * Get refund history for the current user
    */
-  getRefundHistory(pageable: Pageable): Observable<Page<RefundDetailsDto>> {
+  getRefundHistory(pageable: Pageable, filters?: any): Observable<Page<RefundDetailsDto>> {
     let params = new HttpParams()
       .set('page', pageable.page.toString())
       .set('size', pageable.size.toString());
     
+    if ((pageable as any).sort) {
+      params = params.set('sort', (pageable as any).sort);
+    }
     if (pageable.sortBy) {
       params = params.set('sortBy', pageable.sortBy);
     }
     if (pageable.sortDirection) {
       params = params.set('sortDirection', pageable.sortDirection);
+    }
+
+    // Add filter parameters
+    if (filters) {
+      if (filters.paymentId) {
+        params = params.set('paymentId', filters.paymentId.toString());
+      }
+      if (filters.status) {
+        params = params.set('status', filters.status);
+      }
+      if (filters.minAmount) {
+        params = params.set('minAmount', filters.minAmount.toString());
+      }
+      if (filters.maxAmount) {
+        params = params.set('maxAmount', filters.maxAmount.toString());
+      }
+      if (filters.startDate) {
+        params = params.set('startDate', filters.startDate);
+      }
+      if (filters.endDate) {
+        params = params.set('endDate', filters.endDate);
+      }
+      if (filters.searchTerm) {
+        params = params.set('searchTerm', filters.searchTerm);
+      }
     }
 
     return this.http.get<Page<RefundDetailsDto>>(`${this.baseUrl}/refunds`, { params });
@@ -271,5 +301,78 @@ export class PaymentService {
     message?: string;
   }> {
     return this.http.get<any>(`${this.baseUrl}/methods/${methodId}/validate`);
+  }
+
+  /**
+   * Check if a payment exists for a reservation
+   */
+  checkPaymentExists(reservationId: number): Observable<{ exists: boolean; payment?: any }> {
+    return this.http.get<{ exists: boolean; payment?: any }>(`${this.baseUrl}/exists/${reservationId}`);
+  }
+
+  /**
+   * Admin method to complete on-site payments after verifying actual payment
+   */
+  completeOnsitePayment(reservationId: number, adminNotes: string): Observable<any> {
+    const params = new HttpParams().set('adminNotes', adminNotes);
+    return this.http.post<any>(`${this.baseUrl}/admin/complete-onsite/${reservationId}`, {}, { params });
+  }
+
+  /**
+   * Process a refund for a payment (Admin only)
+   */
+  processRefund(paymentId: number, refundRequest: {
+    amount: number;
+    reason: string;
+    adminNotes?: string;
+    contactEmail?: string;
+    contactPhone?: string;
+  }): Observable<RefundResponseDto> {
+    // Map frontend request to backend RefundRequestDto format
+    const backendRequest = {
+      paymentId: paymentId,
+      amount: refundRequest.amount,
+      reason: refundRequest.reason,
+      refundMethod: 'ADMIN_REFUND',
+      additionalNotes: refundRequest.adminNotes || 'Admin-initiated refund',
+      contactEmail: refundRequest.contactEmail || '',
+      contactPhone: refundRequest.contactPhone || ''
+    };
+    
+    return this.http.post<RefundResponseDto>(`${environment.apiUrl}/admin/payments/refund`, backendRequest);
+  }
+
+  /**
+   * Get refund details
+   */
+  getRefundDetails(refundId: number): Observable<RefundDetailsDto> {
+    return this.http.get<RefundDetailsDto>(`${this.baseUrl}/refunds/${refundId}`);
+  }
+
+  /**
+   * Get all refunds (Admin only)
+   */
+  getAllRefunds(filter: PaymentFilter, pageable: Pageable): Observable<Page<RefundDetailsDto>> {
+    let params = new HttpParams()
+      .set('page', pageable.page.toString())
+      .set('size', pageable.size.toString());
+    
+    if (filter.userId) {
+      params = params.set('userId', filter.userId.toString());
+    }
+    if (filter.reservationId) {
+      params = params.set('reservationId', filter.reservationId.toString());
+    }
+    if (filter.startDate) {
+      params = params.set('startDate', filter.startDate.toISOString());
+    }
+    if (filter.endDate) {
+      params = params.set('endDate', filter.endDate.toISOString());
+    }
+    if (filter.searchTerm && filter.searchTerm.trim() !== '') {
+      params = params.set('searchTerm', filter.searchTerm.trim());
+    }
+
+    return this.http.get<Page<RefundDetailsDto>>(`${environment.apiUrl}/admin/payments/refunds`, { params });
   }
 }

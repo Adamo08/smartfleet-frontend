@@ -22,47 +22,106 @@
   @if (isLoading) {
     <div class="text-gray-300 text-center py-8">Loading analytics data...</div>
   } @else if (analyticsReport) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Card: Total Payments -->
       <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
-        <p class="text-gray-400 text-sm">Total Payments</p>
-        <p class="text-3xl font-bold text-white mt-2">{{ analyticsReport.totalPayments }}</p>
-      </div>
-
-      <!-- Card: Successful Payments -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
-        <p class="text-gray-400 text-sm">Successful Payments</p>
-        <p class="text-3xl font-bold text-white mt-2">{{ analyticsReport.successfulPayments }}</p>
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-gray-400 text-sm">Total Payments</p>
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+          </svg>
+        </div>
+        <p class="text-3xl font-bold text-white">{{ analyticsReport.totalPayments }}</p>
       </div>
 
       <!-- Card: Total Revenue -->
       <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
-        <p class="text-gray-400 text-sm">Total Revenue</p>
-        <p class="text-3xl font-bold text-white mt-2">{{ analyticsReport.totalRevenue | currency:'USD':'symbol':'1.2-2' }}</p>
-      </div>
-
-      <!-- Card: Total Refunds -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
-        <p class="text-gray-400 text-sm">Total Refunds</p>
-        <p class="text-3xl font-bold text-white mt-2">{{ analyticsReport.totalRefunds }}</p>
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-gray-400 text-sm">Total Revenue</p>
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+          </svg>
+        </div>
+        <p class="text-3xl font-bold text-white">{{ analyticsReport.totalRevenue | currency:'USD':'symbol':'1.2-2' }}</p>
       </div>
 
       <!-- Card: Success Rate -->
       <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
-        <p class="text-gray-400 text-sm">Success Rate</p>
-        <p class="text-3xl font-bold text-white mt-2">{{ analyticsReport.successRate | number:'1.2-2' }}%</p>
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-gray-400 text-sm">Success Rate</p>
+          <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="text-3xl font-bold text-white">{{ analyticsReport.successRate | number:'1.1-1' }}%</p>
       </div>
 
-      <!-- Card: Refund Rate -->
+      <!-- Card: Average Payment -->
+      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-gray-400 text-sm">Avg Payment</p>
+          <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+          </svg>
+        </div>
+        <p class="text-3xl font-bold text-white">{{ analyticsReport.averagePaymentAmount | currency:'USD':'symbol':'1.0-0' }}</p>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Revenue Trend Chart -->
+      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+        <h3 class="text-xl font-semibold text-white mb-6">Revenue Trend</h3>
+        <div class="relative h-64">
+          <canvas #revenueChart></canvas>
+        </div>
+      </div>
+
+      <!-- Vehicle Utilization Chart -->
+      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+        <h3 class="text-xl font-semibold text-white mb-6">Vehicle Utilization</h3>
+        <div class="relative h-64">
+          <canvas #utilizationChart></canvas>
+        </div>
+      </div>
+
+      <!-- Activity Distribution Chart -->
+      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+        <h3 class="text-xl font-semibold text-white mb-6">Activity Distribution</h3>
+        <div class="relative h-64">
+          <canvas #activityChart></canvas>
+        </div>
+      </div>
+
+      <!-- Payment Methods Chart -->
+      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+        <h3 class="text-xl font-semibold text-white mb-6">Payment Methods</h3>
+        <div class="relative h-64">
+          <canvas #paymentMethodChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Successful Payments -->
+      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <p class="text-gray-400 text-sm">Successful Payments</p>
+        <p class="text-2xl font-bold text-green-400 mt-2">{{ analyticsReport.successfulPayments }}</p>
+      </div>
+
+      <!-- Total Refunds -->
+      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <p class="text-gray-400 text-sm">Total Refunds</p>
+        <p class="text-2xl font-bold text-red-400 mt-2">{{ analyticsReport.totalRefunds }}</p>
+      </div>
+
+      <!-- Refund Rate -->
       <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
         <p class="text-gray-400 text-sm">Refund Rate</p>
-        <p class="text-3xl font-bold text-white mt-2">{{ analyticsReport.refundRate | number:'1.2-2' }}%</p>
-      </div>
-
-      <!-- Card: Average Payment Amount -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
-        <p class="text-gray-400 text-sm">Average Payment Amount</p>
-        <p class="text-3xl font-bold text-white mt-2">{{ analyticsReport.averagePaymentAmount | currency:'USD':'symbol':'1.2-2' }}</p>
+        <p class="text-2xl font-bold text-orange-400 mt-2">{{ analyticsReport.refundRate | number:'1.1-1' }}%</p>
       </div>
     </div>
   } @else {

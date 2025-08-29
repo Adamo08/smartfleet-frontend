@@ -16,6 +16,7 @@ import { map } from 'rxjs/operators';
 })
 export class SlotService {
   private readonly baseUrl = `${environment.apiUrl}/slots`;
+  private readonly reservationBaseUrl = `${environment.apiUrl}/reservations`;
 
   constructor(private http: HttpClient) {}
 
@@ -35,9 +36,10 @@ export class SlotService {
 
   /**
    * Get available slots for a specific vehicle (Public endpoint)
+   * Now uses the reservation-based endpoint
    */
   getAvailableSlotsByVehicle(vehicleId: number): Observable<SlotDto[]> {
-    return this.http.get<SlotDto[]>(`${this.baseUrl}/vehicle/${vehicleId}/available`);
+    return this.http.get<SlotDto[]>(`${this.reservationBaseUrl}/vehicles/${vehicleId}/slots`);
   }
 
   /**
@@ -98,13 +100,20 @@ export class SlotService {
 
   /**
    * Get all slots for a vehicle (available and unavailable) within an optional date range
+   * Now uses the reservation-based endpoint with booking type support
    */
-  getAllSlotsInRange(vehicleId: number, startDate?: Date, endDate?: Date): Observable<SlotDto[]> {
-    let params = new HttpParams();
-    if (startDate && endDate) {
-      params = params.set('start', startDate.toISOString()).set('end', endDate.toISOString());
+  getAllSlotsInRange(vehicleId: number, startDate?: Date, endDate?: Date, bookingType: string = 'DAILY'): Observable<SlotDto[]> {
+    if (!startDate || !endDate) {
+      // Fallback to simple vehicle slots endpoint
+      return this.http.get<SlotDto[]>(`${this.reservationBaseUrl}/vehicles/${vehicleId}/slots`);
     }
-    return this.http.get<SlotDto[]>(`${this.baseUrl}/vehicle/${vehicleId}`, { params });
+    
+    let params = new HttpParams()
+      .set('startDate', startDate.toISOString())
+      .set('endDate', endDate.toISOString())
+      .set('bookingType', bookingType);
+    
+    return this.http.get<SlotDto[]>(`${this.reservationBaseUrl}/vehicles/${vehicleId}/available-slots`, { params });
   }
 
   /**

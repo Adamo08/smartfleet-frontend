@@ -8,13 +8,13 @@ import { PaymentStatus } from '../../../../core/enums/payment-status.enum';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
-// Assuming PaymentDetail component exists or will be created
-import { PaymentDetail } from '../payment-detail/payment-detail'; 
+import { PaymentDetail } from '../payment-detail/payment-detail';
+import { RefundManagement } from '../refund-management/refund-management'; 
 
 @Component({
   selector: 'app-transaction-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, PaymentDetail],
+  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, PaymentDetail, RefundManagement],
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.css'
 })
@@ -30,8 +30,10 @@ export class TransactionList implements OnInit {
 
   selectedPayment: PaymentDetailsDto | null = null;
   showPaymentDetailModal = false;
+  showRefundModal = false;
   showDeletePaymentModal = false;
   paymentToDelete: PaymentDetailsDto | null = null;
+  paymentToRefund: PaymentDetailsDto | null = null;
 
   readonly PaymentStatus = PaymentStatus;
   readonly DialogActionType = DialogActionType;
@@ -142,5 +144,60 @@ export class TransactionList implements OnInit {
   closeDeletePaymentModal(): void {
     this.showDeletePaymentModal = false;
     this.paymentToDelete = null;
+  }
+
+  // Complete on-site payment after verifying actual payment at location
+  completeOnsitePayment(payment: PaymentDetailsDto): void {
+    if (payment.provider !== 'onSitePaymentProvider') {
+      console.error('Only on-site payments can be completed via this method');
+      return;
+    }
+
+    if (payment.status !== PaymentStatus.PENDING) {
+      console.error('Only pending payments can be completed');
+      return;
+    }
+
+    // Prompt admin for notes
+    const adminNotes = prompt('Enter any notes about the payment verification (optional):');
+    
+    this.paymentService.completeOnsitePayment(payment.reservationId, adminNotes || '').subscribe({
+      next: (response: any) => {
+        console.log('On-site payment completed successfully:', response);
+        // Reload payments to show updated status
+        this.loadPayments();
+      },
+      error: (err: any) => {
+        console.error('Failed to complete on-site payment:', err);
+      }
+    });
+  }
+
+  // Check if payment can be completed (on-site and pending)
+  canCompleteOnsitePayment(payment: PaymentDetailsDto): boolean {
+    return payment.provider === 'onSitePaymentProvider' && payment.status === PaymentStatus.PENDING;
+  }
+
+  // Open refund modal
+  openRefundModal(payment: PaymentDetailsDto): void {
+    this.paymentToRefund = payment;
+    this.showRefundModal = true;
+  }
+
+  // Handle refund processed
+  onRefundProcessed(): void {
+    this.closeRefundModal();
+    this.loadPayments(); // Reload the payment list
+  }
+
+  // Close refund modal
+  closeRefundModal(): void {
+    this.showRefundModal = false;
+    this.paymentToRefund = null;
+  }
+
+  // Check if payment can be refunded
+  canRefund(payment: PaymentDetailsDto): boolean {
+    return payment.status === PaymentStatus.COMPLETED;
   }
 }

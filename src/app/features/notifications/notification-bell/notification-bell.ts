@@ -84,6 +84,12 @@ export class NotificationBell implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     console.log('🔧 NotificationBell ngOnDestroy() called');
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    
+    // Clear timeout if exists
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+    }
+    
     this.webSocketService.disconnect();
   }
 
@@ -133,12 +139,22 @@ export class NotificationBell implements OnInit, OnDestroy {
     }
   }
 
+  private hideTimeout: any;
+
   showDropdown(): void {
+    // Clear any existing timeout
+    if (this.hideTimeout) {
+      clearTimeout(this.hideTimeout);
+      this.hideTimeout = null;
+    }
     this.isDropdownOpen = true;
   }
 
   hideDropdown(): void {
-    this.isDropdownOpen = false;
+    // Add a small delay to allow moving from button to dropdown
+    this.hideTimeout = setTimeout(() => {
+      this.isDropdownOpen = false;
+    }, 150); // 150ms delay
   }
 
   markAsRead(notification: Notification): void {

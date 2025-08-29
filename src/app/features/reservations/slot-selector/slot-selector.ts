@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, Observable } from 'rxjs';
 import { SlotService } from '../../../core/services/slot.service';
+import { ReservationService } from '../../../core/services/reservation.service';
 import { SlotDto } from '../../../core/models/slot.interface';
 import { Vehicle } from '../../../core/models/vehicle.interface';
 
@@ -23,9 +24,13 @@ export interface SlotTypeOption {
 })
 export class SlotSelector implements OnInit, OnDestroy, OnChanges {
   @Input() vehicleId: number = 0;
+  @Input() vehicle: Vehicle | null = null;
   @Input() showDatePicker: boolean = true;
   @Input() includeUnavailable: boolean = false;
   @Input() selectedSlotType: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM' = 'DAILY';
+
+  // Flag to determine if slot type selection should be shown
+  isSlotTypePreSelected: boolean = false;
 
   @Output() dateRangeSelected = new EventEmitter<{
     startDate: Date,
@@ -37,10 +42,34 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
 
   // Slot type selection
   slotTypeOptions: SlotTypeOption[] = [
-    { value: 'HOURLY', label: 'Hourly', description: 'Rent by the hour (min 1h, max 23h)', minDuration: 1, maxDuration: 23 },
-    { value: 'DAILY', label: 'Daily', description: 'Rent by the day (min 1 day, max 7 days)', minDuration: 24, maxDuration: 168 },
-    { value: 'WEEKLY', label: 'Weekly', description: 'Rent by the week (min 7 days, max 30 days)', minDuration: 168, maxDuration: 720 },
-    { value: 'CUSTOM', label: 'Custom', description: 'Custom duration (any time range)', minDuration: 1, maxDuration: 8760 } // max 1 year
+    { 
+      value: 'HOURLY', 
+      label: 'Hourly', 
+      description: 'Perfect for quick trips and short-term needs (1-23 hours)', 
+      minDuration: 1, 
+      maxDuration: 23 
+    },
+    { 
+      value: 'DAILY', 
+      label: 'Daily', 
+      description: 'Great for day trips and weekend getaways (1-7 days)', 
+      minDuration: 24, 
+      maxDuration: 168 
+    },
+    { 
+      value: 'WEEKLY', 
+      label: 'Weekly', 
+      description: 'Best value for extended trips and vacations (1-4 weeks)', 
+      minDuration: 168, 
+      maxDuration: 720 
+    },
+    { 
+      value: 'CUSTOM', 
+      label: 'Custom', 
+      description: 'Flexible duration for any time range up to 1 year', 
+      minDuration: 1, 
+      maxDuration: 8760 
+    }
   ];
 
   selectedDuration: number = 24; // Default to 1 day in hours
@@ -53,6 +82,10 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
   selectedStartDate: Date = new Date();
   selectedEndDate: Date = new Date();
 
+  // Hourly selection properties
+  selectedStartHour: number = 9; // 9 AM default
+  selectedEndHour: number = 10; // 10 AM default
+
   // Calendar navigation
   currentMonth = new Date();
   calendarDays: Date[] = [];
@@ -61,22 +94,42 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
   isSelectingRange = false;
   tempStartDate: Date | null = null;
 
+  // Enhanced availability tracking
+  blockedDates: Set<string> = new Set(); // Dates with existing reservations
+  partiallyAvailableDates: Set<string> = new Set(); // Dates with some slots taken
+  
   private destroy$ = new Subject<void>();
 
-  constructor(private slotService: SlotService) {
+  constructor(
+    private slotService: SlotService,
+    private reservationService: ReservationService
+  ) {
     this.initDateRange();
   }
 
   ngOnInit(): void {
     this.generateCalendarDays();
     this.updateDurationBasedOnSlotType();
+    this.loadBlockedDates();
     this.loadAvailableSlots();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['selectedSlotType'] && !changes['selectedSlotType'].firstChange) {
-      this.updateDurationBasedOnSlotType();
-      this.updateEndDateBasedOnDuration();
+    // Check if slot type is pre-selected by parent component
+    if (changes['selectedSlotType']) {
+      // If selectedSlotType was explicitly set by parent (not default value)
+      this.isSlotTypePreSelected = changes['selectedSlotType'].currentValue !== 'DAILY' || 
+                                   !changes['selectedSlotType'].firstChange;
+      
+      if (!changes['selectedSlotType'].firstChange) {
+        this.updateDurationBasedOnSlotType();
+        this.updateEndDateBasedOnDuration();
+        this.loadAvailableSlots();
+      }
+    }
+    
+    // Also check for vehicle input changes
+    if (changes['vehicle'] && !changes['vehicle'].firstChange) {
       this.loadAvailableSlots();
     }
   }
@@ -127,6 +180,23 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  /**
+   * Calculate duration in hours based on selected date range
+   * This method provides a more intuitive calculation for users
+   */
+  private calculateDurationFromDateRange(startDate: Date, endDate: Date): number {
+    // Strip time to work with full days only
+    const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    
+    // Calculate the difference in days
+    const diffMs = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    
+    // Convert to hours (each day is 24 hours)
+    return diffDays * 24;
+  }
+
   private generateCalendarDays(): void {
     const year = this.currentMonth.getFullYear();
     const month = this.currentMonth.getMonth();
@@ -160,14 +230,35 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  private loadBlockedDates(): void {
+    if (!this.vehicleId) return;
+
+    // Load blocked dates for the next 3 months
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 3);
+
+    this.reservationService.getBlockedDatesForVehicle(this.vehicleId, startDate, endDate)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blockedDateStrings) => {
+          this.blockedDates = new Set(blockedDateStrings);
+        },
+        error: (error) => {
+          console.error('Error loading blocked dates:', error);
+          // Don't show error to user as this is not critical
+        }
+      });
+  }
+
   public loadAvailableSlots(): void {
     if (!this.vehicleId || !this.selectedStartDate || !this.selectedEndDate) return;
 
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Use getAllSlotsInRange from service, which now returns dynamic slots
-    this.slotService.getAllSlotsInRange(this.vehicleId, this.selectedStartDate, this.selectedEndDate)
+    // Use getAllSlotsInRange from service, which now returns dynamic slots with booking type
+    this.slotService.getAllSlotsInRange(this.vehicleId, this.selectedStartDate, this.selectedEndDate, this.selectedSlotType)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (slots) => {
@@ -237,9 +328,14 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
       this.isSelectingRange = false;
       this.tempStartDate = null;
 
-      // Update duration based on selected range (add 1 day to include end date)
-      const diffMs = this.selectedEndDate.getTime() - this.selectedStartDate.getTime();
-      this.selectedDuration = Math.ceil(diffMs / (1000 * 60 * 60)) + 24; // Add 24 hours to include end date
+      // Update duration based on selected range using intuitive day-based calculation
+      this.selectedDuration = this.calculateDurationFromDateRange(this.selectedStartDate, this.selectedEndDate);
+
+      // Check if selected range is available
+      if (!this.isDateRangeAvailable(this.selectedStartDate, this.selectedEndDate)) {
+        this.errorMessage = `Selected date range is not available for ${this.selectedSlotType.toLowerCase()} bookings. Please choose different dates.`;
+        return;
+      }
 
       // Adjust slot type based on duration
       this.adjustSlotTypeBasedOnDuration();
@@ -250,15 +346,103 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
   }
 
   private adjustSlotTypeBasedOnDuration(): void {
-    if (this.selectedDuration <= 23) {
-      this.selectedSlotType = 'HOURLY';
-    } else if (this.selectedDuration <= 168) {
-      this.selectedSlotType = 'DAILY';
-    } else if (this.selectedDuration <= 720) {
-      this.selectedSlotType = 'WEEKLY';
-    } else {
-      this.selectedSlotType = 'CUSTOM';
+    const currentOption = this.slotTypeOptions.find(option => option.value === this.selectedSlotType);
+    
+    // Only auto-adjust if current selection doesn't fit the duration
+    if (!currentOption || 
+        this.selectedDuration < currentOption.minDuration || 
+        this.selectedDuration > currentOption.maxDuration) {
+      
+      if (this.selectedDuration <= 23) {
+        this.selectedSlotType = 'HOURLY';
+      } else if (this.selectedDuration <= 168) { // 7 days
+        this.selectedSlotType = 'DAILY';
+      } else if (this.selectedDuration <= 720) { // 30 days
+        this.selectedSlotType = 'WEEKLY';
+      } else {
+        this.selectedSlotType = 'CUSTOM';
+      }
     }
+  }
+
+  /**
+   * Check if a date range is available for the selected booking type
+   */
+  private isDateRangeAvailable(startDate: Date, endDate: Date): boolean {
+    const startDateKey = this.getDateKey(startDate);
+    const endDateKey = this.getDateKey(endDate);
+    
+    // For hourly bookings, check if any part of the day is blocked
+    if (this.selectedSlotType === 'HOURLY') {
+      return !this.blockedDates.has(startDateKey);
+    }
+    
+    // For daily/weekly/custom, check entire range
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const dateKey = this.getDateKey(currentDate);
+      if (this.blockedDates.has(dateKey)) {
+        return false;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    return true;
+  }
+
+  /**
+   * Get pricing multiplier based on booking type
+   */
+  getPricingInfo(): { multiplier: number; description: string } {
+    switch (this.selectedSlotType) {
+      case 'HOURLY':
+        return { 
+          multiplier: 1.0, 
+          description: 'Standard hourly rate' 
+        };
+      case 'DAILY':
+        return { 
+          multiplier: 0.85, 
+          description: '15% discount for daily bookings' 
+        };
+      case 'WEEKLY':
+        return { 
+          multiplier: 0.70, 
+          description: '30% discount for weekly bookings' 
+        };
+      case 'CUSTOM':
+        return { 
+          multiplier: 0.90, 
+          description: '10% discount for custom bookings' 
+        };
+      default:
+        return { multiplier: 1.0, description: 'Standard rate' };
+    }
+  }
+
+  /**
+   * Get recommended duration based on slot type
+   */
+  getRecommendedDurations(): number[] {
+    switch (this.selectedSlotType) {
+      case 'HOURLY':
+        return [1, 2, 3, 4, 6, 8, 12];
+      case 'DAILY':
+        return [24, 48, 72, 96, 120, 144, 168]; // 1-7 days
+      case 'WEEKLY':
+        return [168, 336, 504, 672]; // 1-4 weeks
+      case 'CUSTOM':
+        return [24, 72, 168, 336, 720]; // Mix of options
+      default:
+        return [24];
+    }
+  }
+
+  /**
+   * Get date key for date comparison
+   */
+  private getDateKey(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 
   onPreviousMonth(): void {
@@ -296,9 +480,17 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
 
-    // For now, enable all future dates by default
-    // The actual availability will be checked when a date range is selected
-    // This prevents the calendar from being too restrictive initially
+    // Check if date is blocked by existing reservations
+    const dateKey = this.getDateKey(date);
+    if (this.blockedDates.has(dateKey)) {
+      return true;
+    }
+
+    // For hourly bookings, allow selection if at least some hours are available
+    if (this.selectedSlotType === 'HOURLY') {
+      return false; // Let the backend handle hourly availability
+    }
+
     return false;
   }
 
@@ -395,18 +587,37 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
     if (this.selectedDuration < 24) {
       return `${this.selectedDuration} hour${this.selectedDuration > 1 ? 's' : ''}`;
     } else if (this.selectedDuration < 168) {
-      const days = Math.round(this.selectedDuration / 24);
+      const days = Math.ceil(this.selectedDuration / 24);
       return `${days} day${days > 1 ? 's' : ''}`;
     } else {
-      const weeks = Math.round(this.selectedDuration / 168);
+      const weeks = Math.ceil(this.selectedDuration / 168);
       return `${weeks} week${weeks > 1 ? 's' : ''}`;
     }
   }
 
   getTotalPrice(): string {
-    // This would typically come from the vehicle price and duration
-    // For now, return a placeholder
-    return 'Calculating...';
+    if (!this.vehicle || !this.selectedDuration) {
+      return 'Calculating...';
+    }
+
+    // Get base price per day
+    const basePricePerDay = this.vehicle.pricePerDay || 0;
+    
+    // Calculate total days (convert hours to days)
+    const totalDays = Math.max(1, Math.ceil(this.selectedDuration / 24));
+    
+    // Get pricing multiplier based on booking type
+    const pricingInfo = this.getPricingInfo();
+    
+    // Calculate total price
+    const baseTotal = basePricePerDay * totalDays;
+    const discountedTotal = baseTotal * pricingInfo.multiplier;
+    
+    // Format as currency
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(discountedTotal);
   }
 
   // Helper methods for template bindings
@@ -471,4 +682,60 @@ export class SlotSelector implements OnInit, OnDestroy, OnChanges {
   }
 
   protected readonly Math = Math;
+
+  // Hourly booking methods
+  getAvailableHours(): number[] {
+    const hours = [];
+    for (let i = 6; i <= 22; i++) { // 6 AM to 10 PM
+      hours.push(i);
+    }
+    return hours;
+  }
+
+  getAvailableEndHours(): number[] {
+    if (!this.selectedStartHour) return [];
+    const hours = [];
+    for (let i = this.selectedStartHour + 1; i <= 23; i++) { // End hour must be after start hour
+      hours.push(i);
+    }
+    return hours;
+  }
+
+  formatHour(hour: number): string {
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    return `${displayHour}:00 ${period}`;
+  }
+
+  getHourlyDuration(): number {
+    if (!this.selectedStartHour || !this.selectedEndHour) return 0;
+    return this.selectedEndHour - this.selectedStartHour;
+  }
+
+  updateHourlySelection(): void {
+    if (this.selectedStartHour && this.selectedEndHour && this.selectedStartDate) {
+      // Update the duration based on hour selection
+      this.selectedDuration = this.getHourlyDuration();
+      
+      // Update the end date with the correct time
+      const startDateTime = new Date(this.selectedStartDate);
+      startDateTime.setHours(this.selectedStartHour, 0, 0, 0);
+      
+      const endDateTime = new Date(this.selectedStartDate);
+      endDateTime.setHours(this.selectedEndHour, 0, 0, 0);
+      
+      this.selectedStartDate = startDateTime;
+      this.selectedEndDate = endDateTime;
+      
+      // Reload slots with the new time range
+      this.loadAvailableSlots();
+    }
+  }
+
+  getHourRangeForDate(date: Date): string {
+    if (this.selectedSlotType === 'HOURLY' && this.selectedStartHour !== undefined && this.selectedEndHour !== undefined) {
+      return `${this.formatHour(this.selectedStartHour).replace(':00', '')} - ${this.formatHour(this.selectedEndHour).replace(':00', '')}`;
+    }
+    return '';
+  }
 }

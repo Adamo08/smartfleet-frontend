@@ -3,17 +3,18 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { ReservationService } from '../../../../core/services/reservation.service';
 import { Page, Pageable, Sort } from '../../../../core/models/pagination.interface';
-import { ReservationSummaryDto, ReservationFilter } from '../../../../core/models/reservation.interface';
+import { ReservationSummaryDto, ReservationFilter, DetailedReservationDto } from '../../../../core/models/reservation.interface';
 import { ReservationStatus } from '../../../../core/enums/reservation-status.enum';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
-import { ReservationDetail } from '../reservation-detail/reservation-detail'; // Assuming this component exists
+import { ReservationDetail } from '../reservation-detail/reservation-detail';
+import { ReservationUpdate } from '../reservation-update/reservation-update';
 
 @Component({
   selector: 'app-reservation-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, ReservationDetail],
+  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, ReservationDetail, ReservationUpdate],
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css'
 })
@@ -27,10 +28,12 @@ export class ReservationList implements OnInit {
   sortBy = 'id';
   sortDirection: 'ASC' | 'DESC' = 'DESC';
 
-  selectedReservation: ReservationSummaryDto | null = null;
+  selectedReservation: DetailedReservationDto | null = null;
   showReservationDetailModal = false;
+  showEditReservationModal = false;
   showDeleteReservationModal = false;
   reservationToDelete: ReservationSummaryDto | null = null;
+  reservationToEdit: any = null; // Will hold DetailedReservationDto
 
   readonly ReservationStatus = ReservationStatus;
   readonly DialogActionType = DialogActionType;
@@ -108,8 +111,14 @@ export class ReservationList implements OnInit {
   }
 
   viewReservation(reservation: ReservationSummaryDto): void {
-    this.selectedReservation = reservation;
-    this.showReservationDetailModal = true;
+    // Load detailed reservation data for viewing
+    this.reservationService.getReservationByIdAdmin(reservation.id).subscribe({
+      next: (detailedReservation) => {
+        this.selectedReservation = detailedReservation;
+        this.showReservationDetailModal = true;
+      },
+      error: (err) => console.error('Error loading reservation details:', err)
+    });
   }
 
   closeReservationDetailModal(): void {
@@ -137,5 +146,26 @@ export class ReservationList implements OnInit {
   closeDeleteReservationModal(): void {
     this.showDeleteReservationModal = false;
     this.reservationToDelete = null;
+  }
+
+  editReservation(reservation: ReservationSummaryDto): void {
+    // Load detailed reservation data for editing
+    this.reservationService.getReservationByIdAdmin(reservation.id).subscribe({
+      next: (detailedReservation) => {
+        this.reservationToEdit = detailedReservation;
+        this.showEditReservationModal = true;
+      },
+      error: (err) => console.error('Error loading reservation details:', err)
+    });
+  }
+
+  onReservationUpdated(): void {
+    this.closeEditReservationModal();
+    this.loadReservations();
+  }
+
+  closeEditReservationModal(): void {
+    this.showEditReservationModal = false;
+    this.reservationToEdit = null;
   }
 }

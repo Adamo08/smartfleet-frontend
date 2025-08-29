@@ -6,22 +6,9 @@ import { Page, Pageable } from '../../../../core/models/pagination.interface';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
-
-interface VehicleBrand {
-  id: number;
-  name: string;
-}
-
-interface VehicleModel {
-  id?: number;
-  name: string;
-  brandId: number;
-  brandName?: string;
-  description?: string;
-  isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { VehicleBrand } from '../../../../core/models/vehicle-brand.interface';
+import { VehicleModel } from '../../../../core/models/vehicle-model.interface';
+import { CreateVehicleModelDto, UpdateVehicleModelDto } from '../../../../core/models/vehicle-create-update.interface';
 
 @Component({
   selector: 'app-vehicle-models',
@@ -45,13 +32,11 @@ export class VehicleModels implements OnInit {
   showDeleteModal = false;
 
   // Form data
-  currentModel: VehicleModel = {
+  currentModel: Partial<VehicleModel> = {
     name: '',
     brandId: 0,
     description: '',
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
+    isActive: true
   };
 
   modelToDelete: VehicleModel | null = null;
@@ -115,9 +100,7 @@ export class VehicleModels implements OnInit {
       name: '',
       brandId: this.brands.length > 0 ? this.brands[0].id : 0,
       description: '',
-      isActive: true,
-      createdAt: '',
-      updatedAt: '',
+      isActive: true
     };
     this.showAddModal = true;
   }
@@ -148,7 +131,7 @@ export class VehicleModels implements OnInit {
   }
 
   saveModel(): void {
-    if (!this.currentModel.name.trim()) {
+    if (!this.currentModel.name?.trim()) {
       this.showMessage('Model name is required', 'error');
       return;
     }
@@ -162,8 +145,15 @@ export class VehicleModels implements OnInit {
     this.clearMessage();
 
     if (this.currentModel.id) {
-      // Update existing
-      this.apiService.put<VehicleModel>(`/admin/vehicle-models/${this.currentModel.id}`, this.currentModel).subscribe({
+      // Update existing - use UpdateVehicleModelDto
+      const updateDto: UpdateVehicleModelDto = {
+        name: this.currentModel.name,
+        brandId: this.currentModel.brandId,
+        description: this.currentModel.description,
+        isActive: this.currentModel.isActive
+      };
+      
+      this.apiService.put<VehicleModel>(`/admin/vehicle-models/${this.currentModel.id}`, updateDto).subscribe({
         next: () => {
           this.showMessage('Model updated successfully!', 'success');
           this.closeEditModal();
@@ -178,8 +168,14 @@ export class VehicleModels implements OnInit {
         }
       });
     } else {
-      // Create new
-      this.apiService.post<VehicleModel>('/admin/vehicle-models', this.currentModel).subscribe({
+      // Create new - use CreateVehicleModelDto
+      const createDto: CreateVehicleModelDto = {
+        name: this.currentModel.name!,
+        brandId: this.currentModel.brandId!,
+        description: this.currentModel.description
+      };
+      
+      this.apiService.post<VehicleModel>('/admin/vehicle-models', createDto).subscribe({
         next: () => {
           this.showMessage('Model created successfully!', 'success');
           this.closeAddModal();
@@ -219,8 +215,7 @@ export class VehicleModels implements OnInit {
   toggleModelStatus(model: VehicleModel): void {
     if (!model.id) return;
 
-    const updatedModel = { ...model, isActive: !model.isActive };
-    this.apiService.patch<VehicleModel>(`/admin/vehicle-models/${model.id}/toggle-status`, updatedModel).subscribe({
+    this.apiService.patch<VehicleModel>(`/admin/vehicle-models/${model.id}/toggle-status`, {}).subscribe({
       next: () => {
         this.loadModels();
       },

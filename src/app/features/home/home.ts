@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { VehicleService } from '../../core/services/vehicle';
+import { FavoriteService, Favorite } from '../../core/services/favorite';
 import { Vehicle } from '../../core/models/vehicle.interface';
 import { VehicleCard } from '../vehicles/vehicle-card/vehicle-card';
 import { User } from '../../core/models/user.interface';
 import { Subscription } from 'rxjs';
 import { VehicleFilter } from '../../core/models/vehicle-filter.interface';
 import { Pageable } from '../../core/models/pagination.interface';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +23,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   currentUser: User | null = null;
   featuredVehicles: Vehicle[] = [];
+  favorites: Favorite[] = [];
   loading = true;
   private userSubscription: Subscription | null = null;
 
@@ -51,7 +54,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private vehicleService: VehicleService
+    private vehicleService: VehicleService,
+    private favoriteService: FavoriteService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -69,6 +74,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.currentUser = user;
       this.isAuthenticated = !!user; // Set isAuthenticated based on if a user exists
       console.log('🔧 User data updated:', this.currentUser);
+      
+      // Load favorites when user is authenticated
+      if (this.isAuthenticated) {
+        this.loadFavorites();
+      } else {
+        this.favorites = [];
+      }
     });
   }
 
@@ -108,9 +120,58 @@ export class HomeComponent implements OnInit, OnDestroy {
     return stars;
   }
 
+  private loadFavorites(): void {
+    this.favoriteService.getMyFavorites().subscribe({
+      next: (favorites) => {
+        this.favorites = favorites;
+      },
+      error: (error) => {
+        console.error('Error loading favorites:', error);
+      }
+    });
+  }
+
+  isFavorite(vehicleId: number): boolean {
+    return this.favorites.some(favorite => favorite.vehicleId === vehicleId);
+  }
+
   onFavoriteToggled(vehicleId: number): void {
-    // Handle favorite toggle for featured vehicles
-    console.log('Favorite toggled for vehicle:', vehicleId);
+    if (!this.isAuthenticated) {
+      this.toastr.info('Please log in to manage favorites', 'Login Required');
+      return;
+    }
+
+    const vehicle = this.featuredVehicles.find(v => v.id === vehicleId);
+    const vehicleName = vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Vehicle';
+
+    if (this.isFavorite(vehicleId)) {
+      // Remove from favorites
+      const favorite = this.favorites.find(f => f.vehicleId === vehicleId);
+      if (favorite) {
+        this.favoriteService.deleteFavorite(favorite.id).subscribe({
+          next: () => {
+            this.favorites = this.favorites.filter(f => f.vehicleId !== vehicleId);
+            this.toastr.success(`${vehicleName} removed from favorites`, 'Favorite Removed');
+          },
+          error: (error) => {
+            console.error('Error removing from favorites:', error);
+            this.toastr.error('Failed to remove from favorites', 'Error');
+          }
+        });
+      }
+    } else {
+      // Add to favorites
+      this.favoriteService.addToFavorites(vehicleId).subscribe({
+        next: (favorite) => {
+          this.favorites.push(favorite);
+          this.toastr.success(`${vehicleName} added to favorites`, 'Favorite Added');
+        },
+        error: (error) => {
+          console.error('Error adding to favorites:', error);
+          this.toastr.error('Failed to add to favorites', 'Error');
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {

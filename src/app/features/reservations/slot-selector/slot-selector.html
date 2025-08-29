@@ -14,25 +14,27 @@
   </div>
   }
 
-  <!-- Slot Type Selection -->
-  <div class="slot-type-section mb-6">
-    <h3 class="text-lg font-semibold text-white mb-3">Select Booking Type</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-      @for (option of slotTypeOptions; track option.value) {
-        <div
-          class="slot-type-option cursor-pointer p-3 rounded-lg border transition-all duration-200"
-          [class.border-indigo-500]="selectedSlotType === option.value"
-          [class.border-white]="selectedSlotType !== option.value"
-          [class.bg-indigo-500]="selectedSlotType === option.value"
-          [class.bg-white]="selectedSlotType !== option.value"
-          (click)="selectedSlotType = option.value; onSlotTypeChange()"
-        >
-          <div class="font-medium text-white mb-1">{{ option.label }}</div>
-          <div class="text-xs text-gray-300">{{ option.description }}</div>
-        </div>
-      }
+  <!-- Slot Type Selection (only show if not pre-selected by parent) -->
+  @if (!isSlotTypePreSelected) {
+    <div class="slot-type-section mb-6">
+      <h3 class="text-lg font-semibold text-white mb-3">Select Booking Type</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        @for (option of slotTypeOptions; track option.value) {
+          <div
+            class="slot-type-option cursor-pointer p-3 rounded-lg border transition-all duration-200"
+            [class.border-indigo-500]="selectedSlotType === option.value"
+            [class.border-white]="selectedSlotType !== option.value"
+            [class.bg-indigo-500]="selectedSlotType === option.value"
+            [class.bg-white]="selectedSlotType !== option.value"
+            (click)="selectedSlotType = option.value; onSlotTypeChange()"
+          >
+            <div class="font-medium text-white mb-1">{{ option.label }}</div>
+            <div class="text-xs text-gray-300">{{ option.description }}</div>
+          </div>
+        }
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Duration Selection -->
   <div class="duration-section mb-6">
@@ -72,7 +74,7 @@
         
         <!-- Quick Duration Buttons -->
         <div class="flex flex-wrap gap-2 mt-3">
-          @for (duration of getDurationOptions(); track duration) {
+          @for (duration of getRecommendedDurations(); track duration) {
             <button 
               (click)="adjustDuration(duration)"
               class="px-3 py-1 text-xs rounded-lg transition-all duration-200"
@@ -106,6 +108,43 @@
         </button>
       </div>
 
+      <!-- Hourly Time Selector (only for HOURLY booking type) -->
+      @if (selectedSlotType === 'HOURLY' && selectedStartDate) {
+        <div class="hourly-selector mb-6 p-4 bg-slate-800/50 rounded-xl border border-white/10">
+          <h4 class="text-md font-semibold text-white mb-3">Select Time Range</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm text-gray-300 mb-2">Start Time</label>
+              <select 
+                [(ngModel)]="selectedStartHour" 
+                (ngModelChange)="updateHourlySelection()"
+                class="w-full p-2 rounded-lg bg-slate-700 border border-white/20 text-white"
+              >
+                @for (hour of getAvailableHours(); track hour) {
+                  <option [value]="hour">{{ formatHour(hour) }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm text-gray-300 mb-2">End Time</label>
+              <select 
+                [(ngModel)]="selectedEndHour" 
+                (ngModelChange)="updateHourlySelection()"
+                class="w-full p-2 rounded-lg bg-slate-700 border border-white/20 text-white"
+                [disabled]="!selectedStartHour"
+              >
+                @for (hour of getAvailableEndHours(); track hour) {
+                  <option [value]="hour">{{ formatHour(hour) }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="mt-3 text-sm text-gray-400">
+            Duration: {{ getHourlyDuration() }} hours
+          </div>
+        </div>
+      }
+
       <div class="calendar-grid">
         <!-- Day headers -->
         @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
@@ -128,12 +167,22 @@
             [class.no-slots]="!hasAvailableSlots(date) && isCurrentMonth(date)"
             [class.range-start]="date.getTime() === selectedStartDate.getTime()"
             [class.range-end]="date.getTime() === selectedEndDate.getTime()"
+            [class.hourly-mode]="selectedSlotType === 'HOURLY'"
+            [class.weekly-mode]="selectedSlotType === 'WEEKLY'"
             (click)="onDateSelect(date)">
 
             <span class="day-number" [class.other-month-text]="!isCurrentMonth(date)">{{ getDayNumber(date) }}</span>
 
-            <!-- Selection indicator -->
-            @if (isDateInRange(date)) {
+            <!-- Booking type indicator -->
+            @if (selectedSlotType === 'HOURLY' && isDateInRange(date)) {
+              <div class="booking-type-indicator">
+                <span class="text-xs text-orange-300 font-medium">{{ getHourRangeForDate(date) }}</span>
+              </div>
+            } @else if (selectedSlotType === 'WEEKLY' && isDateInRange(date)) {
+              <div class="booking-type-indicator">
+                <span class="text-xs text-purple-300 font-medium">Week</span>
+              </div>
+            } @else if (isDateInRange(date)) {
               <div class="selection-indicator">
                 @if (date.getTime() === selectedStartDate.getTime()) {
                   <span class="text-xs text-blue-300 font-medium">Start</span>
@@ -188,6 +237,14 @@
             <span class="text-gray-300">Estimated Total:</span>
             <span class="text-xl font-bold text-indigo-400">{{ getTotalPrice() }}</span>
           </div>
+          @if (getPricingInfo().multiplier !== 1.0) {
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-gray-400 text-sm">{{ getPricingInfo().description }}</span>
+              <span class="text-green-400 text-sm font-medium">
+                {{ ((1 - getPricingInfo().multiplier) * 100).toFixed(0) }}% OFF
+              </span>
+            </div>
+          }
         </div>
       </div>
     </div>

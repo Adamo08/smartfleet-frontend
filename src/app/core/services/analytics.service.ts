@@ -31,4 +31,8 @@ export class AnalyticsService {
     }
     return this.http.get<AnalyticsReport>(`${this.baseUrl}/analytics`, { params });
   }
+
+  getPaymentMethodStatistics(): Observable<{[key: string]: number}> {
+    return this.http.get<{[key: string]: number}>(`${this.baseUrl}/method-stats`);
+  }
 }

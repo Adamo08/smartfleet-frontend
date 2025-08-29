@@ -164,6 +164,30 @@ export class PaymentProcessingService {
   }
 
   /**
+   * Check if a payment exists for a reservation
+   */
+  checkPaymentExists(reservationId: number): Observable<{ exists: boolean; payment?: any }> {
+    return this.paymentService.checkPaymentExists(reservationId);
+  }
+
+  /**
+   * Process an existing payment for a reservation
+   */
+  processExistingPayment(reservationId: number): Observable<PaymentResult> {
+    return this.paymentService.processExistingPayment(reservationId).pipe(
+      map((response: any) => ({
+        success: true,
+        message: 'Existing payment processed successfully',
+        transactionId: response.transactionId || response.id
+      })),
+      catchError((error) => {
+        console.error('Existing payment processing error:', error);
+        return throwError(() => new Error(error?.error?.message || 'Failed to process existing payment'));
+      })
+    );
+  }
+
+  /**
    * Calculate total payment amount based on duration and daily rate
    */
   calculatePaymentAmount(dailyRate: number, startDate: Date, endDate: Date): number {
@@ -222,8 +246,6 @@ export class PaymentProcessingService {
     switch (methodId) {
       case 'paypal':
         return 'paypalPaymentProvider';
-      case 'cmi':
-        return 'cmiPaymentProvider';
       case 'onsite':
         return 'onSitePaymentProvider';
       default:
@@ -273,14 +295,6 @@ export class PaymentProcessingService {
         icon: '💳', 
         isActive: true,
         provider: 'paypalPaymentProvider'
-      },
-      { 
-        id: 'cmi', 
-        name: 'CMI', 
-        description: 'Pay securely with your card via CMI', 
-        icon: '🏦', 
-        isActive: true,
-        provider: 'cmiPaymentProvider'
       },
       { 
         id: 'onsite', 

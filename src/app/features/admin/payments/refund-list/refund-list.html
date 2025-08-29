@@ -1,36 +1,308 @@
-<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
-  <h2 class="text-xl font-semibold text-white mb-4">Refunds</h2>
-  @if (isLoading) {
-    <div class="text-gray-300">Loading...</div>
-  } @else {
-  <table class="min-w-full text-sm text-gray-200">
-    <thead>
-      <tr class="text-left border-b border-indigo-500/10">
-        <th class="p-2">ID</th>
-        <th class="p-2">Payment</th>
-        <th class="p-2">Amount</th>
-        <th class="p-2">Reason</th>
-        <th class="p-2">Status</th>
-        <th class="p-2">Created</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (r of refunds; track r.id) {
-        <tr class="border-b border-indigo-500/10">
-          <td class="p-2">{{ r.id }}</td>
-          <td class="p-2">#{{ r.paymentId }}</td>
-          <td class="p-2">{{ r.amount }}</td>
-          <td class="p-2">{{ r.reason }}</td>
-          <td class="p-2">{{ r.status }}</td>
-          <td class="p-2">{{ r.createdAt | date:'short' }}</td>
-        </tr>
-      }
-    </tbody>
-  </table>
-  }
-  <div class="mt-3 flex items-center gap-2">
-    <button class="px-3 py-1 rounded-xl bg-indigo-500/10 text-white" (click)="load(page - 1)" [disabled]="page <= 0">Prev</button>
-    <span>Page {{ page + 1 }}</span>
-    <button class="px-3 py-1 rounded-xl bg-indigo-500/10 text-white" (click)="load(page + 1)" [disabled]="(page + 1) * size >= totalElements">Next</button>
+<div class="backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl p-6">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+    <h1 class="text-2xl font-bold text-white">Refunds Management</h1>
+    <div class="mt-4 md:mt-0 flex items-center space-x-4">
+      <span class="text-gray-400 text-sm">
+        {{ refundsPage.totalElements }} total refunds
+      </span>
+    </div>
   </div>
+
+  <!-- Filters -->
+  <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-6 mb-6">
+    <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Search Term -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Search</label>
+        <input
+          type="text"
+          formControlName="searchTerm"
+          placeholder="Search by reason..."
+          class="w-full px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+
+      <!-- Payment ID -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Payment ID</label>
+        <input
+          type="number"
+          formControlName="paymentId"
+          placeholder="Payment ID"
+          class="w-full px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+
+      <!-- Status -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Status</label>
+        <select
+          formControlName="status"
+          class="w-full px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        >
+          <option value="">All Statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="FAILED">Failed</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="flex items-end">
+        <button
+          type="button"
+          (click)="clearFilters()"
+          class="w-full px-4 py-2 bg-gray-600/50 hover:bg-gray-600/70 text-white rounded-xl transition-colors duration-200"
+        >
+          Clear Filters
+        </button>
+      </div>
+    </form>
+
+    <!-- Amount Range -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Min Amount</label>
+        <input
+          type="number"
+          formControlName="minAmount"
+          placeholder="0.00"
+          step="0.01"
+          class="w-full px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Max Amount</label>
+        <input
+          type="number"
+          formControlName="maxAmount"
+          placeholder="1000.00"
+          step="0.01"
+          class="w-full px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+    </div>
+
+    <!-- Date Range -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">Start Date</label>
+        <input
+          type="date"
+          formControlName="startDate"
+          class="w-full px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1">End Date</label>
+        <input
+          type="date"
+          formControlName="endDate"
+          class="w-full px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (error) {
+    <div class="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-xl mb-4">
+      {{ error }}
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex items-center justify-center py-12">
+      <div class="flex items-center space-x-2 text-gray-400">
+        <svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Loading refunds...</span>
+      </div>
+    </div>
+  } @else if (refundsPage.content.length > 0) {
+    <!-- Refunds Table -->
+    <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-700">
+          <thead class="bg-slate-800/50">
+            <tr>
+              <th (click)="onSortChange('id')"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50 transition-colors">
+                <div class="flex items-center space-x-1">
+                  <span>ID</span>
+                  @if (sortBy === 'id') {
+                    <svg class="w-4 h-4" :class="sortDirection === 'ASC' ? 'rotate-0' : 'rotate-180'" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  }
+                </div>
+              </th>
+              <th (click)="onSortChange('paymentId')"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50 transition-colors">
+                <div class="flex items-center space-x-1">
+                  <span>Payment</span>
+                  @if (sortBy === 'paymentId') {
+                    <svg class="w-4 h-4" :class="sortDirection === 'ASC' ? 'rotate-0' : 'rotate-180'" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  }
+                </div>
+              </th>
+              <th (click)="onSortChange('amount')"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50 transition-colors">
+                <div class="flex items-center space-x-1">
+                  <span>Amount</span>
+                  @if (sortBy === 'amount') {
+                    <svg class="w-4 h-4" :class="sortDirection === 'ASC' ? 'rotate-0' : 'rotate-180'" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  }
+                </div>
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                Reason
+              </th>
+              <th (click)="onSortChange('status')"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50 transition-colors">
+                <div class="flex items-center space-x-1">
+                  <span>Status</span>
+                  @if (sortBy === 'status') {
+                    <svg class="w-4 h-4" :class="sortDirection === 'ASC' ? 'rotate-0' : 'rotate-180'" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  }
+                </div>
+              </th>
+              <th (click)="onSortChange('createdAt')"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50 transition-colors">
+                <div class="flex items-center space-x-1">
+                  <span>Created</span>
+                  @if (sortBy === 'createdAt') {
+                    <svg class="w-4 h-4" :class="sortDirection === 'ASC' ? 'rotate-0' : 'rotate-180'" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  }
+                </div>
+              </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-slate-900/20 divide-y divide-gray-700">
+            @for (refund of refundsPage.content; track refund.id) {
+              <tr class="hover:bg-slate-800/50 transition-colors duration-200">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-white">
+                  #{{ refund.id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-400">
+                  #{{ refund.paymentId }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-white">
+                  {{ formatAmount(refund.amount) }}
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-300">
+                  <div class="max-w-xs truncate" [title]="refund.reason">
+                    {{ refund.reason || 'N/A' }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full {{ getStatusBadgeClass(refund.status) }}">
+                    {{ refund.status }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                  {{ refund.requestedAt | date:'short' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    (click)="viewRefund(refund)"
+                    class="text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                    title="View Details">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-6">
+      <app-pagination
+        [currentPage]="refundsPage.number"
+        [totalPages]="refundsPage.totalPages"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    </div>
+  } @else {
+    <!-- Empty State -->
+    <div class="text-gray-300 text-center py-12 border border-white/10 rounded-xl bg-slate-900/40">
+      <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+      </svg>
+      <h3 class="text-lg font-medium text-white mb-2">No refunds found</h3>
+      <p class="text-gray-400">No refunds match your current filter criteria.</p>
+    </div>
+  }
+
+  <!-- Refund Detail Modal -->
+  @if (showRefundDetailModal && selectedRefund) {
+    <app-modal [title]="'Refund Details'" (close)="closeRefundDetailModal()">
+      <div class="space-y-6">
+        <!-- Basic Information -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Refund ID</label>
+            <p class="text-white font-mono">#{{ selectedRefund.id }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Payment ID</label>
+            <p class="text-blue-400 font-mono">#{{ selectedRefund.paymentId }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Amount</label>
+            <p class="text-white font-semibold text-lg">{{ formatAmount(selectedRefund.amount) }}</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Status</label>
+            <span class="px-2 py-1 text-xs font-medium rounded-full {{ getStatusBadgeClass(selectedRefund.status) }}">
+              {{ selectedRefund.status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Reason -->
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1">Reason</label>
+          <p class="text-white bg-slate-700/50 p-3 rounded-lg">{{ selectedRefund.reason || 'No reason provided' }}</p>
+        </div>
+
+        <!-- Dates -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Requested At</label>
+            <p class="text-white">{{ selectedRefund.requestedAt | date:'full' }}</p>
+          </div>
+          @if (selectedRefund.processedAt) {
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Processed At</label>
+              <p class="text-white">{{ selectedRefund.processedAt | date:'full' }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </app-modal>
+  }
 </div>
