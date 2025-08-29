@@ -15,7 +15,7 @@ export class PaymentSettings {
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
       paypalActive: [true],
-      cmiActive: [false]
+      onsiteActive: [true]
     });
   }
 

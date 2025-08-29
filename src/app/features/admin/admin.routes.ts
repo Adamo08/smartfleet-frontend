@@ -60,16 +60,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'settings', loadComponent: () => import('./payments/payment-settings/payment-settings').then(m => m.PaymentSettings) },
     ]
   },
-  {
-    path: 'slots',
-    children: [
-      { path: '', loadComponent: () => import('./slots/slot-list/slot-list').then(m => m.SlotList) },
-      { path: 'create', loadComponent: () => import('./slots/slot-form/slot-form').then(m => m.SlotForm) },
-      { path: ':id', loadComponent: () => import('./slots/slot-detail/slot-detail').then(m => m.SlotDetail) },
-      { path: ':id/edit', loadComponent: () => import('./slots/slot-form/slot-form').then(m => m.SlotForm) },
-      { path: 'schedules', loadComponent: () => import('./slots/slot-schedules/slot-schedules').then(m => m.SlotSchedules) },
-    ]
-  },
+
   {
     path: 'notifications',
     children: [
@@ -94,17 +85,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'vehicle-utilization', loadComponent: () => import('./analytics/vehicle-utilization/vehicle-utilization').then(m => m.VehicleUtilization) },
     ]
   },
-  {
-    path: 'settings',
-    children: [
-      { path: '', redirectTo: 'general', pathMatch: 'full' },
-      { path: 'general', loadComponent: () => import('./system-settings/system-settings').then(m => m.SystemSettings) },
-      { path: 'pricing', loadComponent: () => import('./system-settings/pricing/pricing').then(m => m.Pricing) },
-      { path: 'opening-hours', loadComponent: () => import('./system-settings/opening-hours/opening-hours').then(m => m.OpeningHours) },
-      { path: 'integrations', loadComponent: () => import('./system-settings/integrations/integrations').then(m => m.Integrations) },
-      { path: 'security', loadComponent: () => import('./system-settings/security/security').then(m => m.Security) },
-    ]
-  },
+
   {
     path: 'webhooks',
     children: [

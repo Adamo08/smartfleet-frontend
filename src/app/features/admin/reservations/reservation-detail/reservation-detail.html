@@ -1,1 +1,129 @@
-<p>reservation-detail works!</p>
+<div class="space-y-6">
+  <!-- Reservation Header -->
+  <div class="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-600/20 to-cyan-600/20 rounded-xl border border-white/10">
+    <div>
+      <h3 class="text-xl font-bold text-white">Reservation #{{ reservation.id }}</h3>
+      <p class="text-gray-300">{{ reservation.user.firstName }} {{ reservation.user.lastName }}</p>
+    </div>
+    <div class="text-right">
+      <div class="px-3 py-1 rounded-full text-sm font-medium border" [ngClass]="getStatusColor(reservation.status)">
+        {{ getStatusText(reservation.status) }}
+      </div>
+      <p class="text-gray-400 text-sm mt-1">{{ reservation.createdAt | date:'medium' }}</p>
+    </div>
+  </div>
+
+  <!-- Details Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Reservation Information -->
+    <div class="space-y-4">
+      <h4 class="text-lg font-semibold text-white border-b border-white/10 pb-2">Reservation Information</h4>
+      
+      <div class="space-y-3">
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">Reservation ID</span>
+          <span class="text-white font-mono">#{{ reservation.id }}</span>
+        </div>
+        
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">Start Date</span>
+          <span class="text-white">{{ reservation.startDate | date:'medium' }}</span>
+        </div>
+        
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">End Date</span>
+          <span class="text-white">{{ reservation.endDate | date:'medium' }}</span>
+        </div>
+        
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">Created</span>
+          <span class="text-white">{{ reservation.createdAt | date:'medium' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vehicle Information -->
+    <div class="space-y-4">
+      <h4 class="text-lg font-semibold text-white border-b border-white/10 pb-2">Vehicle Information</h4>
+      
+      <div class="space-y-3">
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">Vehicle</span>
+          <span class="text-white">{{ reservation.vehicle.brand }} {{ reservation.vehicle.model }}</span>
+        </div>
+        
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">License Plate</span>
+          <span class="text-white font-mono">{{ reservation.vehicle.licensePlate }}</span>
+        </div>
+        
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">Category</span>
+          <span class="text-white">{{ reservation.vehicle.categoryName }}</span>
+        </div>
+        
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">Vehicle Type</span>
+          <span class="text-white">{{ reservation.vehicle.brand }} {{ reservation.vehicle.model }}</span>
+        </div>
+        
+        <div class="flex items-center justify-between py-2 border-b border-white/5">
+          <span class="text-gray-300">Price per Day</span>
+          <span class="text-white">{{ reservation.vehicle.pricePerDay | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Information -->
+  <div class="p-4 bg-slate-800/30 rounded-xl border border-white/10">
+    <h4 class="text-lg font-semibold text-white mb-3">Customer Information</h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div>
+        <span class="text-gray-400">Name:</span>
+        <span class="text-white ml-2">{{ reservation.user.firstName }} {{ reservation.user.lastName }}</span>
+      </div>
+      <div>
+        <span class="text-gray-400">Email:</span>
+        <span class="text-white ml-2">{{ reservation.user.email }}</span>
+      </div>
+      @if (reservation.user.phoneNumber) {
+        <div>
+          <span class="text-gray-400">Phone:</span>
+          <span class="text-white ml-2">{{ reservation.user.phoneNumber }}</span>
+        </div>
+      }
+      <div>
+        <span class="text-gray-400">Customer ID:</span>
+        <span class="text-white ml-2">#{{ reservation.user.id }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Context -->
+  @if (reservation.bookingContext) {
+    <div class="p-4 bg-slate-800/30 rounded-xl border border-white/10">
+      <h4 class="text-lg font-semibold text-white mb-3">Booking Details</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <span class="text-gray-400">Slot Type:</span>
+          <span class="text-white ml-2">{{ reservation.bookingContext.slotType }}</span>
+        </div>
+        <div>
+          <span class="text-gray-400">Duration:</span>
+          <span class="text-white ml-2">{{ reservation.bookingContext.duration }} hours</span>
+        </div>
+        <div>
+          <span class="text-gray-400">Calculation Method:</span>
+          <span class="text-white ml-2">{{ reservation.bookingContext.calculationMethod }}</span>
+        </div>
+        @if (reservation.bookingContext.originalAmount) {
+          <div>
+            <span class="text-gray-400">Original Amount:</span>
+            <span class="text-white ml-2">{{ reservation.bookingContext.originalAmount | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

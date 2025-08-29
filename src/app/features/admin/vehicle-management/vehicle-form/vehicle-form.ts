@@ -5,11 +5,8 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angula
 import { ApiService } from '../../../../core/services/api';
 import { FuelType, Vehicle, VehicleStatus } from '../../../../core/models/vehicle.interface';
 import { Page } from '../../../../core/models/pagination.interface';
-
-interface VehicleCategory {
-  id: number;
-  name: string;
-}
+import { VehicleCategory } from '../../../../core/models/vehicle-category.interface';
+import { CreateVehicleDto, UpdateVehicleDto } from '../../../../core/models/vehicle-create-update.interface';
 
 @Component({
   selector: 'app-vehicle-form',

@@ -6,16 +6,7 @@ import { Page, Pageable } from '../../../../core/models/pagination.interface';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
-
-interface VehicleCategory {
-  id?: number;
-  name: string;
-  description?: string;
-  iconUrl?: string;
-  isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
+import { VehicleCategory, CreateVehicleCategoryDto, UpdateVehicleCategoryDto } from '../../../../core/models/vehicle-category.interface';
 
 @Component({
   selector: 'app-vehicle-categories',
@@ -38,13 +29,11 @@ export class VehicleCategories implements OnInit {
   showDeleteModal = false;
 
   // Form data
-  currentCategory: VehicleCategory = {
+  currentCategory: Partial<VehicleCategory> = {
     name: '',
     description: '',
     iconUrl: '',
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
+    isActive: true
   };
 
   categoryToDelete: VehicleCategory | null = null;
@@ -91,9 +80,7 @@ export class VehicleCategories implements OnInit {
       name: '',
       description: '',
       iconUrl: '',
-      isActive: true,
-      createdAt: '',
-      updatedAt: '',
+      isActive: true
     };
     this.showAddModal = true;
   }
@@ -124,7 +111,7 @@ export class VehicleCategories implements OnInit {
   }
 
   saveCategory(): void {
-    if (!this.currentCategory.name.trim()) {
+    if (!this.currentCategory.name?.trim()) {
       this.showMessage('Category name is required', 'error');
       return;
     }
@@ -133,8 +120,15 @@ export class VehicleCategories implements OnInit {
     this.clearMessage();
 
     if (this.currentCategory.id) {
-      // Update existing
-      this.apiService.put<VehicleCategory>(`/admin/vehicle-categories/${this.currentCategory.id}`, this.currentCategory).subscribe({
+      // Update existing - use UpdateVehicleCategoryDto
+      const updateDto: UpdateVehicleCategoryDto = {
+        name: this.currentCategory.name,
+        description: this.currentCategory.description,
+        iconUrl: this.currentCategory.iconUrl,
+        isActive: this.currentCategory.isActive
+      };
+      
+      this.apiService.put<VehicleCategory>(`/admin/vehicle-categories/${this.currentCategory.id}`, updateDto).subscribe({
         next: () => {
           this.showMessage('Category updated successfully!', 'success');
           this.closeEditModal();
@@ -149,8 +143,14 @@ export class VehicleCategories implements OnInit {
         }
       });
     } else {
-      // Create new
-      this.apiService.post<VehicleCategory>('/admin/vehicle-categories', this.currentCategory).subscribe({
+      // Create new - use CreateVehicleCategoryDto
+      const createDto: CreateVehicleCategoryDto = {
+        name: this.currentCategory.name!,
+        description: this.currentCategory.description,
+        iconUrl: this.currentCategory.iconUrl
+      };
+      
+      this.apiService.post<VehicleCategory>('/admin/vehicle-categories', createDto).subscribe({
         next: () => {
           this.showMessage('Category created successfully!', 'success');
           this.closeAddModal();
@@ -190,8 +190,7 @@ export class VehicleCategories implements OnInit {
   toggleCategoryStatus(category: VehicleCategory): void {
     if (!category.id) return;
 
-    const updatedCategory = { ...category, isActive: !category.isActive };
-    this.apiService.patch<VehicleCategory>(`/admin/vehicle-categories/${category.id}/toggle-status`, updatedCategory).subscribe({
+    this.apiService.patch<VehicleCategory>(`/admin/vehicle-categories/${category.id}/toggle-status`, {}).subscribe({
       next: () => {
         this.loadCategories();
       },

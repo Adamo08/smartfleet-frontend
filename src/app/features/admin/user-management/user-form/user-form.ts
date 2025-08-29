@@ -15,20 +15,23 @@ import { User } from '../../../../core/models/user.interface';
 export class UserForm implements OnInit {
   @Input() user: User | null = null;
   @Output() formSubmitted = new EventEmitter<void>();
+  @Output() cancelled = new EventEmitter<void>();
 
   form!: FormGroup;
   editMode = false;
+  isSubmitting = false;
 
   constructor(private fb: FormBuilder, private api: ApiService) {}
 
   ngOnInit(): void {
     this.editMode = !!this.user;
     this.form = this.fb.group({
-      email: [this.user ? this.user.email : '', [Validators.required, Validators.email]],
-      firstName: [this.user ? this.user.firstName : '', Validators.required],
-      lastName: [this.user ? this.user.lastName : '', Validators.required],
-      // Password is only required for new users
-      password: ['', this.editMode ? [] : [Validators.required]]
+      firstName: [this.user?.firstName || '', [Validators.required]],
+      lastName: [this.user?.lastName || '', [Validators.required]],
+      email: [this.user?.email || '', [Validators.required, Validators.email]],
+      phoneNumber: [this.user?.phoneNumber || '', this.editMode ? [] : [Validators.required, Validators.pattern(/^0[7|6][0-9]{8}$/)]],
+      role: [this.user?.role || '', this.editMode ? [Validators.required] : []],
+      password: ['', this.editMode ? [] : [Validators.required, Validators.minLength(6), Validators.maxLength(25)]]
     });
 
     if (this.editMode) {
@@ -37,29 +40,60 @@ export class UserForm implements OnInit {
   }
 
   submit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.isSubmitting) return;
+
+    this.isSubmitting = true;
+    const formData = { ...this.form.value };
+    
+    // Re-enable email for submission if it was disabled
+    if (this.editMode && this.form.get('email')?.disabled) {
+      formData.email = this.user?.email;
+    }
 
     if (this.editMode) {
       // Handle update logic here
-      this.api.put(`/users/${this.user!.id}`, this.form.value).subscribe({
-        next: () => this.formSubmitted.emit(),
-        error: (err) => console.error('Error updating user:', err)
+      this.api.put(`/users/${this.user!.id}`, formData).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          this.formSubmitted.emit();
+        },
+        error: (err) => {
+          console.error('Error updating user:', err);
+          this.isSubmitting = false;
+        }
       });
     } else {
-      // Handle create logic here
-      this.api.post('/users', this.form.value).subscribe({
+      // Handle create logic here - exclude role for new users (backend sets default)
+      const createRequest = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        password: formData.password
+      };
+      
+      this.api.post('/users', createRequest).subscribe({
         next: () => {
+          this.isSubmitting = false;
           this.formSubmitted.emit();
           this.resetForm();
         },
-        error: (err) => console.error('Error creating user:', err)
+        error: (err) => {
+          console.error('Error creating user:', err);
+          this.isSubmitting = false;
+        }
       });
     }
+  }
+
+  cancel(): void {
+    this.cancelled.emit();
   }
 
   resetForm(): void {
     this.form.reset();
     this.form.get('email')?.enable(); // Re-enable for new user form
     this.editMode = false;
+    this.isSubmitting = false;
   }
 }
