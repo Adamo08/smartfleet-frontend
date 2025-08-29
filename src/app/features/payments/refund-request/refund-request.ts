@@ -4,7 +4,7 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { PaymentService } from '../../../core/services/payment.service';
-import { RefundRequestDto } from '../../../core/models/payment.interface';
+import { RefundRequestDto, RefundResponseDto } from '../../../core/models/payment.interface';
 
 @Component({
   selector: 'app-refund-request',
@@ -97,7 +97,7 @@ export class RefundRequest implements OnInit, OnDestroy {
       };
 
       this.paymentService.requestRefund(refundRequest).subscribe({
-        next: (response) => {
+        next: (response: RefundResponseDto) => {
           this.loading = false;
           this.success = true;
 

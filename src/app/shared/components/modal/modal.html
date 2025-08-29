@@ -1,19 +1,56 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center">
-  <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
-  <div class="relative max-w-3xl w-full mx-4 rounded-3xl shadow-2xl border border-white/10 flex flex-col max-h-[90vh]">
-    <div class="bg-gradient-to-r from-indigo-600/10 to-cyan-600/10 px-6 py-4 border-b border-white/10 flex items-center justify-between">
-      <h3 class="text-white font-semibold text-lg">{{ title }}</h3>
-      <button (click)="onClose()" class="text-gray-400 hover:text-white transition-colors duration-200">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+<div class="modal-overlay" (click)="onBackdropClick($event)" [attr.aria-modal]="true" role="dialog">
+  <div class="modal-backdrop"></div>
+
+  <div
+    class="modal-container"
+    [ngClass]="'size-' + size"
+    (click)="$event.stopPropagation()"
+    aria-labelledby="modal-title"
+    tabindex="-1"
+  >
+    <!-- Modal Header -->
+    <header class="modal-header" *ngIf="title || showCloseButton">
+      <h2
+        class="modal-title"
+        [id]="getModalTitleId()"
+        *ngIf="title"
+      >
+        {{ title }}
+      </h2>
+
+      <button
+        *ngIf="showCloseButton"
+        type="button"
+        class="modal-close-btn"
+        (click)="onClose()"
+        aria-label="Close modal"
+        title="Close"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6L6 18M6 6l12 12"/>
         </svg>
       </button>
-    </div>
-    <div class="bg-slate-900/95 p-6 flex-1 overflow-y-auto">
+    </header>
+
+    <!-- Modal Body -->
+    <main class="modal-body">
       <ng-content></ng-content>
-    </div>
-    <div class="bg-slate-900/95 px-6 py-4 border-t border-white/10">
+    </main>
+
+    <!-- Modal Footer (Optional) -->
+    <footer class="modal-footer">
       <ng-content select="[modal-actions]"></ng-content>
-    </div>
+    </footer>
   </div>
 </div>

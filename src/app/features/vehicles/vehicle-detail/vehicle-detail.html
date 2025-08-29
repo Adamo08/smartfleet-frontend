@@ -224,17 +224,11 @@
 
 <!-- Multi-Step Booking Modal -->
 @if (isBookingOpen && vehicle) {
-  <app-modal>
-    <div modal-close>
-      <button (click)="closeBooking()" class="text-gray-300 hover:text-white">✕</button>
-    </div>
+  <app-modal [size]="'xl'" [title]="getStepTitle()">
 
     <!-- Step Header -->
     <div class="mb-6">
-      <h3 class="text-2xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-2">
-        {{ getStepTitle() }}
-      </h3>
-      <p class="text-gray-300">{{ getStepDescription() }}</p>
+      <p class="text-gray-300 text-center">{{ getStepDescription() }}</p>
 
       <!-- Step Progress -->
       <div class="flex items-center justify-center mt-4">
@@ -352,6 +346,7 @@
 
           <app-slot-selector
             [vehicleId]="vehicle.id"
+            [vehicle]="vehicle"
             [selectedSlotType]="selectedSlotType"
             (dateRangeSelected)="onDateRangeSelected($event)"
           ></app-slot-selector>
@@ -481,10 +476,10 @@
           <!-- Payment Methods -->
           <div class="space-y-3">
             <h4 class="text-lg font-semibold text-white">Select Payment Method</h4>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
               @for (method of availablePaymentMethods; track method.id) {
-                <div 
+                <div
                   class="payment-method-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
                   [class.border-indigo-500]="selectedPaymentMethod === method.id"
                   [class.border-white]="selectedPaymentMethod !== method.id"
@@ -522,26 +517,26 @@
       }
     </div>
 
-    <!-- Step Actions -->
-    <div modal-actions class="flex items-center justify-between">
-      <div>
+
+
+    <!-- Modal Actions Footer -->
+    <div modal-actions class="flex items-center justify-between gap-3">
+      <button
+        (click)="closeBooking()"
+        class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
+      >
+        Cancel
+      </button>
+
+      <div class="flex items-center gap-3">
         @if (currentBookingStep !== 'type') {
           <button
             (click)="previousBookingStep()"
-            class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
+            class="px-4 py-2 rounded-xl border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 transition-colors"
           >
             ← Previous
           </button>
         }
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button
-          (click)="closeBooking()"
-          class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
-        >
-          Cancel
-        </button>
 
         @if (currentBookingStep !== 'confirmation' && currentBookingStep !== 'payment') {
           <button
@@ -570,37 +565,29 @@
             }
           </button>
         } @else if (currentBookingStep === 'payment') {
-          <div class="flex items-center gap-3">
-            <button 
-              (click)="cancelPayment()" 
-              class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
-            >
-              Cancel Payment
-            </button>
-            <button 
-              (click)="saveForLater()" 
-              class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
-            >
-              Save for Later
-            </button>
-            <button 
-              [disabled]="!selectedPaymentMethod || isProcessingPayment"
-              (click)="processPayment()" 
-              class="px-6 py-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              @if (isProcessingPayment) {
-                <span class="flex items-center">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Processing...
-                </span>
-              } @else {
-                Pay Now
-              }
-            </button>
-          </div>
+          <button
+            (click)="saveForLater()"
+            class="px-4 py-2 rounded-xl border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 transition-colors"
+          >
+            Save for Later
+          </button>
+          <button
+            [disabled]="!selectedPaymentMethod || isProcessingPayment"
+            (click)="processPayment()"
+            class="px-6 py-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            @if (isProcessingPayment) {
+              <span class="flex items-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            } @else {
+              Pay Now
+            }
+          </button>
         }
       </div>
     </div>

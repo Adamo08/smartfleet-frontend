@@ -59,7 +59,7 @@ export class PaymentConfirmationDialog {
   getMethodDisplayName(method: string): string {
     const methodMap: { [key: string]: string } = {
       'paypal': 'PayPal',
-      'cmi': 'CMI',
+
       'onsite': 'On-Site Payment',
       'credit-card': 'Credit Card',
       'debit-card': 'Debit Card'

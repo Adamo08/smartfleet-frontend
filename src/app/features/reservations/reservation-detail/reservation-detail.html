@@ -157,6 +157,111 @@
             </div>
           </div>
 
+          <!-- Slot Information Card -->
+          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
+            <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
+              <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Slot Information
+            </h2>
+            
+            @if (reservation.slots && reservation.slots.length > 0) {
+              <div class="space-y-4">
+                @for (slot of reservation.slots; track slot.id) {
+                  <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div class="flex items-center justify-between mb-2">
+                      <h3 class="text-lg font-semibold text-white">Slot #{{ slot.id }}</h3>
+                      <span class="px-3 py-1 rounded-full text-xs font-medium" [ngClass]="{
+                        'bg-red-500/20 text-red-300': !slot.available,
+                        'bg-green-500/20 text-green-300': slot.available
+                      }">
+                        {{ slot.available ? 'Available' : 'Reserved' }}
+                      </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Time Period</label>
+                        <p class="text-white text-sm">
+                          {{ slot.startTime | date:'short' }} - {{ slot.endTime | date:'short' }}
+                        </p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Slot Type</label>
+                        <p class="text-white text-sm">{{ slot.slotType }}</p>
+                      </div>
+                      <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Price</label>
+                        <p class="text-white text-sm font-mono">{{ formatCurrency(slot.price || 0) }}</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-8">
+                <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-gray-400 mb-2">No slots created yet</p>
+                <p class="text-gray-500 text-sm">
+                  @if (reservation.status === 'PENDING') {
+                    Slots will be created automatically once payment is completed.
+                  } @else {
+                    Slots should have been created for this reservation. Please contact support if this issue persists.
+                  }
+                </p>
+              </div>
+            }
+          </div>
+
+          <!-- Booking Context Information Card -->
+          @if (reservation.bookingContext) {
+          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
+            <h2 class="text-2xl font-bold text-white mb-4">Booking Details</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-1">Slot Type</label>
+                <p class="text-white">{{ reservation.bookingContext.slotType }}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-1">Duration</label>
+                <p class="text-white">{{ reservation.bookingContext.duration }} hours</p>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-1">Calculation Method</label>
+                <p class="text-white">{{ reservation.bookingContext.calculationMethod }}</p>
+              </div>
+              @if (reservation.bookingContext.originalAmount) {
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-1">Original Amount</label>
+                <p class="text-white">{{ formatCurrency(reservation.bookingContext.originalAmount) }}</p>
+              </div>
+              }
+            </div>
+
+            @if (reservation.bookingContext.preferences) {
+            <div class="mt-4 p-4 bg-white/5 rounded-lg">
+              <label class="block text-sm font-semibold text-gray-300 mb-2">Preferences</label>
+              @if (reservation.bookingContext.preferences.preferredPaymentMethod) {
+              <div class="mb-2">
+                <span class="text-gray-300 text-sm">Payment Method:</span>
+                <span class="text-white ml-2">{{ reservation.bookingContext.preferences.preferredPaymentMethod }}</span>
+              </div>
+              }
+              @if (reservation.bookingContext.preferences.specialRequests) {
+              <div>
+                <span class="text-gray-300 text-sm">Special Requests:</span>
+                <p class="text-white mt-1">{{ reservation.bookingContext.preferences.specialRequests }}</p>
+              </div>
+              }
+            </div>
+            }
+          </div>
+          }
+
           <!-- Comments Card -->
           <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
             <h2 class="text-2xl font-bold text-white mb-4">Comments</h2>

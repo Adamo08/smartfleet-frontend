@@ -133,9 +133,7 @@ export class ReservationList implements OnInit, OnDestroy {
     this.loadReservations();
   }
 
-  onCreateReservation(): void {
-    this.router.navigate(['/reservations/create']);
-  }
+
 
   getMaxPageElement(): number {
     return Math.min((this.currentPage + 1) * this.pageSize, this.reservationsPage?.totalElements || 0);
