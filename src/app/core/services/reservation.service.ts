@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { 
   Reservation,
@@ -13,6 +14,7 @@ import {
 } from '../models/reservation.interface';
 import { SlotDto } from '../models/slot.interface';
 import { Page, Pageable } from '../models/pagination.interface';
+import { Vehicle, VehicleSummaryDto } from '../models/vehicle.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +23,48 @@ export class ReservationService {
   private readonly baseUrl = `${environment.apiUrl}/reservations`;
 
   constructor(private http: HttpClient) {}
+
+  /**
+   * Transforms a vehicle from backend format to frontend format
+   */
+  private transformVehicle(vehicle: any): Vehicle {
+    return {
+      ...vehicle,
+      brand: vehicle.brandName,
+      model: vehicle.modelName
+    };
+  }
+
+  /**
+   * Transforms a vehicle summary from backend format to frontend format
+   */
+  private transformVehicleSummary(vehicle: any): VehicleSummaryDto {
+    return {
+      ...vehicle,
+      brand: vehicle.brandName,
+      model: vehicle.modelName
+    };
+  }
+
+  /**
+   * Transforms a reservation summary to include vehicle transformations
+   */
+  private transformReservationSummary(reservation: any): ReservationSummaryDto {
+    return {
+      ...reservation,
+      vehicle: this.transformVehicleSummary(reservation.vehicle)
+    };
+  }
+
+  /**
+   * Transforms a detailed reservation to include vehicle transformations  
+   */
+  private transformDetailedReservation(reservation: any): DetailedReservationDto {
+    return {
+      ...reservation,
+      vehicle: this.transformVehicle(reservation.vehicle)
+    };
+  }
 
   /**
    * Create a new reservation for the current user
@@ -44,7 +88,12 @@ export class ReservationService {
       params = params.set('sortDirection', pageable.sortDirection);
     }
 
-    return this.http.get<Page<ReservationSummaryDto>>(this.baseUrl, { params });
+    return this.http.get<Page<ReservationSummaryDto>>(this.baseUrl, { params }).pipe(
+      map(page => ({
+        ...page,
+        content: page.content.map(reservation => this.transformReservationSummary(reservation))
+      }))
+    );
   }
 
   /**
@@ -70,14 +119,21 @@ export class ReservationService {
       params = params.set('searchTerm', filter.searchTerm.trim());
     }
 
-    return this.http.get<Page<ReservationSummaryDto>>(`${this.baseUrl}/filtered`, { params });
+    return this.http.get<Page<ReservationSummaryDto>>(`${this.baseUrl}/filtered`, { params }).pipe(
+      map(page => ({
+        ...page,
+        content: page.content.map(reservation => this.transformReservationSummary(reservation))
+      }))
+    );
   }
 
   /**
    * Get a single reservation by ID for the current user
    */
   getReservationById(id: number): Observable<DetailedReservationDto> {
-    return this.http.get<DetailedReservationDto>(`${this.baseUrl}/${id}`);
+    return this.http.get<DetailedReservationDto>(`${this.baseUrl}/${id}`).pipe(
+      map(reservation => this.transformDetailedReservation(reservation))
+    );
   }
 
   /**
@@ -146,6 +202,21 @@ export class ReservationService {
   }
 
   /**
+   * Update reservation (Admin only) - alias method for consistency
+   */
+  updateReservationAdmin(id: number, request: AdminReservationUpdateRequest): Observable<DetailedReservationDto> {
+    return this.updateReservationStatus(id, request);
+  }
+
+
+  /**
+   * Delete reservation (Admin only) - alias method for consistency
+   */
+  deleteReservationAdmin(id: number): Observable<void> {
+    return this.deleteReservation(id);
+  }
+
+  /**
    * Get reservation statistics for the current user
    */
   getReservationStats(): Observable<{
@@ -167,5 +238,21 @@ export class ReservationService {
       .set('endDate', endDate.toISOString());
     
     return this.http.get<boolean>(`${environment.apiUrl}/vehicles/${vehicleId}/availability`, { params });
+  }
+
+  /**
+   * Get blocked dates for a vehicle
+   */
+  getBlockedDatesForVehicle(vehicleId: number, startDate?: Date, endDate?: Date): Observable<string[]> {
+    let params = new HttpParams();
+    
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+
+    return this.http.get<string[]>(`${this.baseUrl}/vehicles/${vehicleId}/blocked-dates`, { params });
   }
 }

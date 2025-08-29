@@ -5,4 +5,6 @@ export interface VehicleBrand {
   logoUrl?: string;
   countryOfOrigin?: string;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

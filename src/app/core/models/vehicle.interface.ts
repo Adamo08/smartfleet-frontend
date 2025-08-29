@@ -6,8 +6,6 @@ export interface Vehicle {
   brandName: string;
   modelId: number;
   modelName: string;
-  brand: string;
-  model: string;
   year: number;
   licensePlate: string;
   fuelType: FuelType;
@@ -18,16 +16,24 @@ export interface Vehicle {
   description?: string;
   createdAt: string;
   updatedAt: string;
+  
+  // Backward compatibility properties
+  brand: string;  // should be set to brandName
+  model: string;  // should be set to modelName
 }
 
 export interface VehicleSummaryDto {
   id: number;
-  brand: string;
-  model: string;
+  brandName: string;
+  modelName: string;
   licensePlate: string;
   year?: number;
   imageUrl?: string;
   pricePerDay: number;
+  
+  // Backward compatibility properties
+  brand: string;  // should be set to brandName
+  model: string;  // should be set to modelName
 }
 
 export enum FuelType {
