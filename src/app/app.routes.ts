@@ -6,6 +6,7 @@ import { roleGuard } from './core/guards/role.guard';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
 import { RESERVATION_ROUTES } from './features/reservations/reservation.routes';
+import { PAYMENT_ROUTES } from './features/payments/payment.routes';
 import {HomeComponent} from './features/home/home';
 import {VehicleList} from './features/vehicles/vehicle-list/vehicle-list';
 import {VehicleDetail} from './features/vehicles/vehicle-detail/vehicle-detail';
@@ -20,10 +21,7 @@ export const routes: Routes = [
       { path: 'vehicles/:id', loadComponent: () => import('./features/vehicles/vehicle-detail/vehicle-detail').then(m => m.VehicleDetail) },
       { path: 'reservations', canActivate: [authGuard], children: RESERVATION_ROUTES },
       { path: 'profile', canActivate: [authGuard], loadComponent: () => import('./features/user-profile/user-profile').then(m => m.UserProfileComponent) },
-      { path: 'payments', canActivate: [authGuard], loadComponent: () => import('./features/payments/payment-history/payment-history').then(m => m.PaymentHistory) },
-      { path: 'payments/process', canActivate: [authGuard], loadComponent: () => import('./features/payments/payment-process/payment-process').then(m => m.PaymentProcess) },
-      { path: 'payments/success', canActivate: [authGuard], loadComponent: () => import('./features/payments/payment-success/payment-success').then(m => m.PaymentSuccess) },
-      { path: 'payments/cancel', canActivate: [authGuard], loadComponent: () => import('./features/payments/payment-cancel/payment-cancel').then(m => m.PaymentCancel) },
+      { path: 'payments', canActivate: [authGuard], children: PAYMENT_ROUTES },
       { path: 'my-bookmarks', canActivate: [authGuard], loadComponent: () => import('./features/bookmarks/bookmarks-list/bookmarks-list').then(m => m.BookmarksList) },
       { path: 'favorites', canActivate: [authGuard], loadComponent: () => import('./features/favorites/favorites-list/favorites-list').then(m => m.FavoritesList) },
       { path: 'notifications', canActivate: [authGuard], loadComponent: () => import('./features/notifications/notification-list/notification-list').then(m => m.NotificationList) },

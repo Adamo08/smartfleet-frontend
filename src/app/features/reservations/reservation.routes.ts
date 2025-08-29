@@ -7,21 +7,13 @@ export const RESERVATION_ROUTES: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./reservation-list/reservation-list').then(m => m.ReservationList)
   },
-  {
-    path: 'create',
-    canActivate: [authGuard],
-    loadComponent: () => import('./create-reservation/create-reservation').then(m => m.CreateReservation)
-  },
+
   {
     path: ':id',
     canActivate: [authGuard],
     loadComponent: () => import('./reservation-detail/reservation-detail').then(m => m.ReservationDetail)
   },
-  {
-    path: 'edit/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./create-reservation/create-reservation').then(m => m.CreateReservation)
-  },
+
   {
     path: 'calendar',
     canActivate: [authGuard],
