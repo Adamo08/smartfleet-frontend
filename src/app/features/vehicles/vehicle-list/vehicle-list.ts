@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -43,11 +43,11 @@ export class VehicleList implements OnInit {
 
   // Filter properties
   searchTerm = '';
-  selectedCategory: number | null = null;
+  selectedCategory: string = ''; // Changed to empty string to match HTML
   selectedStatus: string | null = null;
   selectedFuelType: string | null = null;
-  selectedBrand: number | null = null;
-  selectedModel: number | null = null;
+  selectedBrand: string = ''; // Changed to empty string to match HTML
+  selectedModel: string = ''; // Changed to empty string to match HTML
   minPrice: number | null = null;
   maxPrice: number | null = null;
   minYear: number | null = null;
@@ -70,7 +70,8 @@ export class VehicleList implements OnInit {
     private favoriteService: FavoriteService,
     private authService: AuthService,
     private toastr: ToastrService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -109,9 +110,9 @@ export class VehicleList implements OnInit {
 
     const filters: VehicleFilter = {
       search: this.searchTerm || undefined,
-      brandId: this.selectedBrand || undefined,
-      modelId: this.selectedModel || undefined,
-      categoryId: this.selectedCategory || undefined,
+      brandId: this.selectedBrand ? Number(this.selectedBrand) : undefined,
+      modelId: this.selectedModel ? Number(this.selectedModel) : undefined,
+      categoryId: this.selectedCategory ? Number(this.selectedCategory) : undefined,
       fuelType: this.selectedFuelType || undefined,
       status: this.selectedStatus || undefined,
       minPrice: this.minPrice || undefined,
@@ -170,11 +171,11 @@ export class VehicleList implements OnInit {
 
   clearFilters(): void {
     this.searchTerm = '';
-    this.selectedCategory = null;
+    this.selectedCategory = ''; // Reset to empty string
     this.selectedStatus = null;
     this.selectedFuelType = null;
-    this.selectedBrand = null;
-    this.selectedModel = null;
+    this.selectedBrand = ''; // Reset to empty string
+    this.selectedModel = ''; // Reset to empty string
     this.minPrice = null;
     this.maxPrice = null;
     this.minYear = null;
@@ -211,6 +212,7 @@ export class VehicleList implements OnInit {
         this.favoriteService.deleteFavorite(favorite.id).subscribe({
           next: () => {
             this.favorites = this.favorites.filter(f => f.vehicleId !== vehicleId);
+            this.cdr.detectChanges(); // Force change detection
             this.toastr.success(`${vehicleName} removed from favorites`, 'Favorite Removed');
           },
           error: (error) => {
@@ -224,6 +226,7 @@ export class VehicleList implements OnInit {
       this.favoriteService.addToFavorites(vehicleId).subscribe({
         next: (favorite) => {
           this.favorites.push(favorite);
+          this.cdr.detectChanges(); // Force change detection
           this.toastr.success(`${vehicleName} added to favorites`, 'Favorite Added');
         },
         error: (error) => {

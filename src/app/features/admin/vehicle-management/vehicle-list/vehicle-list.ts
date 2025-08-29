@@ -15,11 +15,7 @@ import { ApiService } from '../../../../core/services/api';
 import { VehicleFilter } from '../../../../core/models/vehicle-filter.interface';
 import { VehicleBrand } from '../../../../core/models/vehicle-brand.interface';
 import { VehicleModel } from '../../../../core/models/vehicle-model.interface';
-
-interface VehicleCategory {
-  id: number;
-  name: string;
-}
+import { VehicleCategory } from '../../../../core/models/vehicle-category.interface';
 
 @Component({
   selector: 'app-vehicle-list',
@@ -45,11 +41,11 @@ export class VehicleList implements OnInit {
 
   filters = {
     search: '',
-    categoryId: undefined as number | undefined,
+    categoryId: '' as string | number, // Changed to support empty string default
     fuelType: '',
     status: '',
-    brandId: undefined as number | undefined,
-    modelId: undefined as number | undefined,
+    brandId: '' as string | number, // Changed to support empty string default
+    modelId: '' as string | number, // Changed to support empty string default
     minPrice: undefined as number | undefined,
     maxPrice: undefined as number | undefined,
     minYear: undefined as number | undefined,
@@ -111,11 +107,11 @@ export class VehicleList implements OnInit {
 
     const filters: VehicleFilter = {
       search: this.filters.search || undefined,
-      categoryId: this.filters.categoryId || undefined,
+      categoryId: this.filters.categoryId ? Number(this.filters.categoryId) : undefined,
       fuelType: this.filters.fuelType || undefined,
       status: this.filters.status || undefined,
-      brandId: this.filters.brandId || undefined,
-      modelId: this.filters.modelId || undefined,
+      brandId: this.filters.brandId ? Number(this.filters.brandId) : undefined,
+      modelId: this.filters.modelId ? Number(this.filters.modelId) : undefined,
       minPrice: this.filters.minPrice || undefined,
       maxPrice: this.filters.maxPrice || undefined,
       minYear: this.filters.minYear || undefined,
@@ -155,11 +151,11 @@ export class VehicleList implements OnInit {
   clearFilters(): void {
     this.filters = {
       search: '',
-      categoryId: undefined,
+      categoryId: '', // Reset to empty string to match HTML default
       fuelType: '',
       status: '',
-      brandId: undefined,
-      modelId: undefined,
+      brandId: '', // Reset to empty string to match HTML default
+      modelId: '', // Reset to empty string to match HTML default
       minPrice: undefined,
       maxPrice: undefined,
       minYear: undefined,
