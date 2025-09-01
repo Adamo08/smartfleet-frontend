@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
-import { User } from '../../core/models/user.interface';
+import { User, ChangePasswordRequest } from '../../core/models/user.interface';
 import { ToastrService } from 'ngx-toastr';
+import { ConfigrmDialog, DialogActionType } from '../../shared/components/configrm-dialog/configrm-dialog';
+import { ChangePasswordModal } from '../../shared/components/change-password-modal/change-password-modal';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfigrmDialog, ChangePasswordModal],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css'
 })
@@ -26,6 +28,13 @@ export class UserProfileComponent implements OnInit {
     email: '',
     phoneNumber: ''
   };
+
+  // Modal states
+  showChangePasswordModal = false;
+  showDeleteConfirmDialog = false;
+
+  // Expose enum to template
+  DialogActionType = DialogActionType;
 
   constructor(
     public authService: AuthService,
@@ -116,14 +125,49 @@ export class UserProfileComponent implements OnInit {
   }
 
   changePassword(): void {
-    // Navigate to change password page or show modal
-    this.toastr.info('Change password functionality coming soon!', 'Info');
+    this.showChangePasswordModal = true;
+  }
+
+  onPasswordChangeRequested(request: ChangePasswordRequest): void {
+    this.authService.changePassword(request).subscribe({
+      next: () => {
+        this.toastr.success('Password changed successfully!', 'Success');
+        this.showChangePasswordModal = false;
+      },
+      error: (error) => {
+        console.error('Error changing password:', error);
+        const errorMessage = error.error?.message || 'Failed to change password';
+        this.toastr.error(errorMessage, 'Error');
+        // You can access the modal component to set error if needed
+      }
+    });
+  }
+
+  onChangePasswordModalClosed(): void {
+    this.showChangePasswordModal = false;
   }
 
   deleteAccount(): void {
-    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      this.toastr.info('Account deletion functionality coming soon!', 'Info');
-    }
+    this.showDeleteConfirmDialog = true;
+  }
+
+  onDeleteAccountConfirmed(): void {
+    this.authService.deleteAccount().subscribe({
+      next: () => {
+        this.toastr.success('Account deleted successfully', 'Success');
+        this.router.navigate(['/auth/login']);
+      },
+      error: (error) => {
+        console.error('Error deleting account:', error);
+        const errorMessage = error.error?.message || 'Failed to delete account';
+        this.toastr.error(errorMessage, 'Error');
+        this.showDeleteConfirmDialog = false;
+      }
+    });
+  }
+
+  onDeleteAccountCancelled(): void {
+    this.showDeleteConfirmDialog = false;
   }
 
   getAuthProviderDisplayName(): string {
