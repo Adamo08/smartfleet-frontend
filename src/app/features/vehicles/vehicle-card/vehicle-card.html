@@ -8,14 +8,14 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
       </svg>
     }
-    
+
     <!-- Status Badge -->
     <div class="absolute top-4 left-4">
       @if (vehicle.status === 'AVAILABLE') {
         <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">Available</span>
       } @else if (vehicle.status === 'RENTED') {
         <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">Rented</span>
-      } @else if (vehicle.status === 'MAINTENANCE') {
+      } @else if (vehicle.status === 'IN_MAINTENANCE') {
         <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">Maintenance</span>
       } @else {
         <span class="bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">Out of Service</span>
@@ -29,7 +29,7 @@
 
     <!-- Favorite Button -->
     @if (isLoggedIn) {
-      <button 
+      <button
         (click)="toggleFavorite()"
         class="absolute bottom-4 right-4 p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
       >
@@ -51,7 +51,7 @@
     <h3 class="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors duration-200">
       {{ vehicle.brand }} {{ vehicle.model }}
     </h3>
-    
+
     <div class="space-y-2 mb-4">
       <div class="flex items-center text-sm text-gray-300">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +66,7 @@
         <span>{{ vehicle.licensePlate }}</span>
       </div>
     </div>
-    
+
     @if (vehicle.description) {
       <p class="text-sm text-gray-300 mb-4 line-clamp-2 leading-relaxed">{{ vehicle.description }}</p>
     }
@@ -76,7 +76,7 @@
         <span class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">${{ vehicle.pricePerDay }}</span>
         <span class="text-sm text-gray-400">/day</span>
       </div>
-      <a 
+      <a
         [routerLink]="['/vehicles', vehicle.id]"
         class="bg-gradient-to-r from-indigo-600 to-cyan-600 text-white px-6 py-2 rounded-2xl hover:from-indigo-500 hover:to-cyan-500 transition-all duration-300 text-sm font-semibold shadow-lg hover:shadow-xl hover:scale-105"
       >
@@ -90,7 +90,7 @@
   .animation-delay-2000 {
     animation-delay: 2s;
   }
-  
+
   .animation-delay-4000 {
     animation-delay: 4s;
   }

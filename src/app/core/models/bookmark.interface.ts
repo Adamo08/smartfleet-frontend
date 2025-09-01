@@ -28,6 +28,7 @@ export interface BookmarkDto {
   vehicleId: number;
   vehicleBrand: string;
   vehicleModel: string;
+  vehicleImageUrl?: string;
 }
 
 export interface CreateBookmarkRequest {

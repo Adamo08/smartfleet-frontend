@@ -9,11 +9,16 @@ import { Pagination } from '../../../../shared/components/pagination/pagination'
 import { VehicleBrand } from '../../../../core/models/vehicle-brand.interface';
 import { VehicleModel } from '../../../../core/models/vehicle-model.interface';
 import { CreateVehicleModelDto, UpdateVehicleModelDto } from '../../../../core/models/vehicle-create-update.interface';
+import { ActionIcons } from '../../../../shared/components/action-icons/action-icons';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
+import { SkeletonPage } from '../../../../shared/components/skeleton-page/skeleton-page';
+import { InactiveWarningModal } from '../../../../shared/components/inactive-warning-modal/inactive-warning-modal';
+import { VehicleStatusService } from '../../../../core/services/vehicle-status.service';
 
 @Component({
   selector: 'app-vehicle-models',
   standalone: true,
-  imports: [CommonModule, FormsModule, Modal, ConfigrmDialog, Pagination],
+  imports: [CommonModule, FormsModule, Modal, ConfigrmDialog, Pagination, InactiveWarningModal, ActionIcons, SkeletonPage],
   templateUrl: './vehicle-models.html',
   styleUrl: './vehicle-models.css'
 })
@@ -30,6 +35,7 @@ export class VehicleModels implements OnInit {
   showAddModal = false;
   showEditModal = false;
   showDeleteModal = false;
+  showInactiveWarningModal = false;
 
   // Form data
   currentModel: Partial<VehicleModel> = {
@@ -40,6 +46,8 @@ export class VehicleModels implements OnInit {
   };
 
   modelToDelete: VehicleModel | null = null;
+  modelToToggle: VehicleModel | null = null;
+  statusInfo: any = null;
 
   // Pagination
   currentPage = 0;
@@ -50,7 +58,11 @@ export class VehicleModels implements OnInit {
   // Expose DialogActionType to the template
   readonly DialogActionType = DialogActionType;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private successModalService: SuccessModalService,
+    private vehicleStatusService: VehicleStatusService
+  ) {}
 
   ngOnInit(): void {
     this.loadBrands();
@@ -155,7 +167,7 @@ export class VehicleModels implements OnInit {
       
       this.apiService.put<VehicleModel>(`/admin/vehicle-models/${this.currentModel.id}`, updateDto).subscribe({
         next: () => {
-          this.showMessage('Model updated successfully!', 'success');
+          this.successModalService.showEntityUpdated('Model', `Model ${this.currentModel.name} has been successfully updated`);
           this.closeEditModal();
           this.loadModels();
         },
@@ -177,7 +189,7 @@ export class VehicleModels implements OnInit {
       
       this.apiService.post<VehicleModel>('/admin/vehicle-models', createDto).subscribe({
         next: () => {
-          this.showMessage('Model created successfully!', 'success');
+          this.successModalService.showEntityCreated('Model', `Model ${this.currentModel.name} has been successfully created`);
           this.closeAddModal();
           this.loadModels();
         },
@@ -198,7 +210,7 @@ export class VehicleModels implements OnInit {
     this.isSaving = true;
     this.apiService.delete(`/admin/vehicle-models/${this.modelToDelete.id}`).subscribe({
       next: () => {
-        this.showMessage('Model deleted successfully!', 'success');
+        this.successModalService.showEntityDeleted('Model', `Model ${this.modelToDelete!.name} has been successfully deleted`);
         this.closeDeleteModal();
         this.loadModels();
       },
@@ -215,8 +227,38 @@ export class VehicleModels implements OnInit {
   toggleModelStatus(model: VehicleModel): void {
     if (!model.id) return;
 
+    // If setting to inactive, show warning modal with real data
+    if (model.isActive) {
+      this.modelToToggle = model;
+      this.vehicleStatusService.getModelStatusInfo(model.id).subscribe({
+        next: (statusInfo) => {
+          this.statusInfo = statusInfo;
+          this.showInactiveWarningModal = true;
+        },
+        error: (error) => {
+          console.error('Error loading model status info:', error);
+          // Fallback to simple toggle without warning
+          this.confirmToggleStatus(model);
+        }
+      });
+    } else {
+      // Activating - no warning needed
+      this.confirmToggleStatus(model);
+    }
+  }
+
+  confirmToggleStatus(model: VehicleModel): void {
+    if (!model.id) return;
+
     this.apiService.patch<VehicleModel>(`/admin/vehicle-models/${model.id}/toggle-status`, {}).subscribe({
-      next: () => {
+      next: (updatedModel) => {
+        const action = updatedModel.isActive ? 'activated' : 'deactivated';
+        this.successModalService.show({
+          title: `Model ${action}`,
+          message: `${model.name} has been successfully ${action}.`,
+          autoClose: true,
+          autoCloseDelay: 3000
+        });
         this.loadModels();
       },
       error: (error) => {
@@ -224,6 +266,23 @@ export class VehicleModels implements OnInit {
         this.showMessage('Error updating model status', 'error');
       }
     });
+  }
+
+  onInactiveConfirm(): void {
+    if (this.modelToToggle) {
+      this.confirmToggleStatus(this.modelToToggle);
+      this.closeInactiveWarningModal();
+    }
+  }
+
+  onInactiveCancel(): void {
+    this.closeInactiveWarningModal();
+  }
+
+  closeInactiveWarningModal(): void {
+    this.showInactiveWarningModal = false;
+    this.modelToToggle = null;
+    this.statusInfo = null;
   }
 
   getBrandName(brandId: number): string {

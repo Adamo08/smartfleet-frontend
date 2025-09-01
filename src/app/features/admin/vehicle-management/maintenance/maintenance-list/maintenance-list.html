@@ -1,1 +1,219 @@
-<p>maintenance-list works!</p>
+<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-white mb-2">Vehicle Maintenance</h1>
+      <p class="text-gray-400">Manage vehicles currently in maintenance and schedule new maintenance</p>
+    </div>
+    <div class="flex space-x-3">
+      <button
+        routerLink="/admin/vehicles/fleet-status"
+        class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 transition-all duration-200">
+        Fleet Status
+      </button>
+      <button
+        (click)="openScheduleMaintenanceModal()"
+        class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200">
+        Schedule Maintenance
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-red-500/20 rounded-lg">
+          <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-gray-400 text-sm">In Maintenance</p>
+          <p class="text-2xl font-bold text-white">{{ getVehicleCountByStatus('IN_MAINTENANCE') }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-orange-500/20 rounded-lg">
+          <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"/>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-gray-400 text-sm">Out of Service</p>
+          <p class="text-2xl font-bold text-white">{{ getVehicleCountByStatus('OUT_OF_SERVICE') }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-yellow-500/20 rounded-lg">
+          <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-gray-400 text-sm">Damaged</p>
+          <p class="text-2xl font-bold text-white">{{ getVehicleCountByStatus('DAMAGED') }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+      <div class="flex items-center">
+        <div class="p-2 bg-green-500/20 rounded-lg">
+          <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="ml-4">
+          <p class="text-gray-400 text-sm">Available</p>
+          <p class="text-2xl font-bold text-white">{{ getVehicleCountByStatus('AVAILABLE') }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-3 sm:space-y-0 sm:space-x-3">
+    <input
+      type="text"
+      placeholder="Search by license plate, brand, or model..."
+      class="w-full sm:w-1/2 p-3 rounded-xl bg-slate-800 text-white border border-white/10"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+    />
+    <select
+      [(ngModel)]="selectedStatus"
+      (ngModelChange)="onStatusFilterChange()"
+      class="w-full sm:w-auto p-3 rounded-xl bg-slate-800 text-white border border-white/10"
+    >
+      <option value="">All Statuses</option>
+      <option value="IN_MAINTENANCE">In Maintenance</option>
+      <option value="OUT_OF_SERVICE">Out of Service</option>
+      <option value="DAMAGED">Damaged</option>
+      <option value="AVAILABLE">Available</option>
+      <option value="RENTED">Rented</option>
+    </select>
+    <button (click)="clearFilters()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200 w-full sm:w-auto">Clear Filters</button>
+  </div>
+
+  @if (isLoading) {
+    <app-skeleton-page
+      pageType="table"
+      [showFilters]="false"
+      [showPagination]="true"
+      [tableHeaders]="['Vehicle', 'License Plate', 'Status', 'Last Updated', 'Actions']"
+      [tableRows]="5">
+    </app-skeleton-page>
+  } @else if (vehiclesPage && vehiclesPage.content.length > 0) {
+    <div class="bg-slate-800/30 border border-white/10 rounded-xl overflow-hidden">
+      <table class="min-w-full text-sm text-gray-200">
+        <thead class="bg-slate-700/50">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Vehicle</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">License Plate</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Last Updated</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/10">
+          @for (vehicle of vehiclesPage.content; track vehicle.id) {
+            <tr class="hover:bg-slate-700/30 transition-colors duration-200">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  @if (vehicle.imageUrl) {
+                    <img [src]="vehicle.imageUrl" [alt]="vehicle.brandName + ' ' + vehicle.modelName" class="h-12 w-12 rounded-lg object-cover mr-4">
+                  } @else {
+                    <div class="h-12 w-12 bg-slate-600 rounded-lg flex items-center justify-center mr-4">
+                      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h3a1 1 0 110 2h-1v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z"/>
+                      </svg>
+                    </div>
+                  }
+                  <div>
+                    <div class="text-sm font-medium text-white">{{ vehicle.brandName }} {{ vehicle.modelName }}</div>
+                    <div class="text-sm text-gray-400">{{ vehicle.year }} • {{ vehicle.categoryName }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-white">{{ vehicle.licensePlate }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-3 py-1 rounded-full text-xs font-medium" [ngClass]="getStatusColor(vehicle.status)">
+                  {{ getStatusDisplayName(vehicle.status) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                {{ vehicle.updatedAt | date:'short' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex space-x-2">
+                  <app-action-icons
+                    [actions]="{ view: true }"
+                    (onView)="viewVehicle(vehicle)">
+                  </app-action-icons>
+                  @if (vehicle.status !== 'IN_MAINTENANCE') {
+                    <button
+                      (click)="markForMaintenance(vehicle)"
+                      class="text-orange-400 hover:text-orange-300 transition-colors duration-200 p-1 rounded hover:bg-orange-500/20"
+                      title="Mark for Maintenance">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                      </svg>
+                    </button>
+                  }
+                  @if (vehicle.status === 'IN_MAINTENANCE') {
+                    <button
+                      (click)="markAsAvailable(vehicle)"
+                      class="text-green-400 hover:text-green-300 transition-colors duration-200 p-1 rounded hover:bg-green-500/20"
+                      title="Mark as Available">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </button>
+                  }
+                  <button
+                    (click)="openStatusChangeModal(vehicle)"
+                    class="text-blue-400 hover:text-blue-300 transition-colors duration-200 p-1 rounded hover:bg-blue-500/20"
+                    title="Change Status">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (vehiclesPage && vehiclesPage.totalPages > 1) {
+      <div class="mt-6 flex justify-center">
+        <app-pagination
+          [currentPage]="currentPage"
+          [totalPages]="vehiclesPage.totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </div>
+    }
+  } @else {
+    <div class="text-center py-12">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-500/20 rounded-full mb-4">
+        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h3a1 1 0 110 2h-1v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-white mb-2">No Vehicles Found</h3>
+      <p class="text-gray-400">No vehicles match your current filter criteria.</p>
+    </div>
+  }
+</div>

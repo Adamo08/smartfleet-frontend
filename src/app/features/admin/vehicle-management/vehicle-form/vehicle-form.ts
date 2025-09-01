@@ -1,12 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Vehicle } from '../../../../core/models/vehicle.interface';
+import { VehicleService } from '../../../../core/services/vehicle';
 import { ApiService } from '../../../../core/services/api';
-import { FuelType, Vehicle, VehicleStatus } from '../../../../core/models/vehicle.interface';
-import { Page } from '../../../../core/models/pagination.interface';
-import { VehicleCategory } from '../../../../core/models/vehicle-category.interface';
-import { CreateVehicleDto, UpdateVehicleDto } from '../../../../core/models/vehicle-create-update.interface';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
 
 @Component({
   selector: 'app-vehicle-form',
@@ -16,57 +15,85 @@ import { CreateVehicleDto, UpdateVehicleDto } from '../../../../core/models/vehi
   styleUrl: './vehicle-form.css'
 })
 export class VehicleForm implements OnInit {
-  @Input() vehicle: Vehicle | null = null;
+  @Input() vehicle: Vehicle | null = null
   @Output() formSubmitted = new EventEmitter<void>();
 
-  form!: FormGroup;
+  form: FormGroup;
   editMode = false;
-  categories: VehicleCategory[] = [];
-  brands: VehicleBrand[] = [];
-  models: VehicleModel[] = [];
-  fuelTypes = Object.values(FuelType);
-  vehicleStatuses = Object.values(VehicleStatus);
+  categories: any[] = [];
+  brands: any[] = [];
+  models: any[] = [];
+  fuelTypes: any[] = [];
+  vehicleStatuses: any[] = [];
 
-  constructor(private fb: FormBuilder, private api: ApiService) {}
-
-  ngOnInit(): void {
-    this.editMode = !!this.vehicle;
-    this.loadCategories();
-    this.loadBrands();
-    this.loadModels();
+  constructor(
+    private fb: FormBuilder,
+    private vehicleService: VehicleService,
+    private api: ApiService,
+    private successModalService: SuccessModalService
+  ) {
     this.form = this.fb.group({
-      categoryId: [this.vehicle?.categoryId || null, Validators.required],
-      brandId: [this.vehicle?.brandId || null, Validators.required],
-      modelId: [this.vehicle?.modelId || null, Validators.required],
-      year: [this.vehicle ? this.vehicle.year : '', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
-      licensePlate: [this.vehicle ? this.vehicle.licensePlate : '', Validators.required],
-      fuelType: [this.vehicle ? this.vehicle.fuelType : '', Validators.required],
-      status: [this.vehicle ? this.vehicle.status : '', Validators.required],
-      mileage: [this.vehicle ? this.vehicle.mileage : '', [Validators.required, Validators.min(0)]],
-      pricePerDay: [this.vehicle ? this.vehicle.pricePerDay : '', [Validators.required, Validators.min(0)]],
-      imageUrl: [this.vehicle ? this.vehicle.imageUrl : ''],
-      description: [this.vehicle ? this.vehicle.description : '']
+      licensePlate: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{6,8}$/)]],
+      brandId: ['', Validators.required],
+      modelId: ['', Validators.required],
+      categoryId: ['', Validators.required],
+      year: ['', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
+      fuelType: ['', Validators.required],
+      mileage: ['', [Validators.required, Validators.min(0)]],
+      pricePerDay: ['', [Validators.required, Validators.min(0)]],
+      status: ['AVAILABLE', Validators.required],
+      imageUrl: [''],
+      description: ['']
     });
   }
 
+  ngOnInit(): void {
+    this.loadCategories();
+    this.loadBrands();
+    this.loadFuelTypes();
+    this.loadVehicleStatuses();
+    
+    if (this.vehicle) {
+      this.editMode = true;
+      this.form.patchValue(this.vehicle);
+      this.loadModels(this.vehicle.brandId);
+    }
+  }
+
   loadCategories(): void {
-    this.api.get<Page<VehicleCategory>>('/admin/vehicle-categories', { page: 0, size: 9999 }).subscribe({
-      next: (page) => this.categories = page.content,
+    this.vehicleService.getAllVehicleCategories().subscribe({
+      next: (response) => this.categories = response.content,
       error: (err) => console.error('Error loading categories', err)
     });
   }
 
   loadBrands(): void {
-    this.api.get<Page<VehicleBrand>>('/admin/vehicle-brands', { page: 0, size: 9999 }).subscribe({
-      next: (page) => this.brands = page.content,
+    this.vehicleService.getAllVehicleBrands().subscribe({
+      next: (response) => this.brands = response.content,
       error: (err) => console.error('Error loading brands', err)
     });
   }
 
-  loadModels(): void {
-    this.api.get<Page<VehicleModel>>('/admin/vehicle-models', { page: 0, size: 9999 }).subscribe({
-      next: (page) => this.models = page.content,
-      error: (err) => console.error('Error loading models', err)
+  loadModels(brandId?: number): void {
+    if (brandId) {
+      this.vehicleService.getVehicleModelsByBrand(brandId).subscribe({
+        next: (response) => this.models = response.content,
+        error: (err) => console.error('Error loading models', err)
+      });
+    }
+  }
+
+  loadFuelTypes(): void {
+    this.vehicleService.getFuelTypes().subscribe({
+      next: (response) => this.fuelTypes = response,
+      error: (err) => console.error('Error loading fuel types', err)
+    });
+  }
+
+  loadVehicleStatuses(): void {
+    this.vehicleService.getVehicleStatuses().subscribe({
+      next: (response) => this.vehicleStatuses = response,
+      error: (err) => console.error('Error loading vehicle statuses', err)
     });
   }
 
@@ -77,12 +104,16 @@ export class VehicleForm implements OnInit {
 
     if (this.editMode) {
       this.api.put(`/admin/vehicles/${this.vehicle!.id}`, vehicleData).subscribe({
-        next: () => this.formSubmitted.emit(),
+        next: () => {
+          this.successModalService.showEntityUpdated('Vehicle', `Vehicle ${vehicleData.licensePlate} has been successfully updated`);
+          this.formSubmitted.emit();
+        },
         error: (err) => console.error('Error updating vehicle:', err)
       });
     } else {
       this.api.post('/admin/vehicles', vehicleData).subscribe({
         next: () => {
+          this.successModalService.showEntityCreated('Vehicle', `Vehicle ${vehicleData.licensePlate} has been successfully created`);
           this.formSubmitted.emit();
           this.resetForm();
         },
@@ -95,14 +126,4 @@ export class VehicleForm implements OnInit {
     this.form.reset();
     this.editMode = false;
   }
-}
-
-interface VehicleBrand {
-  id: number;
-  name: string;
-}
-
-interface VehicleModel {
-  id: number;
-  name: string;
 }

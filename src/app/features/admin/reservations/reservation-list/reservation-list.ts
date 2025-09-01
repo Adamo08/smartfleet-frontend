@@ -10,11 +10,14 @@ import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/
 import { Pagination } from '../../../../shared/components/pagination/pagination';
 import { ReservationDetail } from '../reservation-detail/reservation-detail';
 import { ReservationUpdate } from '../reservation-update/reservation-update';
+import { ActionIcons } from '../../../../shared/components/action-icons/action-icons';
+import { SkeletonPage } from '../../../../shared/components/skeleton-page/skeleton-page';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
 
 @Component({
   selector: 'app-reservation-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, ReservationDetail, ReservationUpdate],
+  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, ReservationDetail, ReservationUpdate, ActionIcons, SkeletonPage],
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css'
 })
@@ -38,7 +41,11 @@ export class ReservationList implements OnInit {
   readonly ReservationStatus = ReservationStatus;
   readonly DialogActionType = DialogActionType;
 
-  constructor(private reservationService: ReservationService, private fb: FormBuilder) {
+  constructor(
+    private reservationService: ReservationService, 
+    private fb: FormBuilder,
+    private successModalService: SuccessModalService
+  ) {
     this.filterForm = this.fb.group({
       userId: [null],
       vehicleId: [null],
@@ -132,15 +139,18 @@ export class ReservationList implements OnInit {
   }
 
   confirmDeleteReservation(): void {
-    if (this.reservationToDelete && this.reservationToDelete.id) {
-      this.reservationService.deleteReservation(this.reservationToDelete.id).subscribe({
-        next: () => {
-          this.closeDeleteReservationModal();
-          this.loadReservations();
-        },
-        error: (err) => console.error('Error deleting reservation:', err)
-      });
-    }
+    if (!this.reservationToDelete?.id) return;
+    
+    this.reservationService.deleteReservation(this.reservationToDelete.id).subscribe({
+      next: () => {
+        this.successModalService.showEntityDeleted('Reservation', `Reservation #${this.reservationToDelete!.id} has been successfully deleted`);
+        this.closeDeleteReservationModal();
+        this.loadReservations();
+      },
+      error: (err) => {
+        console.error('Error deleting reservation:', err);
+      }
+    });
   }
 
   closeDeleteReservationModal(): void {

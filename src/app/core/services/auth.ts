@@ -167,6 +167,19 @@ export class AuthService {
     return this.http.post<void>(`${environment.apiUrl}/users/${user.id}/change-password`, request);
   }
 
+  deleteAccount(): Observable<void> {
+    const user = this.getCurrentUser();
+    if (!user) {
+      return throwError(() => new Error('User not authenticated'));
+    }
+    return this.http.delete<void>(`${environment.apiUrl}/users/${user.id}`).pipe(
+      tap(() => {
+        // Logout the user after successful account deletion
+        this.logout();
+      })
+    );
+  }
+
   updateProfile(userData: Partial<User>): Observable<User> {
     const user = this.getCurrentUser();
     if (!user) {

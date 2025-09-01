@@ -1,8 +1,8 @@
 <div class="p-6 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl">
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-xl font-semibold text-white">Vehicle Brands</h2>
-    <button 
-      (click)="openAddModal()" 
+    <button
+      (click)="openAddModal()"
       class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200">
       New Brand
     </button>
@@ -10,14 +10,14 @@
 
   <!-- Message Display -->
   @if (message) {
-    <div class="mb-6 p-4 rounded-xl border" 
+    <div class="mb-6 p-4 rounded-xl border"
          [ngClass]="{
-           'bg-green-500/20 border-green-500/30 text-green-300': messageType === 'success',
-           'bg-red-500/20 border-red-500/30 text-red-300': messageType === 'error'
+           'bg-green-500 bg-opacity-20 border-green-500 border-opacity-30 text-green-300': messageType === 'success',
+           'bg-red-500 bg-opacity-20 border-red-500 border-opacity-30 text-red-300': messageType === 'error'
          }">
       <div class="flex items-center justify-between">
         <span>{{ message }}</span>
-        <button (click)="clearMessage()" class="text-white/70 hover:text-white">
+        <button (click)="clearMessage()" class="text-white text-opacity-70 hover:text-white">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -27,15 +27,19 @@
   }
 
   @if (isLoading) {
-    <div class="text-center py-8">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-      <p class="text-gray-300 mt-2">Loading brands...</p>
-    </div>
+    <!-- Advanced Skeleton Loading -->
+    <app-skeleton-page
+      pageType="table"
+      [showFilters]="false"
+      [showPagination]="true"
+      [tableHeaders]="['ID', 'Name', 'Description', 'Country', 'Status', 'Created', 'Actions']"
+      [tableRows]="5">
+    </app-skeleton-page>
   } @else if (brandsPage && brandsPage.content.length > 0) {
     <div class="overflow-x-auto rounded-lg shadow-xl">
       <table class="min-w-full text-sm text-gray-200 bg-slate-800">
         <thead>
-          <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
+            <tr class="text-left border-b border-indigo-500 border-opacity-20 bg-slate-700">
             <th class="p-3 text-white">ID</th>
             <th class="p-3 text-white">Name</th>
             <th class="p-3 text-white">Description</th>
@@ -48,7 +52,7 @@
         </thead>
         <tbody>
           @for (brand of brandsPage.content; track brand.id) {
-            <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
+                         <tr class="border-b border-indigo-500 border-opacity-10 hover:bg-slate-700 hover:bg-opacity-50 transition-colors duration-200">
               <td class="p-3">{{ brand.id }}</td>
               <td class="p-3 font-medium">{{ brand.name }}</td>
               <td class="p-3 text-gray-300">{{ brand.description || 'No description' }}</td>
@@ -61,38 +65,27 @@
               </td>
               <td class="p-3 text-gray-300">{{ brand.countryOfOrigin || 'N/A' }}</td>
               <td class="p-3">
-                <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
-                  'bg-green-500/20 text-green-300': brand.isActive,
-                  'bg-red-500/20 text-red-300': !brand.isActive
-                }">
+                                 <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
+                   'bg-green-500 bg-opacity-20 text-green-300': brand.isActive,
+                   'bg-red-500 bg-opacity-20 text-red-300': !brand.isActive
+                 }">
                   {{ brand.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
               <td class="p-3 text-gray-300">{{ brand.createdAt | date:'short' }}</td>
               <td class="p-3 flex space-x-2">
-                <button 
-                  class="text-yellow-400 hover:text-yellow-300 transition-colors duration-200" 
-                  (click)="openEditModal(brand)" 
-                  title="Edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487zm0 0L19.5 7.125" />
-                  </svg>
-                </button>
-                <button 
-                  class="text-red-400 hover:text-red-300 transition-colors duration-200" 
-                  (click)="openDeleteModal(brand)" 
-                  title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.92c-1.01 0-1.93-.61-2.243-1.673L4.4 6.392m9.165 0c.66-.089 1.309-.178 1.964-.267m-9.964 0a48.11 48.11 0 01-3.478-.397m-1.559 0c.567.067 1.123.134 1.68.201m-.15.909.475 2.85a1.5 1.5 0 001.488 1.36h5.25a1.5 1.5 0 001.488-1.36l.476-2.85m-11.77-.55a22.354 22.354 0 00-.733-1.469C3.722 7.555 3 6.81 3 6h-.003L4.4 6.392V6c0-.528.288-.992.733-1.469a22.354 22.354 0 00.732-1.469A1.751 1.751 0 015.405 2.5C6.07 2.5 6.643 2.76 7 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5C18.27 2.5 18.843 2.76 19.2 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5C21.722 7.555 21 6.81 21 6h-.003L19.6 6.392V6c0-.528-.288-.992-.733-1.469a22.354 22.354 0 00-.732-1.469A1.751 1.751 0 0118.595 2.5C17.93 2.5 17.357 2.76 17 3c-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5C6.27 2.5 5.722 7.555 5.722 7.555z" />
-                  </svg>
-                </button>
-                <button 
-                  class="px-2 py-1 rounded text-xs font-medium transition-colors duration-200" 
+                <app-action-icons
+                  [actions]="{ edit: true, delete: true }"
+                  (onEdit)="openEditModal(brand)"
+                  (onDelete)="openDeleteModal(brand)">
+                </app-action-icons>
+                <button
+                  class="px-2 py-1 rounded text-xs font-medium transition-colors duration-200"
                   [ngClass]="{
-                    'bg-red-500/20 text-red-300 hover:bg-red-500/30': brand.isActive,
-                    'bg-green-500/20 text-green-300 hover:bg-green-500/30': !brand.isActive
+                    'bg-red-100 bg-opacity-20 text-red-300 hover:bg-red-100 hover:bg-opacity-30': brand.isActive,
+                    'bg-green-100 bg-opacity-20 text-green-300 hover:bg-green-100 hover:bg-opacity-30': !brand.isActive
                   }"
-                  (click)="toggleBrandStatus(brand)" 
+                  (click)="toggleBrandStatus(brand)"
                   title="{{ brand.isActive ? 'Deactivate' : 'Activate' }}">
                   {{ brand.isActive ? 'Deactivate' : 'Activate' }}
                 </button>
@@ -114,7 +107,7 @@
       </div>
     }
   } @else if (!isLoading) {
-    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-xl bg-slate-900/40">
+         <div class="text-gray-300 text-center py-8 border border-white border-opacity-10 rounded-xl bg-slate-900 bg-opacity-40">
       No brands found. Create your first brand to get started.
     </div>
   }
@@ -125,53 +118,53 @@
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             [(ngModel)]="currentBrand.name"
             placeholder="Enter brand name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
-          <textarea 
+          <textarea
             [(ngModel)]="currentBrand.description"
             placeholder="Enter brand description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Logo URL</label>
-          <input 
-            type="url" 
+          <input
+            type="url"
             [(ngModel)]="currentBrand.logoUrl"
             placeholder="Enter logo URL (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Country of Origin</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             [(ngModel)]="currentBrand.countryOfOrigin"
             placeholder="Enter country of origin (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div class="flex items-center space-x-2">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             [(ngModel)]="currentBrand.isActive"
             id="isActive"
-            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white/20 rounded focus:ring-indigo-500 focus:ring-2">
+            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white border-opacity-20 rounded focus:ring-indigo-500 focus:ring-2">
           <label for="isActive" class="text-sm text-gray-300">Active</label>
         </div>
       </div>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
-        <button 
-          (click)="closeAddModal()" 
+        <button
+          (click)="closeAddModal()"
           class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
           Cancel
         </button>
-        <button 
-          (click)="saveBrand()" 
+        <button
+          (click)="saveBrand()"
           [disabled]="isSaving"
           class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
           {{ isSaving ? 'Saving...' : 'Save Brand' }}
@@ -186,53 +179,53 @@
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             [(ngModel)]="currentBrand.name"
             placeholder="Enter brand name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
-          <textarea 
+          <textarea
             [(ngModel)]="currentBrand.description"
             placeholder="Enter brand description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Logo URL</label>
-          <input 
-            type="url" 
+          <input
+            type="url"
             [(ngModel)]="currentBrand.logoUrl"
             placeholder="Enter logo URL (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Country of Origin</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             [(ngModel)]="currentBrand.countryOfOrigin"
             placeholder="Enter country of origin (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div class="flex items-center space-x-2">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             [(ngModel)]="currentBrand.isActive"
             id="editIsActive"
-            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white/20 rounded focus:ring-indigo-500 focus:ring-2">
+            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white border-opacity-20 rounded focus:ring-indigo-500 focus:ring-2">
           <label for="editIsActive" class="text-sm text-gray-300">Active</label>
         </div>
       </div>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
-        <button 
-          (click)="closeEditModal()" 
+        <button
+          (click)="closeEditModal()"
           class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
           Cancel
         </button>
-        <button 
-          (click)="saveBrand()" 
+        <button
+          (click)="saveBrand()"
           [disabled]="isSaving"
           class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
           {{ isSaving ? 'Saving...' : 'Update Brand' }}
@@ -252,5 +245,17 @@
       (confirmed)="confirmDeleteBrand()"
       (cancelled)="closeDeleteModal()">
     </app-configrm-dialog>
+  }
+
+  <!-- Inactive Warning Modal -->
+  @if (showInactiveWarningModal && statusInfo) {
+    <app-inactive-warning-modal
+      [isOpen]="showInactiveWarningModal"
+      [entityName]="brandToToggle?.name || ''"
+      [entityType]="'brand'"
+      [statusInfo]="statusInfo"
+      (confirm)="onInactiveConfirm()"
+      (cancel)="onInactiveCancel()">
+    </app-inactive-warning-modal>
   }
 </div>

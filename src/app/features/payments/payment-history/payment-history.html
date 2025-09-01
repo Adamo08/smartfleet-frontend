@@ -30,6 +30,7 @@
             <option value="PENDING">Pending</option>
             <option value="FAILED">Failed</option>
             <option value="REFUNDED">Refunded</option>
+            <option value="PARTIALLY_REFUNDED">Partially Refunded</option>
             <option value="CANCELLED">Cancelled</option>
           </select>
         </div>
@@ -158,7 +159,9 @@
             <div class="flex space-x-2">
               <button (click)="openPaymentDetailModal(payment); $event.stopPropagation()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition-all duration-200">View</button>
               @if (payment.status === 'COMPLETED') {
-              <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-all duration-200">Refund</button>
+              <a routerLink="/payments/refund-request" [queryParams]="{ paymentId: payment.id }" 
+                 class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-all duration-200 inline-block"
+                 (click)="$event.stopPropagation()">Refund</a>
               }
             </div>
           </div>
@@ -198,76 +201,77 @@
       @if (selectedPayment) {
         <div class="space-y-6">
           <!-- Payment Information -->
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Information</h3>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Payment Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Payment ID</label>
-                <p class="text-sm text-gray-900">{{ selectedPayment.id }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Payment ID</label>
+                <p class="text-sm text-white">{{ selectedPayment.id }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Transaction ID</label>
-                <p class="text-sm text-gray-900">{{ selectedPayment.transactionId || 'N/A' }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Transaction ID</label>
+                <p class="text-sm text-white">{{ selectedPayment.transactionId || 'N/A' }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                <p class="text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedPayment.amount, selectedPayment.currency) }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Amount</label>
+                <p class="text-sm text-white font-semibold">{{ formatCurrency(selectedPayment.amount, selectedPayment.currency) }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                <p class="text-sm text-gray-900">{{ selectedPayment.currency }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Currency</label>
+                <p class="text-sm text-white">{{ selectedPayment.currency }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Status</label>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white" [class]="getStatusColor(selectedPayment.status)">
                   {{ getStatusText(selectedPayment.status) }}
                 </span>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-                <p class="text-sm text-gray-900">{{ selectedPayment.provider }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Provider</label>
+                <p class="text-sm text-white">{{ selectedPayment.provider }}</p>
               </div>
             </div>
           </div>
 
           <!-- Reservation Information -->
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Reservation Information</h3>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Reservation Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Reservation ID</label>
-                <p class="text-sm text-gray-900">{{ selectedPayment.reservationId }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Reservation ID</label>
+                <p class="text-sm text-white">{{ selectedPayment.reservationId }}</p>
               </div>
               @if (selectedPayment.captureId) {
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Capture ID</label>
-                <p class="text-sm text-gray-900">{{ selectedPayment.captureId }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Capture ID</label>
+                <p class="text-sm text-white">{{ selectedPayment.captureId }}</p>
               </div>
               }
             </div>
           </div>
 
           <!-- Timestamps -->
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Timeline</h3>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Timeline</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Created At</label>
-                <p class="text-sm text-gray-900">{{ formatDate(selectedPayment.createdAt) }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Created At</label>
+                <p class="text-sm text-white">{{ formatDate(selectedPayment.createdAt) }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Last Updated</label>
-                <p class="text-sm text-gray-900">{{ formatDate(selectedPayment.updatedAt) }}</p>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Last Updated</label>
+                <p class="text-sm text-white">{{ formatDate(selectedPayment.updatedAt) }}</p>
               </div>
             </div>
           </div>
 
           <!-- Actions -->
-          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <div class="flex justify-end space-x-3 pt-4 border-t border-white/10">
             @if (selectedPayment.status === 'COMPLETED') {
-            <button (click)="onRefundRequest(selectedPayment)" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium">
+            <a routerLink="/payments/refund-request" [queryParams]="{ paymentId: selectedPayment.id }" 
+               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium inline-block">
               Request Refund
-            </button>
+            </a>
             }
             <button (click)="closePaymentDetailModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium">
               Close

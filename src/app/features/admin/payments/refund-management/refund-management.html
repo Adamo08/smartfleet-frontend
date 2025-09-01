@@ -14,7 +14,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-red-400">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
         </svg>
-        <p class="text-red-300">This payment cannot be refunded. Only completed payments can be refunded.</p>
+        <p class="text-red-300">This payment cannot be refunded. Only completed or partially refunded payments can be refunded.</p>
       </div>
     </div>
   }
@@ -31,6 +31,14 @@
         <div>
           <span class="text-gray-400">Original Amount:</span>
           <span class="text-white ml-2">{{ payment.amount | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+        <div>
+          <span class="text-gray-400">Refunded Amount:</span>
+          <span class="text-yellow-300 ml-2">{{ getRefundedAmount() | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+        <div>
+          <span class="text-gray-400">Remaining Amount:</span>
+          <span class="text-green-300 ml-2 font-semibold">{{ getRemainingAmount() | currency:'USD':'symbol':'1.2-2' }}</span>
         </div>
         <div>
           <span class="text-gray-400">Payment Method:</span>
@@ -91,16 +99,29 @@
           [class.border-red-500]="refundForm.get('reason')?.invalid && refundForm.get('reason')?.touched"
         >
           <option value="">Select a reason</option>
-          <option value="Customer Request">Customer Request</option>
-          <option value="Service Issue">Service Issue</option>
-          <option value="Vehicle Unavailable">Vehicle Unavailable</option>
-          <option value="Billing Error">Billing Error</option>
-          <option value="Duplicate Payment">Duplicate Payment</option>
-          <option value="Fraudulent Transaction">Fraudulent Transaction</option>
-          <option value="Other">Other</option>
+          @for (reason of getRefundReasons(); track reason.value) {
+            <option [value]="reason.value">{{ reason.label }}</option>
+          }
         </select>
         @if (refundForm.get('reason')?.invalid && refundForm.get('reason')?.touched) {
           <p class="text-red-400 text-sm mt-1">Please select a refund reason</p>
+        }
+      </div>
+
+      <!-- Refund Method -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Refund Method *</label>
+        <select 
+          formControlName="refundMethod"
+          class="w-full p-3 rounded-xl bg-slate-800/50 border border-white/20 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+          [class.border-red-500]="refundForm.get('refundMethod')?.invalid && refundForm.get('refundMethod')?.touched"
+        >
+          @for (method of getRefundMethods(); track method.value) {
+            <option [value]="method.value">{{ method.label }}</option>
+          }
+        </select>
+        @if (refundForm.get('refundMethod')?.invalid && refundForm.get('refundMethod')?.touched) {
+          <p class="text-red-400 text-sm mt-1">Please select a refund method</p>
         }
       </div>
 

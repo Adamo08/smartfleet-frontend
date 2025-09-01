@@ -72,8 +72,8 @@
             <!-- Context Image -->
             <div class="relative h-48 bg-gradient-to-br from-slate-700 to-slate-800">
               <img
-                [src]="getVehicleImageUrl(bookmark.vehicleId)"
-                [alt]="'Reservation ' + bookmark.reservationId"
+                [src]="getVehicleImageUrl(bookmark)"
+                [alt]="bookmark.vehicleBrand + ' ' + bookmark.vehicleModel"
                 class="w-full h-full object-cover"
                 onerror="this.src='/assets/images/icons/car.svg'"
               />

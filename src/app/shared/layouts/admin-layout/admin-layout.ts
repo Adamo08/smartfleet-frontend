@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth';
 import {Sidebar} from '../../components/sidebar/sidebar';
 import {NotificationBell} from '../../../features/notifications/notification-bell/notification-bell';
 import { AdminConfirmationDialogComponent } from '../../components/admin-confirmation-dialog/admin-confirmation-dialog';
+import { GlobalSuccessModal } from '../../components/global-success-modal/global-success-modal';
 import { SidebarMobileToggleComponent } from '../../components/sidebar-mobile-toggle/sidebar-mobile-toggle'; // Import new component
 import { Router } from '@angular/router';
 import { ViewChild } from '@angular/core';
@@ -12,7 +13,7 @@ import { ViewChild } from '@angular/core';
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, Sidebar, NotificationBell, AdminConfirmationDialogComponent, SidebarMobileToggleComponent], // Add to imports
+  imports: [CommonModule, RouterModule, Sidebar, NotificationBell, AdminConfirmationDialogComponent, GlobalSuccessModal, SidebarMobileToggleComponent], // Add to imports
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css'
 })

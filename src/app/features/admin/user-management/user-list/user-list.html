@@ -1,7 +1,17 @@
 <div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-xl font-semibold text-white">Users</h2>
-    <button (click)="openAddUserModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">New User</button>
+    <div class="flex space-x-3">
+      <button 
+        routerLink="/admin/users/roles" 
+        class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 transition-all duration-200">
+        Manage Roles
+      </button>
+      <button 
+          (click)="openAddUserModal()" 
+          class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white"
+      >New User</button>
+    </div>
   </div>
 
   <div class="flex flex-col sm:flex-row items-center justify-between mb-4 space-y-3 sm:space-y-0 sm:space-x-3">
@@ -27,7 +37,14 @@
   </div>
 
   @if (isLoading) {
-    <div class="text-gray-300">Loading...</div>
+    <!-- Advanced Skeleton Loading -->
+    <app-skeleton-page
+      pageType="table"
+      [showFilters]="false"
+      [showPagination]="true"
+      [tableHeaders]="['ID', 'Name', 'Email', 'Phone', 'Role', 'Created', 'Actions']"
+      [tableRows]="5">
+    </app-skeleton-page>
   } @else if (usersPage && usersPage.content.length > 0) {
     <div class="overflow-x-auto rounded-lg shadow-xl">
       <table class="min-w-full text-sm text-gray-200 bg-slate-800">
@@ -54,23 +71,13 @@
                 'bg-purple-500/20 text-purple-300': u.role === 'ADMIN'
               }">{{ u.role }}</span></td>
               <td class="p-3">{{ u.createdAt | date:'short' }}</td>
-              <td class="p-3 flex space-x-2">
-                <button class="text-blue-400 hover:text-blue-300 transition-colors duration-200" (click)="viewUser(u)" title="View">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </button>
-                <button class="text-yellow-400 hover:text-yellow-300 transition-colors duration-200" (click)="openEditUserModal(u)" title="Edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487zm0 0L19.5 7.125" />
-                  </svg>
-                </button>
-                <button class="text-red-400 hover:text-red-300 transition-colors duration-200" (click)="openDeleteUserModal(u)" title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.92c-1.01 0-1.93-.61-2.243-1.673L4.4 6.392m9.165 0c.66-.089 1.309-.178 1.964-.267m-9.964 0a48.11 48.11 0 01-3.478-.397m-1.559 0c.567.067 1.123.134 1.68.201m-.15.909.475 2.85a1.5 1.5 0 001.488 1.36h5.25a1.5 1.5 0 001.488-1.36l.476-2.85m-11.77-.55a22.354 22.354 0 00-.733-1.469C3.722 7.555 3 6.81 3 6h-.003L4.4 6.392V6c0-.528.288-.992.733-1.469a22.354 22.354 0 00.732-1.469A1.751 1.751 0 015.405 2.5C6.07 2.5 6.643 2.76 7 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5C18.27 2.5 18.843 2.76 19.2 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5C21.722 7.555 21 6.81 21 6h-.003L19.6 6.392V6c0-.528-.288-.992-.733-1.469a22.354 22.354 0 00-.732-1.469A1.751 1.751 0 0118.595 2.5C17.93 2.5 17.357 2.76 17 3c-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5C6.27 2.5 5.722 7.555 5.722 7.555z" />
-                  </svg>
-                </button>
+              <td class="p-3">
+                <app-action-icons
+                  [actions]="{ view: true, edit: true, delete: true }"
+                  (onView)="viewUser(u)"
+                  (onEdit)="openEditUserModal(u)"
+                  (onDelete)="openDeleteUserModal(u)">
+                </app-action-icons>
               </td>
             </tr>
           }
@@ -98,7 +105,7 @@
 
   @if (showAddUserModal) {
     <app-modal [title]="'Add New User'" (close)="closeAddUserModal()">
-      <app-user-form (formSubmitted)="closeAddUserModal()"></app-user-form>
+      <app-user-form (formSubmitted)="closeAddUserModal()" (userAdded)="onUserAdded()"></app-user-form>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
         <button (click)="closeAddUserModal()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">Cancel</button>
       </div>
@@ -107,7 +114,7 @@
 
   @if (showEditUserModal && selectedUser) {
     <app-modal [title]="'Edit User'" (close)="closeEditUserModal()">
-      <app-user-form [user]="selectedUser" (formSubmitted)="closeEditUserModal()"></app-user-form>
+      <app-user-form [user]="selectedUser" (formSubmitted)="closeEditUserModal()" (userUpdated)="onUserUpdated()"></app-user-form>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
         <button (click)="closeEditUserModal()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">Cancel</button>
       </div>

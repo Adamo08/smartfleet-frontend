@@ -1,106 +1,63 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+import { RouterModule } from '@angular/router';
 import { PaymentService } from '../../../../core/services/payment.service';
-import { RefundDetailsDto } from '../../../../core/models/payment.interface';
-import { Page, Pageable } from '../../../../core/models/pagination.interface';
+import { RefundDetailsDto, RefundReason, RefundMethod } from '../../../../core/models/payment.interface';
+import { RefundStatus } from '../../../../core/enums/refund-status.enum';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
+import { ToastrService } from 'ngx-toastr';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
-import { Modal } from '../../../../shared/components/modal/modal';
+import { Page, Pageable } from '../../../../core/models/pagination.interface';
 
 @Component({
   selector: 'app-refund-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Pagination, Modal],
+  imports: [CommonModule, RouterModule, Pagination],
   templateUrl: './refund-list.html',
   styleUrl: './refund-list.css'
 })
-export class RefundList implements OnInit, OnDestroy {
+export class RefundList implements OnInit {
   refundsPage!: Page<RefundDetailsDto>;
-  filterForm: FormGroup;
-  isLoading = false;
+  loading = false;
   error: string | null = null;
-
-  currentPage = 0;
-  pageSize = 10;
-  sortBy = 'id';
-  sortDirection: 'ASC' | 'DESC' = 'DESC';
-
-  selectedRefund: RefundDetailsDto | null = null;
-  showRefundDetailModal = false;
-
-  private destroy$ = new Subject<void>();
+  
+  // Pagination
+  currentPage: number = 0;
+  pageSize: number = 10;
+  
+  readonly RefundStatus = RefundStatus;
 
   constructor(
     private paymentService: PaymentService,
-    private fb: FormBuilder
-  ) {
-    this.filterForm = this.fb.group({
-      paymentId: [null],
-      status: [''],
-      minAmount: [null],
-      maxAmount: [null],
-      startDate: [null],
-      endDate: [null],
-      searchTerm: ['']
-    });
-
-    this.refundsPage = {
-      content: [],
-      totalElements: 0,
-      totalPages: 0,
-      number: 0,
-      size: this.pageSize,
-      numberOfElements: 0,
-      first: true,
-      last: true,
-      empty: true
-    } as Page<RefundDetailsDto>;
-  }
+    private successModalService: SuccessModalService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
-    this.setupFilterListener();
     this.loadRefunds();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private setupFilterListener(): void {
-    this.filterForm.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.currentPage = 0;
-        this.loadRefunds();
-      });
-  }
-
   loadRefunds(): void {
-    this.isLoading = true;
+    this.loading = true;
     this.error = null;
 
-    const filters = this.filterForm.value;
     const pageable: Pageable = {
       page: this.currentPage,
       size: this.pageSize,
-      sort: `${this.sortBy},${this.sortDirection}`
-    } as Pageable;
+      sortBy: 'requestedAt',
+      sortDirection: 'DESC'
+    };
 
-    this.paymentService.getRefundHistory(pageable, filters).subscribe({
-      next: (res: Page<RefundDetailsDto>) => {
-        this.refundsPage = res;
-        this.isLoading = false;
+    this.paymentService.getAllRefunds({}, pageable).subscribe({
+      next: (response) => {
+        this.refundsPage = response;
+        this.currentPage = response.number;
+        this.loading = false;
       },
-      error: (err) => {
-        console.error('Error loading refunds:', err);
-        this.error = 'Failed to load refunds. Please try again.';
-        this.isLoading = false;
+      error: (error) => {
+        console.error('Error loading refunds:', error);
+        this.error = 'Failed to load refunds';
+        this.loading = false;
       }
     });
   }
@@ -110,52 +67,78 @@ export class RefundList implements OnInit, OnDestroy {
     this.loadRefunds();
   }
 
-  onSortChange(column: string): void {
-    if (this.sortBy === column) {
-      this.sortDirection = this.sortDirection === 'ASC' ? 'DESC' : 'ASC';
-    } else {
-      this.sortBy = column;
-      this.sortDirection = 'DESC';
-    }
-    this.loadRefunds();
+  getReasonLabel(reason: string): string {
+    const reasons = this.getRefundReasons();
+    const reasonObj = reasons.find(r => r.value === reason);
+    return reasonObj ? reasonObj.label : reason;
   }
 
-  clearFilters(): void {
-    this.filterForm.reset();
-    this.currentPage = 0;
+  getRefundReasons(): { value: RefundReason; label: string }[] {
+    return [
+      { value: RefundReason.VEHICLE_UNAVAILABLE, label: 'Vehicle became unavailable' },
+      { value: RefundReason.CANCELLATION_BY_CUSTOMER, label: 'Customer cancelled reservation' },
+      { value: RefundReason.TECHNICAL_ISSUE, label: 'Technical issue with booking' },
+      { value: RefundReason.DUPLICATE_PAYMENT, label: 'Duplicate payment made' },
+      { value: RefundReason.WRONG_AMOUNT, label: 'Incorrect amount charged' },
+      { value: RefundReason.SERVICE_NOT_PROVIDED, label: 'Service not provided as expected' },
+      { value: RefundReason.EMERGENCY_CANCELLATION, label: 'Emergency cancellation' },
+      { value: RefundReason.WEATHER_CONDITIONS, label: 'Weather conditions prevented service' },
+      { value: RefundReason.VEHICLE_DAMAGE, label: 'Vehicle damage before rental' },
+      { value: RefundReason.OTHER, label: 'Other reason' }
+    ];
   }
 
-  viewRefund(refund: RefundDetailsDto): void {
-    this.selectedRefund = refund;
-    this.showRefundDetailModal = true;
+  getRefundMethodLabel(method: string): string {
+    const methods = this.getRefundMethods();
+    const methodObj = methods.find(m => m.value === method);
+    return methodObj ? methodObj.label : method;
   }
 
-  closeRefundDetailModal(): void {
-    this.showRefundDetailModal = false;
-    this.selectedRefund = null;
+  getRefundMethods(): { value: RefundMethod; label: string }[] {
+    return [
+      { value: RefundMethod.ORIGINAL_PAYMENT_METHOD, label: 'Original Payment Method' },
+      { value: RefundMethod.PAYPAL, label: 'PayPal' },
+      { value: RefundMethod.ONSITE_CASH, label: 'On-site Cash Refund' }
+    ];
   }
 
-  getStatusBadgeClass(status: string): string {
-    switch (status.toUpperCase()) {
-      case 'COMPLETED':
-      case 'SUCCESS':
-        return 'bg-green-500/20 text-green-400';
-      case 'PENDING':
-        return 'bg-yellow-500/20 text-yellow-400';
-      case 'FAILED':
-      case 'REJECTED':
-        return 'bg-red-500/20 text-red-400';
-      case 'PROCESSING':
-        return 'bg-blue-500/20 text-blue-400';
-      default:
-        return 'bg-gray-500/20 text-gray-400';
-    }
-  }
-
-  formatAmount(amount: number): string {
+  formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
+  }
+
+  getStatusColor(status: RefundStatus): string {
+    switch (status) {
+      case RefundStatus.REQUESTED:
+        return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+      case RefundStatus.PENDING:
+        return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case RefundStatus.PROCESSED:
+        return 'bg-green-500/20 text-green-300 border-green-500/30';
+      case RefundStatus.PARTIALLY_PROCESSED:
+        return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+      case RefundStatus.FAILED:
+        return 'bg-red-500/20 text-red-300 border-red-500/30';
+      case RefundStatus.DECLINED:
+        return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+    }
+  }
+
+  getStatusCount(status: RefundStatus): number {
+    return this.refundsPage?.content?.filter(refund => refund.status === status).length || 0;
+  }
+
+  getTotalAmount(): number {
+    return this.refundsPage?.content?.reduce((sum, refund) => sum + refund.amount, 0) || 0;
+  }
+
+  getProcessedAmount(): number {
+    return this.refundsPage?.content
+      ?.filter(refund => refund.status === RefundStatus.PROCESSED || refund.status === RefundStatus.PARTIALLY_PROCESSED)
+      .reduce((sum, refund) => sum + refund.amount, 0) || 0;
   }
 }

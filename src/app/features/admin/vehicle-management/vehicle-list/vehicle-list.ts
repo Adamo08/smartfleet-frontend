@@ -16,11 +16,14 @@ import { VehicleFilter } from '../../../../core/models/vehicle-filter.interface'
 import { VehicleBrand } from '../../../../core/models/vehicle-brand.interface';
 import { VehicleModel } from '../../../../core/models/vehicle-model.interface';
 import { VehicleCategory } from '../../../../core/models/vehicle-category.interface';
+import { ActionIcons } from '../../../../shared/components/action-icons/action-icons';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
+import { SkeletonPage } from '../../../../shared/components/skeleton-page/skeleton-page';
 
 @Component({
   selector: 'app-vehicle-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Modal, ConfigrmDialog, Pagination, VehicleDetail, VehicleForm],
+  imports: [CommonModule, FormsModule, RouterModule, Modal, ConfigrmDialog, Pagination, VehicleDetail, VehicleForm, ActionIcons, SkeletonPage],
   templateUrl: './vehicle-list.html',
   styleUrl: './vehicle-list.css'
 })
@@ -67,7 +70,8 @@ export class VehicleList implements OnInit {
   constructor(
     private vehicleService: VehicleService,
     private enumService: EnumService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private successModalService: SuccessModalService
   ) {}
 
   ngOnInit(): void {
@@ -212,6 +216,7 @@ export class VehicleList implements OnInit {
     if (this.vehicleToDelete) {
       this.vehicleService.deleteVehicle(this.vehicleToDelete.id!).subscribe({
         next: () => {
+          this.successModalService.showEntityDeleted('Vehicle', `Vehicle ${this.vehicleToDelete!.licensePlate} has been successfully deleted`);
           this.closeDeleteVehicleModal();
           this.loadVehicles();
         },

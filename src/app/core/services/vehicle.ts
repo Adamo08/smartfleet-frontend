@@ -108,6 +108,33 @@ export class VehicleService {
     return this.apiService.get<Page<VehicleModel>>('/admin/vehicle-models', { page: 0, size: 9999, sortBy: 'name', sortDirection: 'ASC' });
   }
 
+  /**
+   * Get vehicle models by brand ID
+   */
+  getVehicleModelsByBrand(brandId: number): Observable<Page<VehicleModel>> {
+    return this.apiService.get<Page<VehicleModel>>(`/admin/vehicle-models`, { 
+      page: 0, 
+      size: 9999, 
+      sortBy: 'name', 
+      sortDirection: 'ASC',
+      brandId: brandId.toString()
+    });
+  }
+
+  /**
+   * Get fuel types enum
+   */
+  getFuelTypes(): Observable<{ value: string; label: string }[]> {
+    return this.apiService.get<{ value: string; label: string }[]>('/api/enums/fuel-types');
+  }
+
+  /**
+   * Get vehicle statuses enum
+   */
+  getVehicleStatuses(): Observable<{ value: string; label: string }[]> {
+    return this.apiService.get<{ value: string; label: string }[]>('/api/enums/vehicle-statuses');
+  }
+
   // Admin vehicle management methods with proper transformation
   
   /**

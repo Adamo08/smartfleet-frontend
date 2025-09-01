@@ -18,6 +18,7 @@ export interface Bookmark {
   vehicleId?: number;
   vehicleBrand?: string;
   vehicleModel?: string;
+  vehicleImageUrl?: string;
 }
 
 interface PaginatedResponse<T> {

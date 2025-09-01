@@ -16,6 +16,7 @@ import { User } from '../../../core/models/user.interface';
 })
 export class NotificationBell implements OnInit, OnDestroy {
   notifications: Notification[] = [];
+  unreadNotifications: Notification[] = [];
   unreadCount: number = 0;
   isDropdownOpen: boolean = false;
   wsConnected: boolean = false;
@@ -37,10 +38,12 @@ export class NotificationBell implements OnInit, OnDestroy {
       this.notificationService.notifications$.subscribe(notifications => {
         console.log('📋 NotificationService notifications$ updated:', notifications);
         this.notifications = notifications;
+        this.updateUnreadNotifications();
       }),
       this.notificationService.unreadCount$.subscribe(count => {
         console.log('🔢 NotificationService unreadCount$ updated:', count);
         this.unreadCount = count;
+        this.updateUnreadNotifications();
       }),
       this.webSocketService.state$.subscribe(state => {
         console.log('🔌 WebSocket state$ updated:', state);
@@ -126,6 +129,9 @@ export class NotificationBell implements OnInit, OnDestroy {
       this.notifications = [newNotification, ...currentNotifications];
       console.log('📋 Updated notifications count:', this.notifications.length);
 
+      // Update the notification service to keep everything in sync
+      this.notificationService.addNotificationToCache(newNotification);
+
       // Update unread count if notification is unread
       if (!newNotification.read) {
         this.unreadCount++;
@@ -148,6 +154,10 @@ export class NotificationBell implements OnInit, OnDestroy {
       this.hideTimeout = null;
     }
     this.isDropdownOpen = true;
+    
+    // Refresh notifications when dropdown is opened
+    console.log('🔧 Dropdown opened, refreshing notifications...');
+    this.notificationService.loadInitialData();
   }
 
   hideDropdown(): void {
@@ -158,11 +168,32 @@ export class NotificationBell implements OnInit, OnDestroy {
   }
 
   markAsRead(notification: Notification): void {
-    this.notificationService.markAsRead(notification.id).subscribe();
+    this.notificationService.markAsRead(notification.id).subscribe({
+      next: () => {
+        // Remove from unread notifications immediately for better UX
+        this.unreadNotifications = this.unreadNotifications.filter(n => n.id !== notification.id);
+        // Update the notification in the main list
+        const index = this.notifications.findIndex(n => n.id === notification.id);
+        if (index !== -1) {
+          this.notifications[index] = { ...notification, read: true };
+        }
+      }
+    });
+  }
+
+  private updateUnreadNotifications(): void {
+    this.unreadNotifications = this.notifications.filter(n => !n.read);
+    this.unreadCount = this.unreadNotifications.length;
   }
 
   markAllAsRead(): void {
-    this.notificationService.markAllAsRead().subscribe();
+    this.notificationService.markAllAsRead().subscribe({
+      next: () => {
+        // Mark all local notifications as read
+        this.notifications = this.notifications.map(n => ({ ...n, read: true }));
+        this.updateUnreadNotifications();
+      }
+    });
   }
 
   deleteNotification(id: number, event: Event): void {

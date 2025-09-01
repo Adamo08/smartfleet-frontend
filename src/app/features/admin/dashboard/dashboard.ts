@@ -1,17 +1,22 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { SkeletonCard } from '../../../shared/components/skeleton-card/skeleton-card';
+import { SkeletonChart } from '../../../shared/components/skeleton-chart/skeleton-chart';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 import { Subject, takeUntil } from 'rxjs';
-import { 
-  DashboardService, 
-  DashboardStats, 
+import {
+  DashboardService,
+  DashboardStats,
   DashboardAnalytics,
   RevenueDataPoint,
   VehicleUtilizationData,
-  MonthlyPerformanceData
+  MonthlyPerformanceData,
+  VehicleBreakdownData
 } from '../../../core/services/dashboard.service';
 import { RecentActivities, ActivityItem } from '../../../core/models/activity.interface';
+import {Skeleton} from '../../../shared/components';
+import { VehicleAnalytics } from '../../../shared/components/vehicle-analytics/vehicle-analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -19,12 +24,12 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SkeletonCard, SkeletonChart, Skeleton],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
-  
+
   @ViewChild('revenueChart') revenueChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('statusChart') statusChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('utilizationChart') utilizationChartRef!: ElementRef<HTMLCanvasElement>;
@@ -33,8 +38,9 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   dashboardStats: DashboardStats | null = null;
   dashboardAnalytics: DashboardAnalytics | null = null;
   recentActivities: RecentActivities | null = null;
+  vehicleBreakdown: VehicleBreakdownData | null = null;
   isLoading = false;
-  
+
   // Chart instances
   private revenueChart?: Chart;
   private statusChart?: Chart;
@@ -43,6 +49,12 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
 
   // Subject for handling component destruction
   private destroy$ = new Subject<void>();
+
+  // Pagination state
+  categoryPage = 0;
+  brandPage = 0;
+  statusPage = 0;
+  itemsPerPage = 3;
 
   constructor(private dashboardService: DashboardService) {}
 
@@ -61,7 +73,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
 
     private loadDashboardData(): void {
     this.isLoading = true;
-    
+
     // Load dashboard statistics
     this.dashboardService.getDashboardStats()
       .pipe(takeUntil(this.destroy$))
@@ -70,6 +82,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
           this.dashboardStats = stats;
           this.loadAnalyticsData();
           this.loadRecentActivities();
+          this.loadVehicleBreakdown();
         },
         error: (error) => {
           console.error('Error loading dashboard stats:', error);
@@ -86,7 +99,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
         next: (analytics) => {
           this.dashboardAnalytics = analytics;
           this.isLoading = false;
-          
+
           // Initialize charts after data is loaded and view is ready
           setTimeout(() => {
             if (this.revenueChartRef && this.statusChartRef && this.utilizationChartRef && this.performanceChartRef) {
@@ -120,22 +133,37 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  private loadVehicleBreakdown(): void {
+    this.dashboardService.getVehicleBreakdown()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (breakdown) => {
+          this.vehicleBreakdown = breakdown;
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading vehicle breakdown:', error);
+          this.isLoading = false;
+        }
+      });
+  }
+
   // Helper method to format activity timestamp
   getTimeAgo(timestamp: Date): string {
     const now = new Date();
     const activityDate = new Date(timestamp);
     const diff = now.getTime() - activityDate.getTime();
     const minutes = Math.floor(diff / (1000 * 60));
-    
+
     if (minutes < 1) return 'Just now';
     if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    
+
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    
+
     const days = Math.floor(hours / 24);
     if (days < 30) return `${days} day${days > 1 ? 's' : ''} ago`;
-    
+
     const months = Math.floor(days / 30);
     return `${months} month${months > 1 ? 's' : ''} ago`;
   }
@@ -483,7 +511,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   onRevenueTimeframeChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     const days = parseInt(select.value);
-    
+
     // Load new analytics data with the selected timeframe
     this.dashboardService.getDashboardAnalytics(days)
       .pipe(takeUntil(this.destroy$))
@@ -498,11 +526,103 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  // Helper methods for vehicle status display
+  getStatusIndicatorColor(status: string): string {
+    switch (status) {
+      case 'AVAILABLE':
+        return 'bg-green-400';
+      case 'RENTED':
+        return 'bg-blue-400';
+      case 'IN_MAINTENANCE':
+        return 'bg-red-400';
+      case 'OUT_OF_SERVICE':
+        return 'bg-orange-400';
+      case 'DAMAGED':
+        return 'bg-yellow-400';
+      default:
+        return 'bg-gray-400';
+    }
+  }
+
+  getStatusDisplayName(status: string): string {
+    switch (status) {
+      case 'IN_MAINTENANCE':
+        return 'In Maintenance';
+      case 'OUT_OF_SERVICE':
+        return 'Out of Service';
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+    }
+  }
+
+  // Pagination methods for categories
+  getCurrentCategories() {
+    if (!this.vehicleBreakdown?.categories) return [];
+    const start = this.categoryPage * this.itemsPerPage;
+    return this.vehicleBreakdown.categories.slice(start, start + this.itemsPerPage);
+  }
+
+  nextCategories() {
+    if (!this.vehicleBreakdown?.categories) return;
+    const maxPage = Math.ceil(this.vehicleBreakdown.categories.length / this.itemsPerPage) - 1;
+    if (this.categoryPage < maxPage) {
+      this.categoryPage++;
+    }
+  }
+
+  previousCategories() {
+    if (this.categoryPage > 0) {
+      this.categoryPage--;
+    }
+  }
+
+  // Pagination methods for brands
+  getCurrentBrands() {
+    if (!this.vehicleBreakdown?.brands) return [];
+    const start = this.brandPage * this.itemsPerPage;
+    return this.vehicleBreakdown.brands.slice(start, start + this.itemsPerPage);
+  }
+
+  nextBrands() {
+    if (!this.vehicleBreakdown?.brands) return;
+    const maxPage = Math.ceil(this.vehicleBreakdown.brands.length / this.itemsPerPage) - 1;
+    if (this.brandPage < maxPage) {
+      this.brandPage++;
+    }
+  }
+
+  previousBrands() {
+    if (this.brandPage > 0) {
+      this.brandPage--;
+    }
+  }
+
+  // Pagination methods for statuses
+  getCurrentStatuses() {
+    if (!this.vehicleBreakdown?.statuses) return [];
+    const start = this.statusPage * this.itemsPerPage;
+    return this.vehicleBreakdown.statuses.slice(start, start + this.itemsPerPage);
+  }
+
+  nextStatuses() {
+    if (!this.vehicleBreakdown?.statuses) return;
+    const maxPage = Math.ceil(this.vehicleBreakdown.statuses.length / this.itemsPerPage) - 1;
+    if (this.statusPage < maxPage) {
+      this.statusPage++;
+    }
+  }
+
+  previousStatuses() {
+    if (this.statusPage > 0) {
+      this.statusPage--;
+    }
+  }
+
   ngOnDestroy(): void {
     // Complete the destroy subject to unsubscribe from all observables
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     // Clean up chart instances
     this.revenueChart?.destroy();
     this.statusChart?.destroy();
