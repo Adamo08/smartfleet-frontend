@@ -41,7 +41,7 @@
                 <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Available</span>
               } @else if (vehicle.status === 'RENTED') {
                 <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Rented</span>
-              } @else if (vehicle.status === 'MAINTENANCE') {
+              } @else if (vehicle.status === 'IN_MAINTENANCE') {
                 <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Maintenance</span>
               } @else {
                 <span class="bg-gray-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Out of Service</span>
@@ -137,34 +137,146 @@
               </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Add Testimonial Form -->
+            @if (isLoggedIn && !hasSubmittedTestimonial) {
+              <div class="mb-12">
+                <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
+                  <h3 class="text-xl font-bold text-white mb-6">Share Your Experience</h3>
+                  <p class="text-gray-300 mb-6">Help other customers by sharing your experience with this vehicle.</p>
+
+                  <form [formGroup]="testimonialForm" (ngSubmit)="submitTestimonial()" class="space-y-6">
+                    <!-- Rating -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-300 mb-3">Rating</label>
+                      <div class="flex items-center space-x-2">
+                        @for (star of [1,2,3,4,5]; track star) {
+                          <button
+                            type="button"
+                            (click)="setRating(star)"
+                            [class.text-yellow-400]="testimonialRating >= star"
+                            [class.text-gray-600]="testimonialRating < star"
+                            class="text-2xl hover:text-yellow-300 transition-colors duration-200 focus:outline-none">
+                            ★
+                          </button>
+                        }
+                        <span class="ml-4 text-gray-400">{{ testimonialRating }}/5</span>
+                      </div>
+                    </div>
+
+                    <!-- Title -->
+                    <div>
+                      <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                      <input
+                        type="text"
+                        id="title"
+                        formControlName="title"
+                        placeholder="Give your review a title..."
+                        class="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-white/10 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 transition-all duration-200"
+                      />
+                      @if (testimonialForm.get('title')?.invalid && testimonialForm.get('title')?.touched) {
+                        <p class="mt-2 text-sm text-red-400">Title is required</p>
+                      }
+                    </div>
+
+                    <!-- Content -->
+                    <div>
+                      <label for="content" class="block text-sm font-medium text-gray-300 mb-2">Your Review</label>
+                      <textarea
+                        id="content"
+                        formControlName="content"
+                        rows="4"
+                        placeholder="Tell us about your experience with this vehicle..."
+                        class="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-white/10 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 transition-all duration-200 resize-none"
+                      ></textarea>
+                      @if (testimonialForm.get('content')?.invalid && testimonialForm.get('content')?.touched) {
+                        <p class="mt-2 text-sm text-red-400">Review content is required</p>
+                      }
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex items-center justify-between">
+                      <p class="text-sm text-gray-400">Your review will be moderated before being published.</p>
+                      <button
+                        type="submit"
+                        [disabled]="testimonialForm.invalid || isSubmittingTestimonial"
+                        class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-medium hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        @if (isSubmittingTestimonial) {
+                          <span class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Submitting...
+                          </span>
+                        } @else {
+                          Submit Review
+                        }
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            }
+
+            <!-- Enhanced Testimonials Display -->
+            <div class="space-y-6">
               @for (testimonial of vehicleTestimonials; track testimonial.id) {
-                <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                  <div class="flex items-center mb-4">
-                    <div class="w-10 h-10 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-semibold">
-                      {{ testimonial.userName?.[0] }}
-                    </div>
-                    <div class="ml-3">
-                      <h4 class="font-semibold text-white">{{ testimonial.userName }}</h4>
-                      <p class="text-sm text-gray-400">{{ testimonial.vehicleBrand }} {{ testimonial.vehicleModel }}</p>
+                <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300">
+                  <!-- Header with user info and timestamp -->
+                  <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                      <div class="w-14 h-14 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                        {{ testimonial.userName?.[0] || 'U' }}
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-white text-lg">{{ testimonial.userName || 'Anonymous User' }}</h4>
+                        <p class="text-sm text-gray-400">{{ formatDate(testimonial.createdAt) }}</p>
+                        <!-- Rating stars -->
+                        <div class="flex items-center space-x-1 mt-1">
+                          @for (star of getStarRating(testimonial.rating); track $index) {
+                            <span class="text-yellow-400 text-lg">{{ star }}</span>
+                          }
+                          <span class="text-gray-400 text-sm ml-2">({{ testimonial.rating }}/5)</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="flex items-center mb-3">
-                    @for (star of getStarRating(testimonial.rating); track $index) {
-                      <span class="text-yellow-400 text-sm">{{ star }}</span>
-                    }
+                  <!-- Testimonial title and content -->
+                  <div class="mb-4">
+                    <h5 class="font-semibold text-white mb-3 text-xl">{{ testimonial.title }}</h5>
+                    <p class="text-gray-300 leading-relaxed text-lg">{{ testimonial.content }}</p>
                   </div>
 
-                  <h5 class="font-semibold text-white mb-2 text-sm">{{ testimonial.title }}</h5>
-                  <p class="text-gray-300 text-sm leading-relaxed">{{ testimonial.content }}</p>
-
+                  <!-- Admin reply if exists -->
                   @if (testimonial.adminReplyContent) {
-                    <div class="mt-4 p-3 bg-indigo-500/10 rounded-2xl border-l-4 border-indigo-400">
-                      <p class="text-xs text-indigo-300 font-medium mb-1">SmartFleet Response:</p>
-                      <p class="text-xs text-indigo-200">{{ testimonial.adminReplyContent }}</p>
+                    <div class="mt-6 border-l-4 border-indigo-400 bg-indigo-500/10 rounded-r-lg">
+                      <div class="flex items-start space-x-3 p-4">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                          SF
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center space-x-2 mb-2">
+                            <p class="text-sm font-medium text-indigo-300">SmartFleet Team</p>
+                            <span class="text-xs text-indigo-400 bg-indigo-500/20 px-2 py-1 rounded-full">Official Response</span>
+                          </div>
+                          <p class="text-indigo-200 leading-relaxed">{{ testimonial.adminReplyContent }}</p>
+                        </div>
+                      </div>
                     </div>
                   }
+                </div>
+              }
+
+              <!-- Load more testimonials button -->
+              @if (vehicleTestimonials.length > 0 && hasMoreTestimonials) {
+                <div class="text-center pt-8">
+                  <button
+                    (click)="loadMoreTestimonials()"
+                    [disabled]="loadingMoreTestimonials"
+                    class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl">
+                    {{ loadingMoreTestimonials ? 'Loading...' : 'Load More Reviews' }}
+                  </button>
                 </div>
               }
             </div>

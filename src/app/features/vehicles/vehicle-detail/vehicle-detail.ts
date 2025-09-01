@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
 import { Observable } from 'rxjs';
 import { VehicleService } from '../../../core/services/vehicle';
@@ -26,7 +26,7 @@ import { SlotSelector } from '../../reservations/slot-selector/slot-selector';
 @Component({
   selector: 'app-vehicle-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, Modal, SlotSelector],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, Modal, SlotSelector],
   templateUrl: './vehicle-detail.html',
   styleUrl: './vehicle-detail.css'
 })
@@ -40,6 +40,18 @@ export class VehicleDetail implements OnInit, OnDestroy {
   isFavorite = false;
   isBookingOpen = false;
   isSubmitting = false;
+
+  // Testimonial form properties
+  testimonialForm!: FormGroup;
+  testimonialRating = 0;
+  isSubmittingTestimonial = false;
+  hasSubmittedTestimonial = false;
+  
+  // Forum-style testimonials properties
+  hasMoreTestimonials = false;
+  loadingMoreTestimonials = false;
+  testimonialPage = 0;
+  testimonialPageSize = 5;
 
   // New properties for availability check and booking
   hasAvailableSlotsInDateRange: boolean = false;
@@ -85,10 +97,13 @@ export class VehicleDetail implements OnInit, OnDestroy {
     private paymentStateService: PaymentStateService,
     private bookingContextService: BookingContextService,
     private paymentCalculationService: PaymentCalculationService,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    this.initializeTestimonialForm();
+    
     // If vehicle is passed as an input, we don't need to load it from route params
     if (!this.vehicle) {
       this.loadVehicleFromRoute();
@@ -96,6 +111,7 @@ export class VehicleDetail implements OnInit, OnDestroy {
       // If vehicle is passed as input, proceed with related data loading
       this.loadVehicleTestimonials(this.vehicle.id);
       this.loadSimilarVehicles(this.vehicle);
+      this.checkIfUserHasSubmittedTestimonial(this.vehicle.id);
       this.loading = false;
     }
 
@@ -160,6 +176,7 @@ export class VehicleDetail implements OnInit, OnDestroy {
           this.vehicle = vehicle;
           this.loadVehicleTestimonials(vehicle.id);
           this.loadSimilarVehicles(vehicle);
+          this.checkIfUserHasSubmittedTestimonial(vehicle.id);
           this.loading = false;
         },
         error: (error: any) => { // Explicitly type 'error'
@@ -227,6 +244,9 @@ export class VehicleDetail implements OnInit, OnDestroy {
           vehicleModel: this.vehicle.model
         }
       ];
+      
+      // Set that more testimonials are available for the "Load More" functionality
+      this.hasMoreTestimonials = true;
     }
   }
 
@@ -675,8 +695,16 @@ export class VehicleDetail implements OnInit, OnDestroy {
   }
 
   // Helper to format date for display (can be moved to a pipe for reusability)
-  formatDate(date: Date | null): string {
-    return date ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
+  formatDate(date: Date | string | null): string {
+    if (!date) return 'N/A';
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   // Helper to get duration label
@@ -875,5 +903,105 @@ export class VehicleDetail implements OnInit, OnDestroy {
   // Helper to format amount for API (e.g., to 2 decimal places)
   private formatAmountForApi(amount: number): number {
     return Number(amount.toFixed(2));
+  }
+
+  // Testimonial methods
+  private initializeTestimonialForm(): void {
+    this.testimonialForm = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      content: ['', [Validators.required, Validators.minLength(10)]]
+    });
+  }
+
+  setRating(rating: number): void {
+    this.testimonialRating = rating;
+  }
+
+  private checkIfUserHasSubmittedTestimonial(vehicleId: number): void {
+    if (!this.isLoggedIn) return;
+    
+    this.testimonialService.getMyTestimonials({ vehicleId }).subscribe({
+      next: (testimonials) => {
+        this.hasSubmittedTestimonial = testimonials.length > 0;
+      },
+      error: (error) => {
+        console.error('Error checking user testimonials:', error);
+      }
+    });
+  }
+
+  submitTestimonial(): void {
+    if (this.testimonialForm.invalid || this.testimonialRating === 0 || !this.vehicle) {
+      this.toastr.error('Please fill in all required fields and provide a rating');
+      return;
+    }
+
+    this.isSubmittingTestimonial = true;
+    
+    const testimonialData = {
+      vehicleId: this.vehicle.id,
+      title: this.testimonialForm.get('title')?.value,
+      content: this.testimonialForm.get('content')?.value,
+      rating: this.testimonialRating
+    };
+
+    this.testimonialService.createTestimonial(testimonialData).subscribe({
+      next: (testimonial) => {
+        this.toastr.success('Thank you for your review! It will be published after moderation.');
+        this.hasSubmittedTestimonial = true;
+        this.testimonialForm.reset();
+        this.testimonialRating = 0;
+        this.isSubmittingTestimonial = false;
+        
+        // Reload testimonials to show the new one if it's auto-approved
+        this.loadVehicleTestimonials(this.vehicle!.id);
+      },
+      error: (error) => {
+        console.error('Error submitting testimonial:', error);
+        this.toastr.error('Failed to submit your review. Please try again.');
+        this.isSubmittingTestimonial = false;
+      }
+    });
+  }
+
+
+
+  loadMoreTestimonials(): void {
+    if (!this.vehicle || this.loadingMoreTestimonials) return;
+    
+    this.loadingMoreTestimonials = true;
+    this.testimonialPage++;
+    
+    // Simulate loading more testimonials
+    setTimeout(() => {
+      // Add more mock testimonials for demonstration
+      const newTestimonials = [
+        {
+          id: this.vehicleTestimonials.length + 1,
+          userId: 3,
+          vehicleId: this.vehicle!.id,
+          title: "Outstanding Service",
+          content: "The vehicle was in perfect condition and the rental process was seamless. Highly recommended for business trips!",
+          rating: 5,
+          approved: true,
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+          updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          userName: "Alex Johnson",
+          vehicleBrand: this.vehicle!.brand,
+          vehicleModel: this.vehicle!.model
+        }
+      ];
+      
+      this.vehicleTestimonials.push(...newTestimonials);
+      this.loadingMoreTestimonials = false;
+      
+      // Simulate no more testimonials after a few loads
+      if (this.testimonialPage >= 2) {
+        this.hasMoreTestimonials = false;
+      }
+    }, 1500);
+
+    // TODO: Replace with actual API call
+    // this.testimonialService.getVehicleTestimonials(this.vehicle.id, this.testimonialPage, this.testimonialPageSize).subscribe(...)
   }
 }

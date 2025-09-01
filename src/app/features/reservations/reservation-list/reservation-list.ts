@@ -276,13 +276,17 @@ export class ReservationList implements OnInit, OnDestroy {
 
   // Helper methods for conditional display
   canPayReservation(reservation: ReservationSummaryDto): boolean {
-    return reservation.status === ReservationStatus.CONFIRMED || 
-           reservation.status === ReservationStatus.PENDING;
+    // Only show pay button for pending reservations
+    return reservation.status === ReservationStatus.PENDING;
   }
 
   canCancelReservation(reservation: ReservationSummaryDto): boolean {
-    return reservation.status === ReservationStatus.PENDING || 
-           reservation.status === ReservationStatus.CONFIRMED;
+    // Only show cancel button for pending and confirmed reservations that haven't started yet
+    const now = new Date();
+    const startDate = new Date(reservation.startDate);
+    return (reservation.status === ReservationStatus.PENDING || 
+           reservation.status === ReservationStatus.CONFIRMED) &&
+           startDate > now;
   }
 
   isReservationBookmarked(reservationId: number): boolean {
@@ -330,6 +334,11 @@ export class ReservationList implements OnInit, OnDestroy {
   getPaymentAmount(reservationId: number): number {
     const payment = this.reservationPayments.get(reservationId);
     return payment ? payment.amount : 0;
+  }
+
+  // Navigation to reservation detail page
+  onGoToReservationDetail(reservation: ReservationSummaryDto): void {
+    this.router.navigate(['/reservations', reservation.id]);
   }
 
   // Helper methods using shared services

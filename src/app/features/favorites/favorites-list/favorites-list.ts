@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { ToastrService } from 'ngx-toastr';
 
@@ -18,7 +18,8 @@ export class FavoritesList implements OnInit {
 
   constructor(
     private favoriteService: FavoriteService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -70,5 +71,15 @@ export class FavoritesList implements OnInit {
         }
       });
     }
+  }
+
+  getVehicleImageUrl(favorite: any): string {
+    // Use the vehicleImageUrl from the favorite object if available
+    return favorite.vehicleImageUrl || '/assets/images/icons/car.svg';
+  }
+
+  createReservation(vehicleId: number): void {
+    // Navigate to vehicle detail page where user can create a reservation
+    this.router.navigate(['/vehicles', vehicleId]);
   }
 }

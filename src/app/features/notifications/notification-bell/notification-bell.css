@@ -139,7 +139,30 @@
   .notification-dropdown {
     width: calc(100vw - 2rem);
     right: -1rem;
+    max-height: calc(100vh - 8rem);
   }
+}
+
+@media (max-width: 768px) {
+  .notification-dropdown {
+    width: calc(100vw - 3rem);
+    right: -1.5rem;
+    max-height: calc(100vh - 6rem);
+  }
+}
+
+/* Enhanced z-index management */
+.notification-dropdown {
+  z-index: 9999 !important;
+  position: fixed;
+  top: auto;
+  transform: translateY(0.75rem);
+}
+
+/* Ensure dropdown doesn't get clipped */
+.notification-dropdown {
+  max-height: min(500px, calc(100vh - 10rem));
+  overflow: visible;
 }
 
 /* Smooth transitions for all interactive elements */

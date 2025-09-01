@@ -78,7 +78,8 @@ export class BookmarksList implements OnInit {
     });
   }
 
-  getVehicleImageUrl(vehicleId?: number): string {
-    return '/assets/images/icons/car.svg';
+  getVehicleImageUrl(bookmark: any): string {
+    // Use the vehicleImageUrl from the bookmark object if available
+    return bookmark.vehicleImageUrl || '/assets/images/icons/car.svg';
   }
 }
