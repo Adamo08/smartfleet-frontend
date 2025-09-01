@@ -1,17 +1,19 @@
-<div class="modal-overlay" (click)="onBackdropClick($event)" [attr.aria-modal]="true" role="dialog">
-  <div class="modal-backdrop"></div>
+<div class="modal-overlay animate-fade-in" (click)="onBackdropClick($event)" [attr.aria-modal]="true" role="dialog">
+  <!-- Backdrop with blur effect and fade-in animation -->
+  <div class="modal-backdrop transition-all duration-300 animate-fade-in"></div>
 
+  <!-- Modal container with popup animation -->
   <div
-    class="modal-container"
+    class="modal-container animate-modal-popup"
     [ngClass]="'size-' + size"
     (click)="$event.stopPropagation()"
     aria-labelledby="modal-title"
     tabindex="-1"
   >
-    <!-- Modal Header -->
-    <header class="modal-header" *ngIf="title || showCloseButton">
+    <!-- Modal Header with slide-in animation -->
+    <header class="modal-header animate-slide-in-down" *ngIf="title || showCloseButton">
       <h2
-        class="modal-title"
+        class="modal-title animate-fade-in-up"
         [id]="getModalTitleId()"
         *ngIf="title"
       >
@@ -21,7 +23,7 @@
       <button
         *ngIf="showCloseButton"
         type="button"
-        class="modal-close-btn"
+        class="modal-close-btn transition-all duration-200 hover:scale-110 active:scale-95"
         (click)="onClose()"
         aria-label="Close modal"
         title="Close"
@@ -43,13 +45,13 @@
       </button>
     </header>
 
-    <!-- Modal Body -->
-    <main class="modal-body">
+    <!-- Modal Body with fade-in animation -->
+    <main class="modal-body animate-fade-in-up">
       <ng-content></ng-content>
     </main>
 
-    <!-- Modal Footer (Optional) -->
-    <footer class="modal-footer">
+    <!-- Modal Footer with slide-in animation -->
+    <footer class="modal-footer animate-slide-in-up">
       <ng-content select="[modal-actions]"></ng-content>
     </footer>
   </div>

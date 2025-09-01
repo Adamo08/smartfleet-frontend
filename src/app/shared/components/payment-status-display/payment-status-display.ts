@@ -42,6 +42,8 @@ export class PaymentStatusDisplay {
         return 'status-cancelled';
       case 'refunded':
         return 'status-refunded';
+      case 'partially_refunded':
+        return 'status-partially-refunded';
       default:
         return 'status-pending';
     }
@@ -65,6 +67,8 @@ export class PaymentStatusDisplay {
         return 'Cancelled';
       case 'refunded':
         return 'Refunded';
+      case 'partially_refunded':
+        return 'Partially Refunded';
       default:
         return this.paymentInfo.status;
     }

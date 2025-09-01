@@ -10,23 +10,23 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule, FormsModule],
   template: `
     @if (showDialog) {
-      <div class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="fixed inset-0 z-50 overflow-y-auto animate-fade-in">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <!-- Background overlay -->
-          <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+          <!-- Background overlay with fade-in animation -->
+          <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300 animate-fade-in"
                (click)="cancel()"></div>
 
-          <!-- Modal panel -->
-          <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <!-- Header -->
-            <div class="px-6 py-4 border-b border-gray-200">
+          <!-- Modal panel with popup animation -->
+          <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-modal-popup">
+            <!-- Header with slide-in animation -->
+            <div class="px-6 py-4 border-b border-gray-200 animate-slide-in-down">
               <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-900">
                   {{ currentDialog?.title }}
                 </h3>
                 <button
                   (click)="cancel()"
-                  class="text-gray-400 hover:text-gray-600 transition-colors">
+                  class="text-gray-400 hover:text-gray-600 transition-all duration-200 hover:scale-110 active:scale-95">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                   </svg>
@@ -34,38 +34,38 @@ import { Subscription } from 'rxjs';
               </div>
             </div>
 
-            <!-- Body -->
-            <div class="px-6 py-4">
+            <!-- Body with fade-in animation -->
+            <div class="px-6 py-4 animate-fade-in-up">
               <p class="text-gray-700 mb-4">
                 {{ currentDialog?.message }}
               </p>
 
               @if (currentDialog?.requireReason) {
-                <div class="mb-4">
+                <div class="mb-4 animate-slide-in-up">
                   <label class="block text-sm font-medium text-gray-700 mb-2">
                     Reason for this action (required)
                   </label>
                   <textarea
                     [(ngModel)]="reason"
                     rows="3"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 resize-none"
                     placeholder="Please provide a reason for this action...">
                   </textarea>
                 </div>
               }
             </div>
 
-            <!-- Footer -->
-            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+            <!-- Footer with slide-in animation -->
+            <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3 animate-slide-in-up">
               <button
                 (click)="cancel()"
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 hover:scale-105 active:scale-95">
                 {{ currentDialog?.cancelText || 'Cancel' }}
               </button>
               <button
                 (click)="confirm()"
                 [disabled]="currentDialog?.requireReason && !reason.trim()"
-                class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 active:scale-95">
                 {{ currentDialog?.confirmText || 'Confirm' }}
               </button>
             </div>

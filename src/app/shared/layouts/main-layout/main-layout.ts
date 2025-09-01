@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {Footer} from '../../components/footer/footer';
 import {HeaderComponent} from '../../components/header/header';
+import { GlobalSuccessModal } from '../../components/global-success-modal/global-success-modal';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, Footer, HeaderComponent],
+  imports: [CommonModule, RouterModule, Footer, HeaderComponent, GlobalSuccessModal],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css'
 })
