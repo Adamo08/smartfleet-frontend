@@ -16,7 +16,7 @@ export interface Vehicle {
   description?: string;
   createdAt: string;
   updatedAt: string;
-  
+
   // Backward compatibility properties
   brand: string;  // should be set to brandName
   model: string;  // should be set to modelName
@@ -30,7 +30,7 @@ export interface VehicleSummaryDto {
   year?: number;
   imageUrl?: string;
   pricePerDay: number;
-  
+
   // Backward compatibility properties
   brand: string;  // should be set to brandName
   model: string;  // should be set to modelName
@@ -46,6 +46,6 @@ export enum FuelType {
 export enum VehicleStatus {
   AVAILABLE = 'AVAILABLE',
   RENTED = 'RENTED',
-  MAINTENANCE = 'MAINTENANCE',
+  IN_MAINTENANCE = 'IN_MAINTENANCE',
   OUT_OF_SERVICE = 'OUT_OF_SERVICE'
 }

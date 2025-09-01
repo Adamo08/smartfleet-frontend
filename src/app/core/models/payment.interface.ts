@@ -45,6 +45,7 @@ export interface PaymentResponseDto {
 export interface PaymentDetailsDto {
   id: number;
   amount: number;
+  refundedAmount?: number;
   currency: string;
   status: PaymentStatus;
   provider: string;
@@ -71,11 +72,30 @@ export interface SessionResponseDto {
   redirectUrl: string; // kept for backward compatibility
 }
 
+export enum RefundReason {
+  VEHICLE_UNAVAILABLE = 'VEHICLE_UNAVAILABLE',
+  CANCELLATION_BY_CUSTOMER = 'CANCELLATION_BY_CUSTOMER',
+  TECHNICAL_ISSUE = 'TECHNICAL_ISSUE',
+  DUPLICATE_PAYMENT = 'DUPLICATE_PAYMENT',
+  WRONG_AMOUNT = 'WRONG_AMOUNT',
+  SERVICE_NOT_PROVIDED = 'SERVICE_NOT_PROVIDED',
+  EMERGENCY_CANCELLATION = 'EMERGENCY_CANCELLATION',
+  WEATHER_CONDITIONS = 'WEATHER_CONDITIONS',
+  VEHICLE_DAMAGE = 'VEHICLE_DAMAGE',
+  OTHER = 'OTHER'
+}
+
+export enum RefundMethod {
+  ORIGINAL_PAYMENT_METHOD = 'ORIGINAL_PAYMENT_METHOD',
+  PAYPAL = 'PAYPAL',
+  ONSITE_CASH = 'ONSITE_CASH'
+}
+
 export interface RefundRequestDto {
   paymentId: number;
   amount: number;
-  reason: string;
-  refundMethod?: string;
+  reason: RefundReason;
+  refundMethod: RefundMethod;
   additionalNotes?: string;
   contactEmail?: string;
   contactPhone?: string;

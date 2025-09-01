@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Page, Pageable } from '../models/pagination.interface';
 
@@ -40,7 +41,10 @@ export enum NotificationType {
   RESERVATION_PENDING = 'RESERVATION_PENDING',
   RESERVATION_CANCELLED = 'RESERVATION_CANCELLED',
   RESERVATION_CONFIRMED = 'RESERVATION_CONFIRMED',
-  RESERVATION_COMPLETED = 'RESERVATION_COMPLETED'
+  RESERVATION_COMPLETED = 'RESERVATION_COMPLETED',
+  FAVORITE_ADDED = 'FAVORITE_ADDED',
+  FAVORITE_REMOVED = 'FAVORITE_REMOVED',
+  REFUND_REQUEST = 'REFUND_REQUEST'
 }
 
 
@@ -74,8 +78,18 @@ export class NotificationService {
     return this.http.get<any>(`${environment.apiUrl}/notifications?page=${page}&size=${size}`)
       .pipe(
         tap(response => {
-          this.notificationsSubject.next(response.content || []);
+          console.log('📋 Notifications API response:', response);
+          const notifications = response.content || [];
+          console.log('📋 Setting notifications:', notifications);
+          this.notificationsSubject.next(notifications);
           this.updateUnreadCount();
+        }),
+        catchError(error => {
+          console.error('❌ Error loading notifications:', error);
+          // Don't throw error, just return empty result to prevent breaking the UI
+          this.notificationsSubject.next([]);
+          this.updateUnreadCount();
+          return of({ content: [], totalElements: 0 });
         })
       );
   }
@@ -131,6 +145,14 @@ export class NotificationService {
   // Load initial data
   loadInitialData(): void {
     this.getNotifications();
+  }
+
+  // Add a new notification to the cache (for real-time updates)
+  addNotificationToCache(notification: Notification): void {
+    const currentNotifications = this.notificationsSubject.value;
+    const updatedNotifications = [notification, ...currentNotifications];
+    this.notificationsSubject.next(updatedNotifications);
+    this.updateUnreadCount();
   }
 
   // Get notification type display name

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api';
 import { Observable, map } from 'rxjs';
+import { Page, Pageable } from '../models/pagination.interface';
 
 export interface Testimonial {
   id: number;
@@ -21,13 +22,7 @@ export interface Testimonial {
   vehicleModel?: string;
 }
 
-interface PaginatedResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
+
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +31,7 @@ export class TestimonialService {
   constructor(private apiService: ApiService) {}
 
   getPublicTestimonials(params?: any): Observable<Testimonial[]> {
-    return this.apiService.get<PaginatedResponse<Testimonial>>('/testimonials/public', params).pipe(
+    return this.apiService.get<Page<Testimonial>>('/testimonials/public', params).pipe(
       map(response => response.content)
     );
   }
@@ -58,16 +53,26 @@ export class TestimonialService {
   }
 
   getMyTestimonials(params?: any): Observable<Testimonial[]> {
-    return this.apiService.get<PaginatedResponse<Testimonial>>('/testimonials/my', params).pipe(
+    return this.apiService.get<Page<Testimonial>>('/testimonials/my', params).pipe(
       map(response => response.content)
     );
   }
 
   // ADMIN: list all testimonials
   getAllTestimonials(params?: any): Observable<Testimonial[]> {
-    return this.apiService.get<PaginatedResponse<Testimonial>>('/testimonials', params).pipe(
+    return this.apiService.get<Page<Testimonial>>('/testimonials', params).pipe(
       map(response => response.content)
     );
+  }
+
+  // ADMIN: list all testimonials with pagination
+  getAllTestimonialsPaginated(pageable: Pageable): Observable<Page<Testimonial>> {
+    const params = {
+      page: pageable.page,
+      size: pageable.size,
+      sort: pageable.sortBy ? `${pageable.sortBy},${pageable.sortDirection || 'DESC'}` : 'createdAt,DESC'
+    };
+    return this.apiService.get<Page<Testimonial>>('/admin/testimonials', params);
   }
 
   // ADMIN: approve testimonial

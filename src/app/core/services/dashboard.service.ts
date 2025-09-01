@@ -39,6 +39,101 @@ export interface DashboardAnalytics {
   monthlyPerformance: MonthlyPerformanceData[];
 }
 
+export interface VehicleBreakdownData {
+  overview: FleetOverview;
+  categories: CategoryAnalytics[];
+  brands: BrandAnalytics[];
+  statuses: StatusAnalytics[];
+  topModels: ModelAnalytics[];
+  utilization: UtilizationMetrics;
+  revenue: RevenueMetrics;
+}
+
+export interface FleetOverview {
+  totalVehicles: number;
+  activeVehicles: number;
+  availableVehicles: number;
+  inUseVehicles: number;
+  maintenanceVehicles: number;
+  utilizationRate: number;
+  availabilityRate: number;
+  totalBrands: number;
+  totalCategories: number;
+  totalModels: number;
+}
+
+export interface CategoryAnalytics {
+  name: string;
+  totalVehicles: number;
+  availableVehicles: number;
+  rentedVehicles: number;
+  averagePrice: number;
+  totalRevenue: number;
+  utilizationRate: number;
+  iconUrl?: string;
+}
+
+export interface BrandAnalytics {
+  name: string;
+  totalVehicles: number;
+  availableVehicles: number;
+  rentedVehicles: number;
+  averagePrice: number;
+  totalRevenue: number;
+  averageRating: number;
+  modelCount: number;
+  marketShare: number;
+}
+
+export interface StatusAnalytics {
+  status: string;
+  count: number;
+  percentage: number;
+  color: string;
+  description: string;
+}
+
+export interface ModelAnalytics {
+  modelName: string;
+  brandName: string;
+  categoryName: string;
+  totalVehicles: number;
+  reservationCount: number;
+  totalRevenue: number;
+  averageRating: number;
+  averagePrice: number;
+}
+
+export interface UtilizationMetrics {
+  overallUtilization: number;
+  mostUtilizedCategory: string;
+  leastUtilizedCategory: string;
+  mostUtilizedBrand: string;
+  peakUsageHour: string;
+  hourlyBreakdown: HourlyUtilization[];
+}
+
+export interface HourlyUtilization {
+  hour: number;
+  reservations: number;
+  utilizationRate: number;
+}
+
+export interface RevenueMetrics {
+  totalRevenue: number;
+  averageRevenuePerVehicle: number;
+  topRevenueCategory: string;
+  topRevenueBrand: string;
+  monthlyGrowth: number;
+  categoryRevenue: CategoryRevenue[];
+}
+
+export interface CategoryRevenue {
+  categoryName: string;
+  revenue: number;
+  percentage: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -79,5 +174,12 @@ export class DashboardService {
     return this.http.get<ActivityStats>(`${this.baseUrl}/activity-stats`, {
       params: { days: days.toString() }
     });
+  }
+
+  /**
+   * Get vehicle breakdown data for dashboard analytics
+   */
+  getVehicleBreakdown(): Observable<VehicleBreakdownData> {
+    return this.http.get<VehicleBreakdownData>(`${this.baseUrl}/vehicle-breakdown`);
   }
 }

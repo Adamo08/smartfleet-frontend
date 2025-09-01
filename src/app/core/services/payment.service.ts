@@ -152,6 +152,31 @@ export class PaymentService {
     return this.http.post<RefundResponseDto>(`${this.baseUrl}/refund`, request);
   }
 
+  approveRefund(refundId: number): Observable<RefundResponseDto> {
+    return this.http.post<RefundResponseDto>(`${environment.apiUrl}/admin/payments/refund-requests/${refundId}/approve`, {});
+  }
+
+  declineRefund(refundId: number, adminNotes: string): Observable<RefundResponseDto> {
+    return this.http.post<RefundResponseDto>(`${environment.apiUrl}/admin/payments/refund-requests/${refundId}/decline`, null, {
+      params: { adminNotes }
+    });
+  }
+
+  getRefundRequests(pageable: Pageable): Observable<Page<RefundDetailsDto>> {
+    let params = new HttpParams()
+      .set('page', pageable.page.toString())
+      .set('size', pageable.size.toString());
+    
+    if (pageable.sortBy) {
+      params = params.set('sortBy', pageable.sortBy);
+    }
+    if (pageable.sortDirection) {
+      params = params.set('sortDirection', pageable.sortDirection);
+    }
+
+    return this.http.get<Page<RefundDetailsDto>>(`${environment.apiUrl}/admin/payments/refund-requests`, { params });
+  }
+
 
 
   /**
@@ -373,6 +398,6 @@ export class PaymentService {
       params = params.set('searchTerm', filter.searchTerm.trim());
     }
 
-    return this.http.get<Page<RefundDetailsDto>>(`${environment.apiUrl}/admin/payments/refunds`, { params });
+    return this.http.get<Page<RefundDetailsDto>>(`${this.baseUrl}/refunds`, { params });
   }
 }

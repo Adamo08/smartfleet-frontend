@@ -15,6 +15,7 @@ export interface Favorite {
   userEmail?: string;
   vehicleBrand?: string;
   vehicleModel?: string;
+  vehicleImageUrl?: string;
 }
 
 interface PaginatedResponse<T> {
