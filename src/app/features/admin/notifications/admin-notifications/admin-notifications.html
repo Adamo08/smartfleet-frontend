@@ -21,56 +21,70 @@
   </form>
 
   @if (isLoading) {
-    <div class="text-gray-300">Loading...</div>
+    <!-- Advanced Skeleton Loading -->
+    <app-skeleton-page
+      pageType="table"
+      [showFilters]="true"
+      [showPagination]="true"
+      [filterCount]="3"
+      [tableHeaders]="['ID', 'User', 'Type', 'Title', 'Message', 'Read', 'Created', 'Actions']"
+      [tableRows]="5">
+    </app-skeleton-page>
   } @else if (notificationsPage && notificationsPage.content.length > 0) {
     <div class="overflow-x-auto rounded-lg shadow-xl">
       <table class="min-w-full text-sm text-gray-200 bg-slate-800">
-        <thead>
-          <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
-            <th class="p-3 text-white cursor-pointer" (click)="onSortChange('id')">ID</th>
-            <th class="p-3 text-white cursor-pointer" (click)="onSortChange('userId')">User ID</th>
-            <th class="p-3 text-white cursor-pointer" (click)="onSortChange('type')">Type</th>
-            <th class="p-3 text-white cursor-pointer" (click)="onSortChange('message')">Message</th>
-            <th class="p-3 text-white cursor-pointer" (click)="onSortChange('read')">Read</th>
-            <th class="p-3 text-white cursor-pointer" (click)="onSortChange('createdAt')">Created At</th>
-            <th class="p-3 text-white">Actions</th>
+        <thead class="bg-slate-700/50">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">User</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Title</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Message</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Read</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Created</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          @for (n of notificationsPage.content; track n.id) {
-            <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
-              <td class="p-3">{{ n.id }}</td>
-              <td class="p-3">{{ n.userId }}</td>
-              <td class="p-3">{{ n.type }}</td>
-              <td class="p-3 truncate max-w-xs">{{ n.message }}</td>
-              <td class="p-3">
-                <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
-                  'bg-green-500/20 text-green-300': n.read,
-                  'bg-yellow-500/20 text-yellow-300': !n.read
-                }">
-                  {{ n.read ? 'Read' : 'Unread' }}
+        <tbody class="divide-y divide-white/10">
+          @for (notification of notificationsPage.content; track notification.id) {
+            <tr class="hover:bg-slate-700/30 transition-colors duration-200">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-white font-medium">#{{ notification.id }}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="ml-0">
+                    <div class="text-sm font-medium text-white">User #{{ notification.userId }}</div>
+                    <div class="text-sm text-gray-400">ID: {{ notification.userId }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span [class]="getTypeColor(notification.type)" class="px-3 py-1 rounded-full text-xs font-medium">
+                  {{ notification.type }}
                 </span>
               </td>
-              <td class="p-3">{{ n.createdAt | date:'short' }}</td>
-              <td class="p-3 flex space-x-2">
-                <button class="text-blue-400 hover:text-blue-300 transition-colors duration-200" (click)="viewNotification(n)" title="View">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </button>
-                @if (!n.read) {
-                  <button class="text-green-400 hover:text-green-300 transition-colors duration-200" (click)="markNotificationAsRead(n)" title="Mark as Read">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                }
-                <button class="text-red-400 hover:text-red-300 transition-colors duration-200" (click)="openDeleteNotificationModal(n)" title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.92c-1.01 0-1.93-.61-2.243-1.673L4.4 6.392m9.165 0c.66-.089 1.309-.178 1.964-.267m-9.964 0a48.11 48.11 0 01-3.478-.397m-1.559 0c.567.067 1.123.134 1.68.201m-.15.909.475 2.85a1.5 1.5 0 001.488 1.36h5.25a1.5 1.5 0 001.488-1.36l.476-2.85m-11.77-.55a22.354 22.354 0 00-.733-1.469C3.722 7.555 3 6.81 3 6h-.003L4.4 6.392V6c0-.528.288-.992.733-1.469a22.354 22.354 0 00.732-1.469A1.751 1.751 0 015.405 2.5C6.07 2.5 6.643 2.76 7 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5C18.27 2.5 18.843 2.76 19.2 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5C21.722 7.555 21 6.81 21 6h-.003L19.6 6.392V6c0-.528-.288-.992-.733-1.469a22.354 22.354 0 00-.732-1.469A1.751 1.751 0 0118.595 2.5C17.93 2.5 17.357 2.76 17 3c-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5C6.27 2.5 5.722 7.555 5.722 7.555z" />
-                  </svg>
-                </button>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-white">{{ notification.type }}</span>
+              </td>
+              <td class="px-6 py-4">
+                <span class="text-gray-300">{{ notification.message | slice:0:50 }}{{ notification.message.length > 50 ? '...' : '' }}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span [class]="notification.read ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'" 
+                      class="px-3 py-1 rounded-full text-xs font-medium">
+                  {{ notification.read ? 'Read' : 'Unread' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-gray-300">{{ notification.createdAt | date:'short' }}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <app-action-icons
+                  [actions]="{ view: true, delete: true }"
+                  (onView)="viewNotification(notification)"
+                  (onDelete)="openDeleteNotificationModal(notification)">
+                </app-action-icons>
               </td>
             </tr>
           }

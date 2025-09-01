@@ -6,13 +6,15 @@ import { Page, Pageable } from '../../../../core/models/pagination.interface';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
-
 import { NotificationDetail } from '../../../../features/notifications/notification-detail/notification-detail';
+import { ActionIcons } from '../../../../shared/components/action-icons/action-icons';
+import { SkeletonPage } from '../../../../shared/components/skeleton-page/skeleton-page';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
 
 @Component({
   selector: 'app-admin-notifications',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, NotificationDetail],
+  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, NotificationDetail, ActionIcons, SkeletonPage],
   templateUrl: './admin-notifications.html',
   styleUrl: './admin-notifications.css'
 })
@@ -34,7 +36,11 @@ export class AdminNotifications implements OnInit {
   readonly NotificationType = NotificationType;
   readonly DialogActionType = DialogActionType;
 
-  constructor(private notificationService: NotificationService, private fb: FormBuilder) {
+  constructor(
+    private notificationService: NotificationService, 
+    private fb: FormBuilder,
+    private successModalService: SuccessModalService
+  ) {
     this.filterForm = this.fb.group({
       userId: [null],
       read: [null],
@@ -126,15 +132,18 @@ export class AdminNotifications implements OnInit {
   }
 
   confirmDeleteNotification(): void {
-    if (this.notificationToDelete && this.notificationToDelete.id) {
-      this.notificationService.deleteNotification(this.notificationToDelete.id).subscribe({
-        next: () => {
-          this.closeDeleteNotificationModal();
-          this.loadNotifications();
-        },
-        error: (err) => console.error('Error deleting notification:', err)
-      });
-    }
+    if (!this.notificationToDelete?.id) return;
+    
+    this.notificationService.deleteNotification(this.notificationToDelete.id).subscribe({
+      next: () => {
+        this.successModalService.showEntityDeleted('Notification', `Notification has been successfully deleted`);
+        this.closeDeleteNotificationModal();
+        this.loadNotifications();
+      },
+      error: (error) => {
+        console.error('Error deleting notification:', error);
+      }
+    });
   }
 
   closeDeleteNotificationModal(): void {
@@ -152,5 +161,30 @@ export class AdminNotifications implements OnInit {
       },
       error: (err) => console.error('Error marking notification as read:', err)
     });
+  }
+
+  getTypeColor(type: NotificationType): string {
+    switch (type) {
+      case NotificationType.BOOKING_CONFIRMATION:
+      case NotificationType.RESERVATION_CONFIRMED:
+        return 'bg-green-500/20 text-green-400';
+      case NotificationType.BOOKING_CANCELLATION:
+      case NotificationType.RESERVATION_CANCELLED:
+        return 'bg-red-500/20 text-red-400';
+      case NotificationType.PAYMENT_SUCCESS:
+      case NotificationType.REFUND_ISSUED:
+        return 'bg-blue-500/20 text-blue-400';
+      case NotificationType.PAYMENT_FAILURE:
+      case NotificationType.SECURITY_ALERT:
+        return 'bg-red-500/20 text-red-400';
+      case NotificationType.SYSTEM_ALERT:
+      case NotificationType.MAINTENANCE_NOTIFICATION:
+        return 'bg-yellow-500/20 text-yellow-400';
+      case NotificationType.GENERAL_UPDATE:
+      case NotificationType.FEATURE_UPDATE:
+        return 'bg-purple-500/20 text-purple-400';
+      default:
+        return 'bg-gray-500/20 text-gray-400';
+    }
   }
 }

@@ -20,7 +20,31 @@
   </div>
 
   @if (isLoading) {
-    <div class="text-gray-300 text-center py-8">Loading analytics data...</div>
+    <!-- Skeleton Loading State -->
+    <div class="space-y-8">
+      <!-- KPI Cards Skeleton -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <app-skeleton-card></app-skeleton-card>
+        <app-skeleton-card></app-skeleton-card>
+        <app-skeleton-card></app-skeleton-card>
+        <app-skeleton-card></app-skeleton-card>
+      </div>
+
+      <!-- Charts Skeleton -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <app-skeleton-chart chartType="line"></app-skeleton-chart>
+        <app-skeleton-chart chartType="bar"></app-skeleton-chart>
+        <app-skeleton-chart chartType="doughnut" [showLegend]="true"></app-skeleton-chart>
+        <app-skeleton-chart chartType="pie" [showLegend]="true"></app-skeleton-chart>
+      </div>
+
+      <!-- Detailed Metrics Skeleton -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <app-skeleton-card></app-skeleton-card>
+        <app-skeleton-card></app-skeleton-card>
+        <app-skeleton-card></app-skeleton-card>
+      </div>
+    </div>
   } @else if (analyticsReport) {
     <!-- KPI Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -105,7 +129,7 @@
     </div>
 
     <!-- Detailed Metrics -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <!-- Successful Payments -->
       <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
         <p class="text-gray-400 text-sm">Successful Payments</p>
@@ -123,6 +147,18 @@
         <p class="text-gray-400 text-sm">Refund Rate</p>
         <p class="text-2xl font-bold text-orange-400 mt-2">{{ analyticsReport.refundRate | number:'1.1-1' }}%</p>
       </div>
+    </div>
+
+    <!-- Vehicle Fleet Analytics Section -->
+    <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-white">Vehicle Fleet Analytics</h2>
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+          <span class="text-gray-300 text-sm">Live Data</span>
+        </div>
+      </div>
+      <app-vehicle-analytics></app-vehicle-analytics>
     </div>
   } @else {
     <div class="text-gray-300 text-center py-8">No analytics data available.</div>

@@ -1,33 +1,89 @@
 <div class="p-6 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl">
-  <h2 class="text-xl font-semibold text-white mb-6">Manage Roles</h2>
-  @if (isLoading) {
-    <div class="text-gray-300">Loading...</div>
-  } @else {
-  <table class="min-w-full text-sm text-gray-200">
-    <thead>
-      <tr class="text-left border-b border-white/10">
-        <th class="p-2">ID</th>
-        <th class="p-2">Name</th>
-        <th class="p-2">Email</th>
-        <th class="p-2">Role</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (u of users; track u.id) {
-        <tr class="border-b border-white/10">
-          <td class="p-2">{{ u.id }}</td>
-          <td class="p-2">{{ u.firstName }} {{ u.lastName }}</td>
-          <td class="p-2">{{ u.email }}</td>
-          <td class="p-2">
-            <select class="bg-slate-900/60 border border-white/10 rounded-xl p-2" [value]="u.role" (change)="updateRole(u, $any($event.target).value)">
-              <option value="ADMIN">ADMIN</option>
-              <option value="CUSTOMER">CUSTOMER</option>
-              <option value="GUEST">GUEST</option>
-            </select>
-          </td>
-        </tr>
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-white">Manage Roles</h2>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-3 sm:space-y-0 sm:space-x-3">
+    <input
+      type="text"
+      placeholder="Search users by name or email..."
+      class="w-full sm:w-1/2 p-3 rounded-xl bg-slate-800 text-white border border-white/10"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+    />
+    <select
+      [(ngModel)]="selectedRole"
+      (ngModelChange)="onRoleFilterChange()"
+      class="w-full sm:w-auto p-3 rounded-xl bg-slate-800 text-white border border-white/10"
+    >
+      <option value="">All Roles</option>
+      @for (role of getRoleOptions(); track role) {
+        <option [value]="role">{{ role }}</option>
       }
-    </tbody>
-  </table>
+    </select>
+    <button (click)="clearFilters()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200 w-full sm:w-auto">Clear Filters</button>
+  </div>
+
+  @if (isLoading) {
+    <!-- Advanced Skeleton Loading -->
+    <app-skeleton-page
+      pageType="table"
+      [showFilters]="false"
+      [showPagination]="false"
+      [tableHeaders]="['Name', 'Email', 'Role', 'Actions']"
+      [tableRows]="5">
+    </app-skeleton-page>
+  } @else {
+    <div class="overflow-x-auto rounded-lg shadow-xl">
+      <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+        <thead class="bg-slate-700/50">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Role</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/10">
+          @for (user of usersPage.content; track user.id) {
+            <tr class="hover:bg-slate-700/30 transition-colors duration-200">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-white">{{ user.firstName }} {{ user.lastName }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-300">{{ user.email }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span [class]="getRoleColor(user.role)" class="px-3 py-1 rounded-full text-xs font-medium">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <select 
+                  [value]="user.role" 
+                  (change)="onRoleChange(user, $event)"
+                  class="bg-slate-700/50 border border-white/20 rounded-lg px-3 py-1 text-sm text-white focus:outline-none focus:border-indigo-500">
+                  <option value="CUSTOMER">Customer</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="GUEST">Guest</option>
+                </select>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (usersPage && usersPage.totalPages > 1) {
+      <div class="mt-6 flex justify-center">
+        <app-pagination
+          [currentPage]="currentPage"
+          [totalPages]="usersPage.totalPages"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </div>
+    }
   }
 </div>

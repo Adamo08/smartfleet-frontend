@@ -2,6 +2,9 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { SkeletonCard } from '../../../shared/components/skeleton-card/skeleton-card';
+import { SkeletonChart } from '../../../shared/components/skeleton-chart/skeleton-chart';
+import { VehicleAnalytics } from '../../../shared/components/vehicle-analytics/vehicle-analytics';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { AnalyticsService, AnalyticsReport } from '../../../core/services/analytics.service';
@@ -14,7 +17,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, SkeletonCard, SkeletonChart, VehicleAnalytics],
   templateUrl: './analytics.html',
   styleUrl: './analytics.css'
 })

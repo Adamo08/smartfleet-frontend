@@ -27,10 +27,14 @@
   }
 
   @if (isLoading) {
-    <div class="text-center py-8">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-      <p class="text-gray-300 mt-2">Loading models...</p>
-    </div>
+    <!-- Advanced Skeleton Loading -->
+    <app-skeleton-page
+      pageType="table"
+      [showFilters]="false"
+      [showPagination]="true"
+      [tableHeaders]="['ID', 'Name', 'Brand', 'Description', 'Status', 'Updated', 'Actions']"
+      [tableRows]="5">
+    </app-skeleton-page>
   } @else if (modelsPage && modelsPage.content.length > 0) {
     <div class="overflow-x-auto rounded-lg shadow-xl">
       <table class="min-w-full text-sm text-gray-200 bg-slate-800">
@@ -63,25 +67,14 @@
               </td>
               <td class="p-3 text-gray-300">{{ model.createdAt | date:'short' }}</td>
               <td class="p-3 text-gray-300">{{ model.updatedAt | date:'short' }}</td>
-              <td class="p-3 flex space-x-2">
+              <td class="p-3">
+                <app-action-icons
+                  [actions]="{ edit: true, delete: true }"
+                  (onEdit)="openEditModal(model)"
+                  (onDelete)="openDeleteModal(model)">
+                </app-action-icons>
                 <button 
-                  class="text-yellow-400 hover:text-yellow-300 transition-colors duration-200" 
-                  (click)="openEditModal(model)" 
-                  title="Edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487zm0 0L19.5 7.125" />
-                  </svg>
-                </button>
-                <button 
-                  class="text-red-400 hover:text-red-300 transition-colors duration-200" 
-                  (click)="openDeleteModal(model)" 
-                  title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.92c-1.01 0-1.93-.61-2.243-1.673L4.4 6.392m9.165 0c.66-.089 1.309-.178 1.964-.267m-9.964 0a48.11 48.11 0 01-3.478-.397m-1.559 0c.567.067 1.123.134 1.68.201m-.15.909.475 2.85a1.5 1.5 0 001.488 1.36h5.25a1.5 1.5 0 001.488-1.36l.476-2.85m-11.77-.55a22.354 22.354 0 00-.733-1.469C3.722 7.555 3 6.81 3 6h-.003L4.4 6.392V6c0-.528.288-.992.733-1.469a22.354 22.354 0 00.732-1.469A1.751 1.751 0 015.405 2.5C6.07 2.5 6.643 2.76 7 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5C18.27 2.5 18.843 2.76 19.2 3c.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5.357-.24.93-.5 1.6-.5.67 0 1.243.26 1.6.5C21.722 7.555 21 6.81 21 6h-.003L19.6 6.392V6c0-.528-.288-.992-.733-1.469a22.354 22.354 0 00-.732-1.469A1.751 1.751 0 0118.595 2.5C17.93 2.5 17.357 2.76 17 3c-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5-.357-.24-.93-.5-1.6-.5-.67 0-1.243.26-1.6-.5C6.27 2.5 5.722 7.555 5.722 7.555z" />
-                  </svg>
-                </button>
-                <button 
-                  class="px-2 py-1 rounded text-xs font-medium transition-colors duration-200" 
+                  class="px-2 py-1 rounded text-xs font-medium transition-colors duration-200 ml-2" 
                   [ngClass]="{
                     'bg-red-500/20 text-red-300 hover:bg-red-500/30': model.isActive,
                     'bg-green-500/20 text-green-300 hover:bg-green-500/30': !model.isActive
@@ -236,5 +229,17 @@
       (confirmed)="confirmDeleteModel()"
       (cancelled)="closeDeleteModal()">
     </app-configrm-dialog>
+  }
+
+  <!-- Inactive Warning Modal -->
+  @if (showInactiveWarningModal && statusInfo) {
+    <app-inactive-warning-modal
+      [isOpen]="showInactiveWarningModal"
+      [entityName]="modelToToggle?.name || ''"
+      [entityType]="'model'"
+      [statusInfo]="statusInfo"
+      (confirm)="onInactiveConfirm()"
+      (cancel)="onInactiveCancel()">
+    </app-inactive-warning-modal>
   }
 </div>

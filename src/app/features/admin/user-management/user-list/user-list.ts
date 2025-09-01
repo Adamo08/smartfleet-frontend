@@ -1,20 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../../../core/services/api';
-import { User, UserRole } from '../../../../core/models/user.interface';
-import { Page, Pageable, Sort } from '../../../../core/models/pagination.interface';
+import { User } from '../../../../core/models/user.interface';
+import { Page, Pageable } from '../../../../core/models/pagination.interface';
+import { UserRole } from '../../../../core/models/user.interface';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { UserDetail } from '../user-detail/user-detail';
 import { UserForm } from '../user-form/user-form';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
+import { ActionIcons } from '../../../../shared/components/action-icons/action-icons';
+import { SkeletonPage } from '../../../../shared/components/skeleton-page/skeleton-page';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, Modal, UserDetail, UserForm, ConfigrmDialog, FormsModule, ReactiveFormsModule, Pagination],
+  imports: [CommonModule, RouterModule, Modal, UserDetail, UserForm, ConfigrmDialog, FormsModule, ReactiveFormsModule, Pagination, ActionIcons, SkeletonPage],
   templateUrl: './user-list.html',
   styleUrl: './user-list.css'
 })
@@ -40,7 +44,10 @@ export class UserList implements OnInit {
   // Expose DialogActionType to the template
   readonly DialogActionType = DialogActionType;
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    private successModalService: SuccessModalService
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -172,6 +179,11 @@ export class UserList implements OnInit {
     this.loadUsers();
   }
 
+  onUserAdded(): void {
+    this.successModalService.showEntityCreated('User', 'New user has been successfully added to the system');
+    this.closeAddUserModal();
+  }
+
   openEditUserModal(user: User): void {
     this.selectedUser = user;
     this.showEditUserModal = true;
@@ -183,6 +195,11 @@ export class UserList implements OnInit {
     this.loadUsers();
   }
 
+  onUserUpdated(): void {
+    this.successModalService.showEntityUpdated('User', 'User information has been successfully updated');
+    this.closeEditUserModal();
+  }
+
   openDeleteUserModal(user: User): void {
     this.userToDelete = user;
     this.showDeleteUserModal = true;
@@ -192,6 +209,7 @@ export class UserList implements OnInit {
     if (this.userToDelete) {
       this.api.delete(`/users/${this.userToDelete.id}`).subscribe({
         next: () => {
+          this.successModalService.showEntityDeleted('User', `User ${this.userToDelete!.firstName} ${this.userToDelete!.lastName} has been removed from the system`);
           this.closeDeleteUserModal();
           this.loadUsers();
         },

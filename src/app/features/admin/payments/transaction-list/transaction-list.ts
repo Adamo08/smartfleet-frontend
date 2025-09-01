@@ -9,12 +9,15 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
 import { PaymentDetail } from '../payment-detail/payment-detail';
-import { RefundManagement } from '../refund-management/refund-management'; 
+import { RefundManagement } from '../refund-management/refund-management';
+import { ActionIcons } from '../../../../shared/components/action-icons/action-icons';
+import { SkeletonPage } from '../../../../shared/components/skeleton-page/skeleton-page';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
 
 @Component({
   selector: 'app-transaction-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, PaymentDetail, RefundManagement],
+  imports: [CommonModule, ReactiveFormsModule, Modal, ConfigrmDialog, Pagination, PaymentDetail, RefundManagement, ActionIcons, SkeletonPage],
   templateUrl: './transaction-list.html',
   styleUrl: './transaction-list.css'
 })
@@ -38,7 +41,11 @@ export class TransactionList implements OnInit {
   readonly PaymentStatus = PaymentStatus;
   readonly DialogActionType = DialogActionType;
 
-  constructor(private paymentService: PaymentService, private fb: FormBuilder) {
+  constructor(
+    private paymentService: PaymentService, 
+    private fb: FormBuilder,
+    private successModalService: SuccessModalService
+  ) {
     this.filterForm = this.fb.group({
       userId: [null],
       reservationId: [null],
@@ -130,15 +137,18 @@ export class TransactionList implements OnInit {
   }
 
   confirmDeletePayment(): void {
-    if (this.paymentToDelete && this.paymentToDelete.id) {
-      this.paymentService.deletePayment(this.paymentToDelete.id).subscribe({
-        next: () => {
-          this.closeDeletePaymentModal();
-          this.loadPayments();
-        },
-        error: (err) => console.error('Error deleting payment:', err)
-      });
-    }
+    if (!this.paymentToDelete?.id) return;
+    
+    this.paymentService.deletePayment(this.paymentToDelete.id).subscribe({
+      next: () => {
+        this.successModalService.showEntityDeleted('Payment', `Payment #${this.paymentToDelete!.id} has been successfully deleted`);
+        this.closeDeletePaymentModal();
+        this.loadPayments();
+      },
+      error: (err) => {
+        console.error('Error deleting payment:', err);
+      }
+    });
   }
 
   closeDeletePaymentModal(): void {
@@ -198,6 +208,6 @@ export class TransactionList implements OnInit {
 
   // Check if payment can be refunded
   canRefund(payment: PaymentDetailsDto): boolean {
-    return payment.status === PaymentStatus.COMPLETED;
+    return payment.status === PaymentStatus.COMPLETED || payment.status === PaymentStatus.PARTIALLY_REFUNDED;
   }
 }

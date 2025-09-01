@@ -7,11 +7,16 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { ConfigrmDialog, DialogActionType } from '../../../../shared/components/configrm-dialog/configrm-dialog';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
 import { VehicleCategory, CreateVehicleCategoryDto, UpdateVehicleCategoryDto } from '../../../../core/models/vehicle-category.interface';
+import { InactiveWarningModal } from '../../../../shared/components/inactive-warning-modal/inactive-warning-modal';
+import { SuccessModalService } from '../../../../shared/services/success-modal.service';
+import { ActionIcons } from '../../../../shared/components/action-icons/action-icons';
+import { SkeletonPage } from '../../../../shared/components/skeleton-page/skeleton-page';
+import { VehicleStatusService, VehicleStatusInfo } from '../../../../core/services/vehicle-status.service';
 
 @Component({
   selector: 'app-vehicle-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule, Modal, ConfigrmDialog, Pagination],
+  imports: [CommonModule, FormsModule, Modal, ConfigrmDialog, Pagination, InactiveWarningModal, ActionIcons, SkeletonPage],
   templateUrl: './vehicle-categories.html',
   styleUrl: './vehicle-categories.css'
 })
@@ -27,6 +32,7 @@ export class VehicleCategories implements OnInit {
   showAddModal = false;
   showEditModal = false;
   showDeleteModal = false;
+  showInactiveWarningModal = false;
 
   // Form data
   currentCategory: Partial<VehicleCategory> = {
@@ -37,6 +43,8 @@ export class VehicleCategories implements OnInit {
   };
 
   categoryToDelete: VehicleCategory | null = null;
+  categoryToToggle: VehicleCategory | null = null;
+  statusInfo: VehicleStatusInfo | null = null;
 
   // Pagination
   currentPage = 0;
@@ -47,7 +55,11 @@ export class VehicleCategories implements OnInit {
   // Expose DialogActionType to the template
   readonly DialogActionType = DialogActionType;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private successModalService: SuccessModalService,
+    private vehicleStatusService: VehicleStatusService
+  ) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -130,7 +142,7 @@ export class VehicleCategories implements OnInit {
       
       this.apiService.put<VehicleCategory>(`/admin/vehicle-categories/${this.currentCategory.id}`, updateDto).subscribe({
         next: () => {
-          this.showMessage('Category updated successfully!', 'success');
+          this.successModalService.showEntityUpdated('Category', `${this.currentCategory.name} has been updated`);
           this.closeEditModal();
           this.loadCategories();
         },
@@ -152,7 +164,7 @@ export class VehicleCategories implements OnInit {
       
       this.apiService.post<VehicleCategory>('/admin/vehicle-categories', createDto).subscribe({
         next: () => {
-          this.showMessage('Category created successfully!', 'success');
+          this.successModalService.showEntityCreated('Category', `${this.currentCategory.name} has been added to the system`);
           this.closeAddModal();
           this.loadCategories();
         },
@@ -173,7 +185,7 @@ export class VehicleCategories implements OnInit {
     this.isSaving = true;
     this.apiService.delete(`/admin/vehicle-categories/${this.categoryToDelete.id}`).subscribe({
       next: () => {
-        this.showMessage('Category deleted successfully!', 'success');
+        this.successModalService.showEntityDeleted('Category', `${this.categoryToDelete!.name} has been removed from the system`);
         this.closeDeleteModal();
         this.loadCategories();
       },
@@ -190,15 +202,57 @@ export class VehicleCategories implements OnInit {
   toggleCategoryStatus(category: VehicleCategory): void {
     if (!category.id) return;
 
-    this.apiService.patch<VehicleCategory>(`/admin/vehicle-categories/${category.id}/toggle-status`, {}).subscribe({
-      next: () => {
+    // If setting to inactive, show warning modal with real data
+    if (category.isActive) {
+      this.categoryToToggle = category;
+      this.vehicleStatusService.getCategoryStatusInfo(category.id).subscribe({
+        next: (statusInfo) => {
+          this.statusInfo = statusInfo;
+          this.showInactiveWarningModal = true;
+        },
+        error: (error) => {
+          console.error('Error fetching category status info:', error);
+          // Fallback to simple confirmation without detailed info
+          this.confirmToggleStatus(category);
+        }
+      });
+    } else {
+      // Activating - no warning needed
+      this.confirmToggleStatus(category);
+    }
+  }
+
+  confirmToggleStatus(category?: VehicleCategory): void {
+    const categoryToUpdate = category || this.categoryToToggle;
+    if (!categoryToUpdate?.id) return;
+
+    this.apiService.patch<VehicleCategory>(`/admin/vehicle-categories/${categoryToUpdate.id}/toggle-status`, {}).subscribe({
+      next: (updatedCategory) => {
+        const action = updatedCategory.isActive ? 'activated' : 'deactivated';
+        this.successModalService.show({
+          title: `Category ${action}`,
+          message: `${categoryToUpdate.name} has been successfully ${action}.`,
+          details: updatedCategory.isActive 
+            ? 'Vehicles in this category are now available for rental.' 
+            : 'Vehicles in this category are no longer available for new reservations.',
+          autoClose: true,
+          autoCloseDelay: 3000
+        });
+        this.closeInactiveWarningModal();
         this.loadCategories();
       },
       error: (error) => {
         console.error('Error toggling category status:', error);
         this.showMessage('Error updating category status', 'error');
+        this.closeInactiveWarningModal();
       }
     });
+  }
+
+  closeInactiveWarningModal(): void {
+    this.showInactiveWarningModal = false;
+    this.categoryToToggle = null;
+    this.statusInfo = null;
   }
 
   onPageChange(page: number): void {

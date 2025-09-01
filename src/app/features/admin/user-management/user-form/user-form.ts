@@ -16,6 +16,8 @@ export class UserForm implements OnInit {
   @Input() user: User | null = null;
   @Output() formSubmitted = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
+  @Output() userAdded = new EventEmitter<void>();
+  @Output() userUpdated = new EventEmitter<void>();
 
   form!: FormGroup;
   editMode = false;
@@ -55,6 +57,7 @@ export class UserForm implements OnInit {
       this.api.put(`/users/${this.user!.id}`, formData).subscribe({
         next: () => {
           this.isSubmitting = false;
+          this.userUpdated.emit();
           this.formSubmitted.emit();
         },
         error: (err) => {
@@ -75,6 +78,7 @@ export class UserForm implements OnInit {
       this.api.post('/users', createRequest).subscribe({
         next: () => {
           this.isSubmitting = false;
+          this.userAdded.emit();
           this.formSubmitted.emit();
           this.resetForm();
         },
