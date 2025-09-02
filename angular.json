@@ -18,6 +18,9 @@
               "zone.js",
               "src/window-global-fix.ts"
             ],
+            "allowedCommonJsDependencies": [
+              "stompjs"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
