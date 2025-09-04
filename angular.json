@@ -19,7 +19,7 @@
               "src/window-global-fix.ts"
             ],
             "allowedCommonJsDependencies": [
-              "stompjs"
+              "sockjs-client"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import SockJS from 'sockjs-client';
-import * as Stomp from 'stompjs';
+import { Client } from '@stomp/stompjs';
 
 export interface WebSocketMessage {
   type: string;
@@ -20,7 +20,7 @@ export interface WebSocketState {
   providedIn: 'root'
 })
 export class WebSocketService {
-  private stompClient: Stomp.Client | null = null;
+  private stompClient: Client | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
@@ -51,15 +51,21 @@ export class WebSocketService {
       console.log('🔄 Starting WebSocket connection...');
       this.updateState({ connecting: true, error: null });
 
-      // Use SockJS instead of raw WebSocket
-      console.log('🔧 Creating SockJS connection to:', environment.wsUrl);
-      const socket = new (SockJS as any)(environment.wsUrl);
-      this.stompClient = Stomp.over(socket);
-
-      // Disable STOMP debug logging in production
-      if (this.stompClient.debug) {
-        this.stompClient.debug = () => {}; // Empty function instead of null
-      }
+      // Create new StompJS client
+      console.log('🔧 Creating STOMP client for:', environment.wsUrl);
+      this.stompClient = new Client({
+        brokerURL: undefined, // We'll use webSocketFactory instead
+        webSocketFactory: () => new SockJS(environment.wsUrl),
+        debug: (str) => {
+          // Disable debug logging in production
+          if (!environment.production) {
+            console.log('STOMP: ' + str);
+          }
+        },
+        reconnectDelay: this.reconnectDelay,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+      });
 
       // Get authentication token
       const token = localStorage.getItem('accessToken');
@@ -75,7 +81,8 @@ export class WebSocketService {
 
       console.log('🔧 STOMP connection headers:', headers);
 
-      this.stompClient.connect(headers, () => {
+      // Set up connection handlers
+      this.stompClient.onConnect = (frame) => {
         console.log('✅ STOMP connected successfully');
         console.log('🔧 STOMP client state:', this.stompClient);
         this.updateState({ connected: true, connecting: false, error: null });
@@ -88,13 +95,26 @@ export class WebSocketService {
           console.warn('⚠️ No user email provided for notification subscription');
         }
         resolve();
-      }, (error: string | Stomp.Frame) => {
-        console.error('❌ STOMP connection error:', error);
-        console.error('❌ Error details:', error);
+      };
+
+      this.stompClient.onStompError = (frame) => {
+        console.error('❌ STOMP connection error:', frame);
+        console.error('❌ Error details:', frame.headers);
         this.updateState({ connected: false, connecting: false, error: 'Connection error' });
         this.scheduleReconnect(userEmail);
-        reject(error);
-      });
+        reject(frame);
+      };
+
+      this.stompClient.onWebSocketError = (event) => {
+        console.error('❌ WebSocket error:', event);
+        this.updateState({ connected: false, connecting: false, error: 'WebSocket error' });
+        this.scheduleReconnect(userEmail);
+        reject(event);
+      };
+
+      // Set connection headers and activate
+      this.stompClient.connectHeaders = headers;
+      this.stompClient.activate();
     });
   }
 
@@ -150,7 +170,10 @@ export class WebSocketService {
 
     if (this.stompClient && this.stompClient.connected) {
       console.log('✅ STOMP client connected, sending message');
-      this.stompClient.send(destination, {}, JSON.stringify(message));
+      this.stompClient.publish({
+        destination: destination,
+        body: JSON.stringify(message)
+      });
       console.log('✅ Message sent successfully');
     } else {
       console.warn('⚠️ STOMP client is not connected. Message not sent.');
@@ -163,10 +186,11 @@ export class WebSocketService {
 
     if (this.stompClient && this.stompClient.connected) {
       console.log('🔄 Disconnecting STOMP client...');
-      this.stompClient.disconnect(() => {
+      this.stompClient.onDisconnect = () => {
         console.log('✅ STOMP disconnected successfully');
         this.updateState({ connected: false, connecting: false, error: null });
-      });
+      };
+      this.stompClient.deactivate();
       this.stompClient = null;
     } else {
       console.log('ℹ️ STOMP client already disconnected or null');
