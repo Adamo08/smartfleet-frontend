@@ -19,8 +19,11 @@
 
       <!-- Navigation removed - only logo, notification bell, and user dropdown remain -->
 
-      <!-- Mobile menu button -->
-      <div class="md:hidden">
+      <!-- Mobile menu button and notification bell -->
+      <div class="md:hidden flex items-center space-x-2">
+        @if (authService.isAuthenticated()) {
+          <app-notification-bell></app-notification-bell>
+        }
         <button (click)="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" [attr.aria-expanded]="mobileMenuOpen">
           <span class="sr-only">Open main menu</span>
           <svg class="h-6 w-6" [class.hidden]="mobileMenuOpen" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -98,9 +98,11 @@
     <!-- Reservations Table -->
     @if (!loading && !error) {
     <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-      <!-- Table Header -->
-      <div class="bg-gray-50 border-b border-gray-200">
-        <div class="grid grid-cols-12 gap-4 p-4 text-sm font-semibold text-gray-700">
+      <!-- Table Container with Horizontal Scroll -->
+      <div class="overflow-x-auto">
+        <!-- Table Header -->
+        <div class="bg-gray-50 border-b border-gray-200">
+          <div class="grid grid-cols-12 gap-4 p-4 text-sm font-semibold text-gray-700 min-w-[800px]">
           <div class="col-span-2">
             <button
               (click)="onSort('vehicleBrand')"
@@ -171,12 +173,12 @@
         </div>
       </div>
 
-      <!-- Table Body -->
-      <div class="divide-y divide-gray-200">
-        @for (reservation of reservationsPage.content; track reservation.id) {
-        <div
-             (click)="onReservationClick(reservation)"
-             class="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 cursor-pointer transition-all duration-200">
+        <!-- Table Body -->
+        <div class="divide-y divide-gray-200">
+          @for (reservation of reservationsPage.content; track reservation.id) {
+          <div
+               (click)="onReservationClick(reservation)"
+               class="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 cursor-pointer transition-all duration-200 min-w-[800px]">
 
           <!-- Vehicle -->
           <div class="col-span-2">
@@ -282,16 +284,17 @@
         }
       </div>
 
-      <!-- No Reservations Message -->
-      @if (reservationsPage.content.length === 0) {
-      <div class="text-center py-20">
-        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-        </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No reservations found</h3>
-        <p class="text-gray-600">Try adjusting your filters or browse vehicles to make a reservation</p>
+        <!-- No Reservations Message -->
+        @if (reservationsPage.content.length === 0) {
+          <div class="text-center py-20">
+            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No reservations found</h3>
+            <p class="text-gray-600">Try adjusting your filters or browse vehicles to make a reservation</p>
+          </div>
+        }
       </div>
-      }
     </div>
     }
 

@@ -18,7 +18,7 @@
         <!-- Status Filter -->
         <div>
           <label class="block text-sm font-semibold text-gray-900 mb-2">Status</label>
-          <select formControlName="status" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-gray-900 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          <select formControlName="status" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-gray-900">
             <option value="">All Statuses</option>
             <option value="COMPLETED">Completed</option>
             <option value="PENDING">Pending</option>
@@ -73,8 +73,10 @@
     <!-- Payment History Table -->
     @if (!loading && !error) {
     <div class="backdrop-blur-2xl bg-gray-50 border border-gray-200 rounded-lg shadow-2xl overflow-hidden">
-      <!-- Table Header -->
-      <div class="grid grid-cols-12 gap-4 p-6 border-b border-gray-200 bg-gray-50">
+      <!-- Table Container with Horizontal Scroll -->
+      <div class="overflow-x-auto">
+        <!-- Table Header -->
+        <div class="grid grid-cols-12 gap-4 p-6 border-b border-gray-200 bg-gray-50 min-w-[900px]">
         <div class="col-span-2">
           <button (click)="onSort('transactionId')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all duration-200">
             <span>Transaction ID</span>
@@ -129,9 +131,9 @@
       </div>
 
       <!-- Table Body -->
-      <div class="divide-y divide-white/10">
-        @for (payment of paymentsPage.content; track payment.id) {
-        <div (click)="onPaymentClick(payment)" class="grid grid-cols-12 gap-4 p-6 hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+        <div class="divide-y divide-white/10">
+          @for (payment of paymentsPage.content; track payment.id) {
+          <div (click)="onPaymentClick(payment)" class="grid grid-cols-12 gap-4 p-6 hover:bg-gray-50 transition-all duration-200 cursor-pointer min-w-[900px]">
           <div class="col-span-2">
             <div class="text-sm font-medium text-gray-900">{{ payment.transactionId || 'N/A' }}</div>
           </div>
@@ -163,16 +165,17 @@
         }
       </div>
 
-      <!-- Empty State -->
-      @if (paymentsPage.content.length === 0 && !loading) {
-      <div class="text-center py-20">
-        <svg class="w-16 h-16 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-        <h3 class="text-lg font-medium text-gray-600 mb-2">No payments found</h3>
-        <p class="text-gray-500">Your payment history will appear here once you make transactions.</p>
+        <!-- Empty State -->
+        @if (paymentsPage.content.length === 0 && !loading) {
+        <div class="text-center py-20">
+          <svg class="w-16 h-16 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <h3 class="text-lg font-medium text-gray-600 mb-2">No payments found</h3>
+          <p class="text-gray-500">Your payment history will appear here once you make transactions.</p>
+        </div>
+        }
       </div>
-      }
     </div>
     }
 

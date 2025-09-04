@@ -3,12 +3,12 @@
 
   <form [formGroup]="filterForm" (ngSubmit)="onFilterChange()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
     <input type="number" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="User ID" formControlName="userId" (change)="onFilterChange()">
-    <select class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2" formControlName="read" (change)="onFilterChange()">
+    <select class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" formControlName="read" (change)="onFilterChange()">
       <option [value]="null">All Statuses</option>
       <option [value]="true">Read</option>
       <option [value]="false">Unread</option>
     </select>
-    <select class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2" formControlName="type" (change)="onFilterChange()">
+    <select class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" formControlName="type" (change)="onFilterChange()">
       <option value="">All Types</option>
       @for (type of NotificationType | keyvalue; track type.key) {
         <option [value]="type.value">{{ type.value }}</option>

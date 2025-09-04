@@ -525,7 +525,7 @@
       @if (currentBookingStep === 'dates') {
         <div class="space-y-4">
           <div class="text-center mb-4">
-            <p class="text-gray-300">You've selected: <span class="text-blue-600 font-semibold">{{ selectedSlotType }}</span> rental</p>
+            <p class="text-gray-600">You've selected: <span class="text-blue-600 font-semibold">{{ selectedSlotType }}</span> rental</p>
           </div>
 
           <app-slot-selector
@@ -566,25 +566,25 @@
       <!-- Step 3: Confirmation -->
       @if (currentBookingStep === 'confirmation') {
         <div class="space-y-4">
-          <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-            <h4 class="text-lg font-semibold text-white mb-3">Booking Summary</h4>
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Booking Summary</h4>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p class="text-gray-300 text-sm">Vehicle</p>
-                <p class="text-white font-medium">{{ vehicle.brand }} {{ vehicle.model }}</p>
+                <p class="text-gray-600 text-sm">Vehicle</p>
+                <p class="text-gray-900 font-medium">{{ vehicle.brand }} {{ vehicle.model }}</p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">License Plate</p>
-                <p class="text-white font-medium">{{ vehicle.licensePlate }}</p>
+                <p class="text-gray-600 text-sm">License Plate</p>
+                <p class="text-gray-900 font-medium">{{ vehicle.licensePlate }}</p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">Booking Type</p>
-                <p class="text-white font-medium">{{ selectedSlotType }}</p>
+                <p class="text-gray-600 text-sm">Booking Type</p>
+                <p class="text-gray-900 font-medium">{{ selectedSlotType }}</p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">Duration</p>
-                <p class="text-white font-medium">
+                <p class="text-gray-600 text-sm">Duration</p>
+                <p class="text-gray-900 font-medium">
                   @if (selectedDuration < 24) {
                     {{ selectedDuration }} hour{{ selectedDuration > 1 ? 's' : '' }}
                   } @else if (selectedDuration < 168) {
@@ -595,21 +595,21 @@
                 </p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">Start Date</p>
-                <p class="text-white font-medium">{{ formatDate(selectedAvailabilityStartDate) }}</p>
+                <p class="text-gray-600 text-sm">Start Date</p>
+                <p class="text-gray-900 font-medium">{{ formatDate(selectedAvailabilityStartDate) }}</p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">End Date</p>
-                <p class="text-white font-medium">{{ formatDate(selectedAvailabilityEndDate) }}</p>
+                <p class="text-gray-600 text-sm">End Date</p>
+                <p class="text-gray-900 font-medium">{{ formatDate(selectedAvailabilityEndDate) }}</p>
               </div>
             </div>
 
-            <div class="mt-4 pt-4 border-t border-white/10">
+            <div class="mt-4 pt-4 border-t border-gray-200">
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Estimated Total:</span>
+                <span class="text-gray-600">Estimated Total:</span>
                 <span class="text-2xl font-bold text-blue-600">{{ formatCurrency(getTotalPaymentAmount()) }}</span>
               </div>
-              <p class="text-xs text-gray-600 mt-1">*Final price may vary based on actual duration and any additional fees</p>
+              <p class="text-xs text-gray-500 mt-1">*Final price may vary based on actual duration and any additional fees</p>
             </div>
           </div>
 
@@ -635,31 +635,31 @@
       <!-- Step 4: Payment -->
       @if (currentBookingStep === 'payment') {
         <div class="space-y-4">
-          <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-            <h4 class="text-lg font-semibold text-white mb-3">Payment Summary</h4>
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Payment Summary</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <p class="text-gray-300 text-sm">Vehicle</p>
-                <p class="text-white font-medium">{{ vehicle.brand }} {{ vehicle.model }}</p>
+                <p class="text-gray-600 text-sm">Vehicle</p>
+                <p class="text-gray-900 font-medium">{{ vehicle.brand }} {{ vehicle.model }}</p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">Total Amount</p>
+                <p class="text-gray-600 text-sm">Total Amount</p>
                 <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(getTotalPaymentAmount()) }}</p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">Duration</p>
-                <p class="text-white font-medium">{{ getDurationLabel() }}</p>
+                <p class="text-gray-600 text-sm">Duration</p>
+                <p class="text-gray-900 font-medium">{{ getDurationLabel() }}</p>
               </div>
               <div>
-                <p class="text-gray-300 text-sm">Date Range</p>
-                <p class="text-white font-medium">{{ formatDate(selectedAvailabilityStartDate) }} - {{ formatDate(selectedAvailabilityEndDate) }}</p>
+                <p class="text-gray-600 text-sm">Date Range</p>
+                <p class="text-gray-900 font-medium">{{ formatDate(selectedAvailabilityStartDate) }} - {{ formatDate(selectedAvailabilityEndDate) }}</p>
               </div>
             </div>
           </div>
 
           <!-- Payment Methods -->
           <div class="space-y-3">
-            <h4 class="text-lg font-semibold text-white">Select Payment Method</h4>
+            <h4 class="text-lg font-semibold text-gray-900">Select Payment Method</h4>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
               @for (method of availablePaymentMethods; track method.id) {

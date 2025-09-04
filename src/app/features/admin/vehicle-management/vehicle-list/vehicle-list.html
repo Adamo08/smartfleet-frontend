@@ -25,7 +25,7 @@
           [(ngModel)]="filters.search"
           (input)="applyFilters()"
           placeholder="Brand, model, license..."
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Category -->
@@ -34,7 +34,7 @@
         <select
           [(ngModel)]="filters.categoryId"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="">All Categories</option>
           @for (category of categories; track category.id) {
             <option [value]="category.id">{{ category.name }}</option>
@@ -48,7 +48,7 @@
         <select
           [(ngModel)]="filters.fuelType"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="">All Fuels</option>
           @for (fuel of fuelTypes; track fuel.value) {
             <option [value]="fuel.value">{{ fuel.label }}</option>
@@ -62,7 +62,7 @@
         <select
           [(ngModel)]="filters.status"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="">All Statuses</option>
           @for (status of vehicleStatuses; track status.value) {
             <option [value]="status.value">{{ status.label }}</option>
@@ -79,7 +79,7 @@
         <select
           [(ngModel)]="filters.brandId"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="" selected>All Brands</option>
           @for (brand of brands; track brand.id) {
             <option [value]="brand.id">{{ brand.name }}</option>
@@ -93,7 +93,7 @@
         <select
           [(ngModel)]="filters.modelId"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="" selected>All Models</option>
           @for (model of models; track model.id) {
             <option [value]="model.id">{{ model.name }}</option>
@@ -131,7 +131,7 @@
           [(ngModel)]="filters.minYear"
           (input)="applyFilters()"
           placeholder="Min year..."
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Max Year -->
@@ -142,7 +142,7 @@
           [(ngModel)]="filters.maxYear"
           (input)="applyFilters()"
           placeholder="Max year..."
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Min Mileage -->
@@ -153,7 +153,7 @@
           [(ngModel)]="filters.minMileage"
           (input)="applyFilters()"
           placeholder="Min mileage..."
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Max Mileage -->
@@ -164,7 +164,7 @@
           [(ngModel)]="filters.maxMileage"
           (input)="applyFilters()"
           placeholder="Max mileage..."
-          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
     </div>
 

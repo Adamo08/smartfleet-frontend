@@ -36,7 +36,7 @@
           <select
             [(ngModel)]="selectedCategory"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option value="">All Categories</option>
             @for (category of categories; track category.id) {
@@ -51,7 +51,7 @@
           <select
             [(ngModel)]="selectedBrand"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option value="">All Brands</option>
             @for (brand of brands; track brand.id) {
@@ -66,7 +66,7 @@
           <select
             [(ngModel)]="selectedModel"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option value="">All Models</option>
             @for (model of models; track model.id) {
@@ -81,7 +81,7 @@
           <select
             [(ngModel)]="selectedStatus"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option [value]="null">All Status</option>
             @for (status of VehicleStatus; track status) {
@@ -96,7 +96,7 @@
           <select
             [(ngModel)]="selectedFuelType"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option [value]="null">All Fuel Types</option>
             @for (type of FuelType; track type) {
