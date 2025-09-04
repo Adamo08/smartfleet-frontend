@@ -4,7 +4,7 @@
   <form [formGroup]="filterForm" (ngSubmit)="onFilterChange()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
     <input class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="User ID" formControlName="userId" (change)="onFilterChange()">
     <input class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Vehicle ID" formControlName="vehicleId" (change)="onFilterChange()">
-    <select class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" formControlName="status" (change)="onFilterChange()">
+    <select class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 [&>option]:bg-white [&>option]:text-gray-700 [&>option]:p-2" formControlName="status" (change)="onFilterChange()">
       <option value="">All Statuses</option>
       @for (status of ReservationStatus | keyvalue; track status.key) {
         <option [value]="status.value">{{ status.value }}</option>

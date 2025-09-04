@@ -340,22 +340,3 @@ select {
   color: white;
 }
 
-/* Comprehensive select dropdown styling for visibility */
-select option {
-  background-color: white !important;
-  color: #374151 !important; /* gray-700 */
-  padding: 8px 12px !important;
-  border: none !important;
-}
-
-select option:checked,
-select:focus option:checked {
-  background-color: #2563eb !important; /* blue-600 */
-  color: white !important;
-}
-
-select option:hover,
-select option:focus {
-  background-color: #f3f4f6 !important; /* gray-100 */
-  color: #111827 !important; /* gray-900 */
-}
