@@ -340,16 +340,6 @@ select {
   color: white;
 }
 
-select option {
-  background-color: #1e293b; /* slate-800 */
-  color: white;
-  padding: 8px 12px;
-}
-
-select option:hover {
-  background-color: #334155; /* slate-700 */
-}
-
 /* Comprehensive select dropdown styling for visibility */
 select option {
   background-color: white !important;

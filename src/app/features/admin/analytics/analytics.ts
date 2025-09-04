@@ -329,7 +329,7 @@ export class Analytics implements OnInit, OnDestroy, AfterViewInit {
           legend: {
             position: 'bottom',
             labels: {
-              color: '#ffffff',
+              color: '#374151',
               usePointStyle: true,
               padding: 20
             }
@@ -369,7 +369,7 @@ export class Analytics implements OnInit, OnDestroy, AfterViewInit {
           legend: {
             position: 'bottom',
             labels: {
-              color: '#ffffff',
+              color: '#374151',
               usePointStyle: true,
               padding: 20
             }

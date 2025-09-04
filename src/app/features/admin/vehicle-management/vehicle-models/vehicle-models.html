@@ -69,20 +69,17 @@
               <td class="p-3 text-gray-600">{{ model.updatedAt | date:'short' }}</td>
               <td class="p-3">
                 <app-action-icons
-                  [actions]="{ edit: true, delete: true }"
-                  (onEdit)="openEditModal(model)"
-                  (onDelete)="openDeleteModal(model)">
-                </app-action-icons>
-                <button 
-                  class="px-2 py-1 rounded text-xs font-medium transition-colors duration-200 ml-2" 
-                  [ngClass]="{
-                    'bg-red-100 text-red-700 hover:bg-red-200': model.isActive,
-                    'bg-green-100 text-green-700 hover:bg-green-200': !model.isActive
+                  [actions]="{ 
+                    edit: true, 
+                    delete: true,
+                    activate: !model.isActive,
+                    deactivate: model.isActive
                   }"
-                  (click)="toggleModelStatus(model)" 
-                  title="{{ model.isActive ? 'Deactivate' : 'Activate' }}">
-                  {{ model.isActive ? 'Deactivate' : 'Activate' }}
-                </button>
+                  (onEdit)="openEditModal(model)"
+                  (onDelete)="openDeleteModal(model)"
+                  (onActivate)="toggleModelStatus(model)"
+                  (onDeactivate)="toggleModelStatus(model)">
+                </app-action-icons>
               </td>
             </tr>
           }

@@ -53,11 +53,11 @@
             <td class="p-3">#{{ p.reservationId }}</td>
             <td class="p-3">{{ p.amount | currency:'USD':'symbol':'1.2-2' }}</td>
             <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
-              'bg-yellow-500/20 text-yellow-300': p.status === PaymentStatus.PENDING,
-              'bg-green-500/20 text-green-300': p.status === PaymentStatus.COMPLETED,
-              'bg-red-500/20 text-red-300': p.status === PaymentStatus.FAILED,
-              'bg-blue-500/20 text-blue-300': p.status === PaymentStatus.REFUNDED,
-              'bg-purple-500/20 text-purple-300': p.status === PaymentStatus.PARTIALLY_REFUNDED
+              'bg-yellow-500 text-white': p.status === PaymentStatus.PENDING,
+              'bg-green-500 text-white': p.status === PaymentStatus.COMPLETED,
+              'bg-red-500 text-white': p.status === PaymentStatus.FAILED,
+              'bg-blue-500 text-white': p.status === PaymentStatus.REFUNDED,
+              'bg-purple-500 text-white': p.status === PaymentStatus.PARTIALLY_REFUNDED
             }">{{ p.status }}</span></td>
             <td class="p-3">{{ p.provider }}</td>
             <td class="p-3">{{ p.createdAt | date:'short' }}</td>

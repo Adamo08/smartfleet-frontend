@@ -173,7 +173,7 @@
 
       <!-- Analytics Sidebar -->
       <div class="lg:col-span-1">
-        <div class="backdrop-blur-xl bg-slate-900/95 border border-gray-200 rounded-3xl shadow-2xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Analytics</h3>
             <button
@@ -187,35 +187,35 @@
           @if (showAnalytics && analytics) {
             <div class="space-y-4">
               <!-- Total Users -->
-              <div class="text-center p-4 backdrop-blur-sm bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <div class="text-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div class="text-2xl font-bold text-blue-400">{{ analytics.totalUsers.toLocaleString() }}</div>
                 <div class="text-sm text-blue-300">Total Users</div>
               </div>
 
               <!-- Delivery Rate -->
-              <div class="text-center p-4 backdrop-blur-sm bg-green-500/10 border border-green-500/20 rounded-lg">
+              <div class="text-center p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div class="text-2xl font-bold text-green-400">{{ analytics.deliveryRate }}%</div>
                 <div class="text-sm text-green-300">Delivery Rate</div>
               </div>
 
               <!-- Metrics Grid -->
               <div class="grid grid-cols-2 gap-3">
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
+                <div class="text-center p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-green-400">{{ analytics.sentCount.toLocaleString() }}</div>
                   <div class="text-xs text-gray-700">Sent</div>
                 </div>
 
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
+                <div class="text-center p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-red-400">{{ analytics.failedCount.toLocaleString() }}</div>
                   <div class="text-xs text-gray-700">Failed</div>
                 </div>
 
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
+                <div class="text-center p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-blue-400">{{ analytics.readCount.toLocaleString() }}</div>
                   <div class="text-xs text-gray-700">Read</div>
                 </div>
 
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
+                <div class="text-center p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-purple-400">{{ analytics.clickCount.toLocaleString() }}</div>
                   <div class="text-xs text-gray-700">Clicked</div>
                 </div>
@@ -225,7 +225,7 @@
         </div>
 
         <!-- Recent Broadcasts -->
-        <div class="backdrop-blur-xl bg-slate-900/95 border border-gray-200 rounded-3xl shadow-2xl p-6 mt-6">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mt-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Broadcasts</h3>
 
           @if (recentBroadcasts.length === 0) {

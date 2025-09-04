@@ -6,6 +6,8 @@ export interface ActionConfig {
   edit?: boolean;
   delete?: boolean;
   toggle?: boolean;
+  activate?: boolean;
+  deactivate?: boolean;
   custom?: CustomAction[];
 }
 
@@ -72,6 +74,30 @@ export interface CustomAction {
         </button>
       }
 
+      <!-- Activate Action -->
+      @if (actions.activate) {
+        <button 
+          (click)="onActivate.emit()"
+          class="text-green-600 hover:text-green-700 transition-colors duration-200 p-2 rounded-lg hover:bg-green-50 border border-green-200 hover:border-green-300"
+          title="Activate">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </button>
+      }
+
+      <!-- Deactivate Action -->
+      @if (actions.deactivate) {
+        <button 
+          (click)="onDeactivate.emit()"
+          class="text-red-600 hover:text-red-700 transition-colors duration-200 p-2 rounded-lg hover:bg-red-50 border border-red-200 hover:border-red-300"
+          title="Deactivate">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </button>
+      }
+
       <!-- Custom Actions -->
       @if (actions.custom) {
         @for (action of actions.custom; track action.label) {
@@ -97,6 +123,8 @@ export class ActionIcons {
   @Output() onEdit = new EventEmitter<void>();
   @Output() onDelete = new EventEmitter<void>();
   @Output() onToggle = new EventEmitter<void>();
+  @Output() onActivate = new EventEmitter<void>();
+  @Output() onDeactivate = new EventEmitter<void>();
 
   get toggleClasses(): string {
     const baseClasses = 'transition-colors duration-200 p-2 rounded-lg border';
