@@ -10,7 +10,7 @@ import { SkeletonCard } from '../skeleton-card/skeleton-card';
   standalone: true,
   imports: [CommonModule, Skeleton, SkeletonTable, SkeletonFilter, SkeletonCard],
   template: `
-    <div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
+    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
         <app-skeleton 
@@ -55,7 +55,7 @@ import { SkeletonCard } from '../skeleton-card/skeleton-card';
       } @else if (pageType === 'list') {
         <div class="space-y-3">
           @for (item of [1,2,3,4,5]; track item) {
-            <div class="flex items-center justify-between p-4 bg-slate-800/30 border border-white/10 rounded-xl">
+            <div class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
               <div class="flex items-center space-x-4">
                 <app-skeleton 
                   width="48px" 

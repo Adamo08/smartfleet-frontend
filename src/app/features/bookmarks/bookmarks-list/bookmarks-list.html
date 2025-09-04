@@ -1,17 +1,13 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
+<div class="min-h-screen bg-gray-50">
   <!-- Header Section -->
   <div class="relative overflow-hidden">
-    <div class="absolute inset-0">
-      <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/10 rounded-full filter blur-3xl"></div>
-      <div class="absolute bottom-20 right-20 w-80 h-80 bg-cyan-500/10 rounded-full filter blur-3xl"></div>
-    </div>
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="text-center">
-        <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-6">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
           My Bookmarks
         </h1>
-        <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
           Your saved reservations for quick access and easy management
         </p>
       </div>
@@ -23,26 +19,26 @@
     @if (loading) {
       <!-- Loading State -->
       <div class="text-center py-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full mb-4">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
           <svg class="w-8 h-8 text-white animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         </div>
-        <p class="text-gray-300 text-lg">Loading your bookmarks...</p>
+        <p class="text-gray-600 text-lg">Loading your bookmarks...</p>
       </div>
     } @else if (error) {
       <!-- Error State -->
       <div class="text-center py-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-full mb-4">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-4">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <p class="text-red-300 text-lg mb-4">{{ error }}</p>
+        <p class="text-red-600 text-lg mb-4">{{ error }}</p>
         <button
           (click)="loadBookmarks()"
-          class="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:shadow-xl">
+          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-xl">
           Try Again
         </button>
       </div>
@@ -55,9 +51,9 @@
           </svg>
         </div>
         <h3 class="text-2xl font-semibold text-white mb-2">No bookmarks yet</h3>
-        <p class="text-gray-300 mb-6">Create reservations and bookmark them for quick access later</p>
+        <p class="text-gray-600 mb-6">Create reservations and bookmark them for quick access later</p>
         <a routerLink="/reservations"
-           class="inline-flex items-center bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300 hover:shadow-xl">
+           class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-xl">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
@@ -104,12 +100,12 @@
               <!-- Action Buttons -->
               <div class="flex space-x-3">
                 <a [routerLink]="['/reservations', bookmark.reservationId]"
-                   class="flex-1 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white py-3 px-4 rounded-2xl text-center font-semibold transition-all duration-300 hover:shadow-lg">
+                   class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg text-center font-semibold transition-all duration-300 hover:shadow-lg">
                   View Reservation
                 </a>
                 <a [routerLink]="['/reservations/create']"
                    [queryParams]="{vehicleId: bookmark.vehicleId}"
-                   class="flex-1 backdrop-blur-sm bg-white/10 border border-white/20 text-white py-3 px-4 rounded-2xl text-center font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/30">
+                   class="flex-1 backdrop-blur-sm bg-white/10 border border-white/20 text-white py-3 px-4 rounded-lg text-center font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/30">
                   New Reservation
                 </a>
               </div>
@@ -127,7 +123,7 @@
 
       <!-- Summary -->
       <div class="mt-12 text-center">
-        <div class="inline-flex items-center space-x-2 bg-white/5 border border-white/10 rounded-2xl px-6 py-3">
+        <div class="inline-flex items-center space-x-2 bg-white/5 border border-white/10 rounded-lg px-6 py-3">
           <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
           </svg>

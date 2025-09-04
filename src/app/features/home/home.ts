@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { VehicleService } from '../../core/services/vehicle';
+import { VehicleDataService } from '../../core/services/vehicle-data.service';
 import { FavoriteService, Favorite } from '../../core/services/favorite';
 import { Vehicle } from '../../core/models/vehicle.interface';
+import { VehicleBrand } from '../../core/models/vehicle-brand.interface';
 import { VehicleCard } from '../vehicles/vehicle-card/vehicle-card';
 import { User } from '../../core/models/user.interface';
 import { Subscription } from 'rxjs';
@@ -23,8 +25,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   currentUser: User | null = null;
   featuredVehicles: Vehicle[] = [];
+  vehicleBrands: VehicleBrand[] = [];
   favorites: Favorite[] = [];
   loading = true;
+  brandsLoading = true;
   private userSubscription: Subscription | null = null;
 
   // Static service testimonials
@@ -55,6 +59,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private vehicleService: VehicleService,
+    private vehicleDataService: VehicleDataService,
     private favoriteService: FavoriteService,
     private toastr: ToastrService
   ) {}
@@ -62,6 +67,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkAuthStatus();
     this.loadFeaturedVehicles();
+    this.loadVehicleBrands();
     // Log the current user and authentication status
     console.log('🔧 HomeComponent initialized');
     console.log('🔧 Current User:', this.currentUser);
@@ -95,6 +101,19 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error loading featured vehicles:', error);
         this.loading = false;
+      }
+    });
+  }
+
+  private loadVehicleBrands(): void {
+    this.vehicleDataService.getActiveBrands().subscribe({
+      next: (brands) => {
+        this.vehicleBrands = brands.slice(0, 8); // Show first 8 brands
+        this.brandsLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading vehicle brands:', error);
+        this.brandsLoading = false;
       }
     });
   }

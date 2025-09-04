@@ -1,101 +1,94 @@
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
-  <!-- Background Effects -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
-    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
-  </div>
-
-  <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="text-center mb-8">
-      <h2 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
-        Date & Time <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Picker</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Date & Time <span class="text-blue-600">Picker</span>
       </h2>
-      <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
         Select your preferred date and time range for your reservation
       </p>
     </div>
 
     <!-- Main Form Container -->
-    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-8">
+    <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-8">
       <form [formGroup]="dateTimeForm" class="space-y-6">
         <!-- Date and Time Selection Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Start Date & Time -->
           <div class="space-y-4">
-            <h3 class="text-xl font-semibold text-white mb-4">Start Date & Time</h3>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Start Date & Time</h3>
             
             <!-- Start Date -->
             <div>
-              <label class="block text-sm font-semibold text-white mb-2">Start Date</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
               <input
                 type="date"
                 formControlName="startDate"
                 (change)="onStartDateChange($event)"
                 [disabled]="disabled"
-                class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
               @if (startDateError) {
-              <div class="mt-1 text-red-400 text-sm">{{ startDateError }}</div>
+              <div class="mt-1 text-red-600 text-sm">{{ startDateError }}</div>
               }
             </div>
 
             <!-- Start Time -->
             <div>
-              <label class="block text-sm font-semibold text-white mb-2">Start Time</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Start Time</label>
               <input
                 type="time"
                 formControlName="startTime"
                 (change)="onStartTimeChange($event)"
                 [disabled]="disabled"
-                class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
             </div>
           </div>
 
           <!-- End Date & Time -->
           <div class="space-y-4">
-            <h3 class="text-xl font-semibold text-white mb-4">End Date & Time</h3>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">End Date & Time</h3>
             
             <!-- End Date -->
             <div>
-              <label class="block text-sm font-semibold text-white mb-2">End Date</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
               <input
                 type="date"
                 formControlName="endDate"
                 (change)="onEndDateChange($event)"
                 [disabled]="disabled"
-                class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
               @if (endDateError) {
-              <div class="mt-1 text-red-400 text-sm">{{ endDateError }}</div>
+              <div class="mt-1 text-red-600 text-sm">{{ endDateError }}</div>
               }
             </div>
 
             <!-- End Time -->
             <div>
-              <label class="block text-sm font-semibold text-white mb-2">End Time</label>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">End Time</label>
               <input
                 type="time"
                 formControlName="endTime"
                 (change)="onEndTimeChange($event)"
                 [disabled]="disabled"
-                class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 text-gray-900 placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
             </div>
           </div>
         </div>
 
         <!-- Quick Selection Buttons -->
-        <div class="border-t border-white/10 pt-6">
-          <h3 class="text-lg font-semibold text-white mb-4">Quick Selection</h3>
+        <div class="border-t border-gray-200 pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Selection</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <button
               type="button"
               (click)="setQuickTimeRange(2)"
               [disabled]="disabled"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
             >
               2 Hours
             </button>
@@ -103,7 +96,7 @@
               type="button"
               (click)="setQuickTimeRange(4)"
               [disabled]="disabled"
-              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
             >
               4 Hours
             </button>
@@ -111,7 +104,7 @@
               type="button"
               (click)="setToday()"
               [disabled]="disabled"
-              class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
+              class="px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
             >
               Today
             </button>
@@ -119,7 +112,7 @@
               type="button"
               (click)="setThisWeek()"
               [disabled]="disabled"
-              class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
+              class="px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
             >
               This Week
             </button>
@@ -127,19 +120,19 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-white/10">
+        <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
           <button
             type="button"
             (click)="clearSelection()"
             [disabled]="disabled"
-            class="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 font-medium"
+            class="flex-1 px-6 py-3 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 font-medium"
           >
             Clear Selection
           </button>
           <button
             type="button"
             [disabled]="!isFormValid || disabled"
-            class="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 font-medium shadow-lg"
+            class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl transition-all duration-200 font-medium shadow-lg"
           >
             Confirm Selection
           </button>
@@ -148,11 +141,11 @@
         <!-- Form Status -->
         @if (isFormValid) {
         <div class="text-center">
-          <div class="inline-flex items-center px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-lg">
-            <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="inline-flex items-center px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
+            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
-            <span class="text-green-400 font-medium">Date and time selection is valid</span>
+            <span class="text-green-600 font-medium">Date and time selection is valid</span>
           </div>
         </div>
         }

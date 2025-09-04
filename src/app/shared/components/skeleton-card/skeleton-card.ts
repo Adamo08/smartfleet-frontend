@@ -7,7 +7,7 @@ import { Skeleton } from '../skeleton/skeleton';
   standalone: true,
   imports: [CommonModule, Skeleton],
   template: `
-    <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <app-skeleton 
@@ -23,7 +23,7 @@ import { Skeleton } from '../skeleton/skeleton';
         <app-skeleton 
           width="48px" 
           height="48px" 
-          borderRadius="16px"
+          borderRadius="12px"
         ></app-skeleton>
       </div>
     </div>

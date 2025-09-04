@@ -1,62 +1,64 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+<div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
   <div>
-    <p class="font-semibold text-white">ID:</p>
+    <p class="font-semibold text-gray-900">ID:</p>
     <p>{{ vehicle.id }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Brand:</p>
+    <p class="font-semibold text-gray-900">Brand:</p>
     <p>{{ vehicle.brand }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Model:</p>
+    <p class="font-semibold text-gray-900">Model:</p>
     <p>{{ vehicle.model }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Year:</p>
+    <p class="font-semibold text-gray-900">Year:</p>
     <p>{{ vehicle.year }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">License Plate:</p>
+    <p class="font-semibold text-gray-900">License Plate:</p>
     <p>{{ vehicle.licensePlate }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Vehicle Type:</p>
+    <p class="font-semibold text-gray-900">Vehicle Type:</p>
     <p>{{ vehicle.categoryName }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Fuel Type:</p>
+    <p class="font-semibold text-gray-900">Fuel Type:</p>
     <p>{{ vehicle.fuelType }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Status:</p>
+    <p class="font-semibold text-gray-900">Status:</p>
     <p>{{ vehicle.status }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Mileage:</p>
+    <p class="font-semibold text-gray-900">Mileage:</p>
     <p>{{ vehicle.mileage }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Price Per Day:</p>
+    <p class="font-semibold text-gray-900">Price Per Day:</p>
     <p>{{ vehicle.pricePerDay | currency }}</p>
   </div>
   @if (vehicle.imageUrl) {
     <div>
-      <p class="font-semibold text-white">Image:</p>
+      <p class="font-semibold text-gray-900">Image:</p>
       <img [src]="vehicle.imageUrl" alt="Vehicle Image" class="w-32 h-32 object-cover rounded-lg mt-2">
     </div>
   }
   @if (vehicle.description) {
     <div class="col-span-2">
-      <p class="font-semibold text-white">Description:</p>
+      <p class="font-semibold text-gray-900">Description:</p>
       <p>{{ vehicle.description }}</p>
     </div>
   }
   <div>
-    <p class="font-semibold text-white">Created At:</p>
+    <p class="font-semibold text-gray-900">Created At:</p>
     <p>{{ vehicle.createdAt | date:'short' }}</p>
   </div>
   <div>
-    <p class="font-semibold text-white">Last Updated:</p>
+    <p class="font-semibold text-gray-900">Last Updated:</p>
     <p>{{ vehicle.updatedAt | date:'short' }}</p>
   </div>
+</div>
 </div>

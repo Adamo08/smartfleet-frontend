@@ -1,23 +1,16 @@
 <div class="min-h-screen">
   <!-- Header Section -->
-  <div class="relative overflow-hidden">
-    <div class="absolute inset-0">
-      <div class="absolute top-20 left-20 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl"></div>
-      <div class="absolute bottom-20 right-20 w-80 h-80 bg-indigo-500/10 rounded-full filter blur-3xl"></div>
-    </div>
-
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-indigo-200 bg-clip-text text-transparent mb-4">
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Admin Dashboard
           </h1>
-          <p class="text-xl text-gray-300 max-w-2xl">
+          <p class="text-lg text-gray-600 max-w-2xl">
             Manage your vehicle rental system and monitor operations
           </p>
         </div>
-
-        <!-- Mode switch removed; handled in admin layout header -->
       </div>
     </div>
   </div>
@@ -45,7 +38,7 @@
 
         <!-- Quick Actions Skeleton -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
             <app-skeleton width="150px" height="24px" additionalClasses="mb-6"></app-skeleton>
             <div class="grid grid-cols-2 gap-4">
               @for (item of [1,2,3,4]; track item) {
@@ -57,7 +50,7 @@
             </div>
           </div>
           
-          <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
             <app-skeleton width="130px" height="24px" additionalClasses="mb-6"></app-skeleton>
             <div class="space-y-4">
               @for (item of [1,2,3,4]; track item) {
@@ -78,56 +71,56 @@
     } @else if (dashboardStats) {
       <!-- Quick Stats -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm">Total Reservations</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardStats.totalReservations }}</p>
+              <p class="text-gray-600 text-sm">Total Reservations</p>
+              <p class="text-3xl font-bold text-gray-900">{{ dashboardStats.totalReservations }}</p>
             </div>
-            <div class="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 11h2a2 2 0 012 2v2m2-2h2a2 2 0 012 2v2m-6-2h6m-1-4V9a2 2 0 00-2-2H8a2 2 0 00-2 2v2m-1 8h10a2 2 0 002-2v-6a2 2 0 00-2-2h-10a2 2 0 00-2 2v6a2 2 0 002 2z" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm">Active Vehicles</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardStats.activeVehicles }}</p>
+              <p class="text-gray-600 text-sm">Active Vehicles</p>
+              <p class="text-3xl font-bold text-gray-900">{{ dashboardStats.activeVehicles }}</p>
             </div>
-            <div class="w-12 h-12 bg-green-500/20 rounded-2xl flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm">Total Revenue</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardStats.totalRevenue | currency:'USD':'symbol':'1.2-2' }}</p>
+              <p class="text-gray-600 text-sm">Total Revenue</p>
+              <p class="text-3xl font-bold text-gray-900">{{ dashboardStats.totalRevenue | currency:'USD':'symbol':'1.2-2' }}</p>
             </div>
-            <div class="w-12 h-12 bg-yellow-500/20 rounded-2xl flex items-center justify-center">
-              <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm">Total Users</p>
-              <p class="text-3xl font-bold text-white">{{ dashboardStats.totalUsers }}</p>
+              <p class="text-gray-600 text-sm">Total Users</p>
+              <p class="text-3xl font-bold text-gray-900">{{ dashboardStats.totalUsers }}</p>
             </div>
-            <div class="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center">
-              <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
             </div>
@@ -137,12 +130,12 @@
 
       <!-- Vehicle Analytics -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-white">Vehicle Categories</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Vehicle Categories</h3>
             <div class="flex items-center space-x-2">
               <div class="w-8 h-8 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                 </svg>
               </div>
@@ -150,13 +143,13 @@
                 <div class="flex space-x-1">
                   <button (click)="previousCategories()" [disabled]="categoryPage === 0" 
                           class="w-6 h-6 bg-indigo-500/20 rounded flex items-center justify-center disabled:opacity-50 hover:bg-indigo-500/30 transition-colors">
-                    <svg class="w-3 h-3 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                   </button>
                   <button (click)="nextCategories()" [disabled]="(categoryPage + 1) * 3 >= vehicleBreakdown.categories.length" 
                           class="w-6 h-6 bg-indigo-500/20 rounded flex items-center justify-center disabled:opacity-50 hover:bg-indigo-500/30 transition-colors">
-                    <svg class="w-3 h-3 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
                   </button>
@@ -169,7 +162,7 @@
               @for (category of getCurrentCategories(); track category.name) {
                 <div class="flex justify-between items-center">
                   <span class="text-gray-300 text-sm">{{ category.name }}</span>
-                  <span class="text-white font-medium">{{ category.totalVehicles }}</span>
+                  <span class="text-gray-900 font-medium">{{ category.totalVehicles }}</span>
                 </div>
               }
             } @else {
@@ -181,24 +174,24 @@
               }
             }
           </div>
-          <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
-            <a routerLink="/admin/vehicles/categories" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors duration-200">
+          <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
+            <a routerLink="/admin/vehicles/categories" class="text-indigo-600 hover:text-indigo-300 text-sm font-medium transition-colors duration-200">
               Manage Categories →
             </a>
             @if (vehicleBreakdown && vehicleBreakdown.categories && vehicleBreakdown.categories.length > 3) {
-              <a routerLink="/admin/analytics" class="text-indigo-400 hover:text-indigo-300 text-xs transition-colors duration-200">
+              <a routerLink="/admin/analytics" class="text-indigo-600 hover:text-indigo-300 text-xs transition-colors duration-200">
                 View All
               </a>
             }
           </div>
         </div>
 
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-white">Popular Brands</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Popular Brands</h3>
             <div class="flex items-center space-x-2">
               <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                 </svg>
               </div>
@@ -206,13 +199,13 @@
                 <div class="flex space-x-1">
                   <button (click)="previousBrands()" [disabled]="brandPage === 0" 
                           class="w-6 h-6 bg-green-500/20 rounded flex items-center justify-center disabled:opacity-50 hover:bg-green-500/30 transition-colors">
-                    <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                   </button>
                   <button (click)="nextBrands()" [disabled]="(brandPage + 1) * 3 >= vehicleBreakdown.brands.length" 
                           class="w-6 h-6 bg-green-500/20 rounded flex items-center justify-center disabled:opacity-50 hover:bg-green-500/30 transition-colors">
-                    <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
                   </button>
@@ -225,7 +218,7 @@
               @for (brand of getCurrentBrands(); track brand.name) {
                 <div class="flex justify-between items-center">
                   <span class="text-gray-300 text-sm">{{ brand.name }}</span>
-                  <span class="text-white font-medium">{{ brand.totalVehicles }}</span>
+                  <span class="text-gray-900 font-medium">{{ brand.totalVehicles }}</span>
                 </div>
               }
             } @else {
@@ -237,21 +230,21 @@
               }
             }
           </div>
-          <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
-            <a routerLink="/admin/vehicles/brands" class="text-green-400 hover:text-green-300 text-sm font-medium transition-colors duration-200">
+          <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
+            <a routerLink="/admin/vehicles/brands" class="text-green-600 hover:text-green-300 text-sm font-medium transition-colors duration-200">
               Manage Brands →
             </a>
             @if (vehicleBreakdown && vehicleBreakdown.brands && vehicleBreakdown.brands.length > 3) {
-              <a routerLink="/admin/analytics" class="text-green-400 hover:text-green-300 text-xs transition-colors duration-200">
+              <a routerLink="/admin/analytics" class="text-green-600 hover:text-green-300 text-xs transition-colors duration-200">
                 View All
               </a>
             }
           </div>
         </div>
 
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-white">Vehicle Status</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Vehicle Status</h3>
             <div class="flex items-center space-x-2">
               <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
                 <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +277,7 @@
                     <div class="w-2 h-2 rounded-full mr-2" [ngClass]="getStatusIndicatorColor(status.status)"></div>
                     <span class="text-gray-300 text-sm">{{ getStatusDisplayName(status.status) }}</span>
                   </div>
-                  <span class="text-white font-medium">{{ status.count }}</span>
+                  <span class="text-gray-900 font-medium">{{ status.count }}</span>
                 </div>
               }
             } @else {
@@ -299,17 +292,17 @@
               }
             }
           </div>
-          <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
+          <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
             <div class="flex space-x-4">
-              <a routerLink="/admin/vehicles/fleet-status" class="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors duration-200">
+              <a routerLink="/admin/vehicles/fleet-status" class="text-purple-600 hover:text-purple-700 text-sm font-medium transition-colors duration-200">
                 Fleet Status →
               </a>
-              <a routerLink="/admin/vehicles/maintenance" class="text-orange-400 hover:text-orange-300 text-sm font-medium transition-colors duration-200">
+              <a routerLink="/admin/vehicles/maintenance" class="text-orange-600 hover:text-orange-700 text-sm font-medium transition-colors duration-200">
                 Maintenance →
               </a>
             </div>
             @if (vehicleBreakdown && vehicleBreakdown.statuses && vehicleBreakdown.statuses.length > 3) {
-              <a routerLink="/admin/analytics" class="text-gray-400 hover:text-gray-300 text-xs transition-colors duration-200">
+              <a routerLink="/admin/analytics" class="text-gray-600 hover:text-gray-700 text-xs transition-colors duration-200">
                 View All
               </a>
             }
@@ -320,11 +313,11 @@
       <!-- Charts Section -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- Revenue Chart -->
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-white">Revenue Trends</h3>
+            <h3 class="text-2xl font-bold text-gray-900">Revenue Trends</h3>
             <div class="flex items-center space-x-2">
-              <select class="bg-slate-800 border border-white/20 rounded-lg px-3 py-1 text-white text-sm" (change)="onRevenueTimeframeChange($event)">
+              <select class="bg-white border border-gray-300 rounded-lg px-3 py-1 text-gray-900 text-sm" (change)="onRevenueTimeframeChange($event)">
                 <option value="7">Last 7 Days</option>
                 <option value="30" selected>Last 30 Days</option>
                 <option value="90">Last 3 Months</option>
@@ -337,34 +330,34 @@
         </div>
 
         <!-- Reservations by Status Chart -->
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-          <h3 class="text-2xl font-bold text-white mb-6">Reservations Status</h3>
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6">Reservations Status</h3>
           <div class="relative h-64">
             <canvas #statusChart></canvas>
           </div>
           <div class="grid grid-cols-2 gap-4 mt-4">
             <div class="text-center">
-              <div class="text-2xl font-bold text-green-400">{{ dashboardStats.completedReservations }}</div>
+              <div class="text-2xl font-bold text-green-600">{{ dashboardStats.completedReservations }}</div>
               <div class="text-sm text-gray-300">Completed</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-bold text-yellow-400">{{ dashboardStats.pendingReservations }}</div>
+              <div class="text-2xl font-bold text-yellow-600">{{ dashboardStats.pendingReservations }}</div>
               <div class="text-sm text-gray-300">Pending</div>
             </div>
           </div>
         </div>
 
         <!-- Vehicle Utilization Chart -->
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-          <h3 class="text-2xl font-bold text-white mb-6">Vehicle Utilization</h3>
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6">Vehicle Utilization</h3>
           <div class="relative h-64">
             <canvas #utilizationChart></canvas>
           </div>
         </div>
 
         <!-- Monthly Performance Chart -->
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-          <h3 class="text-2xl font-bold text-white mb-6">Monthly Performance</h3>
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6">Monthly Performance</h3>
           <div class="relative h-64">
             <canvas #performanceChart></canvas>
           </div>
@@ -373,52 +366,52 @@
 
       <!-- Quick Actions -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-          <h3 class="text-2xl font-bold text-white mb-6">Quick Actions</h3>
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
           <div class="grid grid-cols-2 gap-4">
-            <a routerLink="/admin/reservations" class="flex flex-col items-center p-6 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/20 rounded-2xl hover:bg-blue-500/20 transition-all duration-300 group">
-              <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <a routerLink="/admin/reservations" class="flex flex-col items-center p-6 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-all duration-300 group">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 11h2a2 2 0 012 2v2m2-2h2a2 2 0 012 2v2m-6-2h6m-1-4V9a2 2 0 00-2-2H8a2 2 0 00-2 2v2m-1 8h10a2 2 0 002-2v-6a2 2 0 00-2-2h-10a2 2 0 00-2 2v6a2 2 0 002 2z" />
               </svg>
-              <span class="text-white font-medium">Manage Reservations</span>
+              <span class="text-gray-900 font-medium">Manage Reservations</span>
             </a>
 
-            <a routerLink="/admin/vehicles" class="flex flex-col items-center p-6 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl hover:bg-green-500/20 transition-all duration-300 group">
-              <svg class="w-8 h-8 text-green-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a routerLink="/admin/vehicles" class="flex flex-col items-center p-6 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-all duration-300 group">
+              <svg class="w-8 h-8 text-green-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
               </svg>
-              <span class="text-white font-medium">Manage Vehicles</span>
+              <span class="text-gray-900 font-medium">Manage Vehicles</span>
             </a>
 
-            <a routerLink="/admin/users" class="flex flex-col items-center p-6 bg-gradient-to-r from-purple-500/10 to-violet-500/10 border border-purple-500/20 rounded-2xl hover:bg-purple-500/20 transition-all duration-300 group">
+            <a routerLink="/admin/users" class="flex flex-col items-center p-6 bg-purple-50 border border-purple-200 rounded-xl hover:bg-purple-100 transition-all duration-300 group">
               <svg class="mr-3 h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
-              <span class="text-white font-medium">Manage Users</span>
+              <span class="text-gray-900 font-medium">Manage Users</span>
             </a>
 
-            <a routerLink="/admin/analytics" class="flex flex-col items-center p-6 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-2xl hover:bg-yellow-500/20 transition-all duration-300 group">
-              <svg class="w-8 h-8 text-yellow-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a routerLink="/admin/analytics" class="flex flex-col items-center p-6 bg-yellow-50 border border-yellow-200 rounded-xl hover:bg-yellow-100 transition-all duration-300 group">
+              <svg class="w-8 h-8 text-yellow-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
               </svg>
-              <span class="text-white font-medium">Analytics</span>
+              <span class="text-gray-900 font-medium">Analytics</span>
             </a>
           </div>
         </div>
 
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-          <h3 class="text-2xl font-bold text-white mb-6">Recent Activity</h3>
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+          <h3 class="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h3>
           @if (recentActivities && recentActivities.activities.length > 0) {
             <div class="space-y-4">
               @for (activity of recentActivities.activities; track activity.id) {
                 <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl">
                   <div class="w-3 h-3 {{ activity.iconColor }} rounded-full"></div>
                   <div class="flex-1">
-                    <p class="text-white text-sm font-medium">{{ activity.title }}</p>
+                    <p class="text-gray-900 text-sm font-medium">{{ activity.title }}</p>
                     <p class="text-gray-300 text-xs mb-1">{{ activity.description }}</p>
                     <div class="flex items-center justify-between">
-                      <p class="text-gray-400 text-xs">{{ activity.userName }}</p>
-                      <p class="text-gray-400 text-xs">{{ getTimeAgo(activity.createdAt) }}</p>
+                      <p class="text-gray-600 text-xs">{{ activity.userName }}</p>
+                      <p class="text-gray-600 text-xs">{{ getTimeAgo(activity.createdAt) }}</p>
                     </div>
                   </div>
                 </div>
@@ -426,7 +419,7 @@
             </div>
           } @else {
             <div class="text-center py-8">
-              <p class="text-gray-400">No recent activities to display</p>
+              <p class="text-gray-600">No recent activities to display</p>
             </div>
           }
         </div>

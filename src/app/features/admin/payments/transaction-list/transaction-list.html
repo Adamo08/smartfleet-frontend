@@ -1,22 +1,22 @@
-<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
-  <h2 class="text-xl font-semibold text-white mb-4">Payments</h2>
+<div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+  <h2 class="text-xl font-semibold text-gray-900 mb-4">Payments</h2>
 
   <form [formGroup]="filterForm" (ngSubmit)="onFilterChange()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="User ID" formControlName="userId" (change)="onFilterChange()">
-    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Reservation ID" formControlName="reservationId" (change)="onFilterChange()">
-    <select class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" formControlName="status" (change)="onFilterChange()">
+    <input type="number" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="User ID" formControlName="userId" (change)="onFilterChange()">
+    <input type="number" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Reservation ID" formControlName="reservationId" (change)="onFilterChange()">
+    <select class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" formControlName="status" (change)="onFilterChange()">
       <option value="">All Statuses</option>
       @for (status of PaymentStatus | keyvalue; track status.key) {
         <option [value]="status.value">{{ status.value }}</option>
       }
     </select>
-    <input type="text" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Search..." formControlName="searchTerm" (change)="onFilterChange()">
-    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Min Amount" formControlName="minAmount" (change)="onFilterChange()">
-    <input type="number" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Max Amount" formControlName="maxAmount" (change)="onFilterChange()">
-    <input type="date" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="Start Date" formControlName="startDate" (change)="onFilterChange()">
-    <input type="date" class="bg-slate-900/60 border border-white/10 rounded-xl p-3 text-white" placeholder="End Date" formControlName="endDate" (change)="onFilterChange()">
-    <button type="button" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
-    <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white">Apply Filters</button>
+    <input type="text" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search..." formControlName="searchTerm" (change)="onFilterChange()">
+    <input type="number" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Min Amount" formControlName="minAmount" (change)="onFilterChange()">
+    <input type="number" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Max Amount" formControlName="maxAmount" (change)="onFilterChange()">
+    <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Start Date" formControlName="startDate" (change)="onFilterChange()">
+    <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="End Date" formControlName="endDate" (change)="onFilterChange()">
+    <button type="button" class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
+    <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Apply Filters</button>
   </form>
 
   @if (isLoading) {
@@ -34,21 +34,21 @@
     </app-skeleton-page>
   } @else if (paymentsPage && paymentsPage.content.length > 0) {
   <div class="overflow-x-auto rounded-lg shadow-xl">
-    <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+    <table class="min-w-full text-sm text-gray-900 bg-white">
       <thead>
-        <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
-          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('id')">ID</th>
-          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('reservation.id')">Reservation</th>
-          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('amount')">Amount</th>
-          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('status')">Status</th>
-          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('provider')">Provider</th>
-          <th class="p-3 text-white cursor-pointer" (click)="onSortChange('createdAt')">Date</th>
-          <th class="p-3 text-white">Actions</th>
+        <tr class="text-left border-b border-gray-200 bg-gray-50">
+          <th class="p-3 text-gray-900 cursor-pointer" (click)="onSortChange('id')">ID</th>
+          <th class="p-3 text-gray-900 cursor-pointer" (click)="onSortChange('reservation.id')">Reservation</th>
+          <th class="p-3 text-gray-900 cursor-pointer" (click)="onSortChange('amount')">Amount</th>
+          <th class="p-3 text-gray-900 cursor-pointer" (click)="onSortChange('status')">Status</th>
+          <th class="p-3 text-gray-900 cursor-pointer" (click)="onSortChange('provider')">Provider</th>
+          <th class="p-3 text-gray-900 cursor-pointer" (click)="onSortChange('createdAt')">Date</th>
+          <th class="p-3 text-gray-900">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for (p of paymentsPage.content; track p.id) {
-          <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
+          <tr class="border-b border-indigo-500/10 hover:bg-gray-50/50 transition-colors duration-200">
             <td class="p-3">{{ p.id }}</td>
             <td class="p-3">#{{ p.reservationId }}</td>
             <td class="p-3">{{ p.amount | currency:'USD':'symbol':'1.2-2' }}</td>
@@ -95,7 +95,7 @@
     </app-pagination>
   </div>
   } @else {
-    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-xl bg-slate-900/40">
+    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-lg bg-slate-900/40">
       No payments found.
     </div>
   }

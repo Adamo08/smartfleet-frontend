@@ -16,40 +16,40 @@ import { CommonModule } from '@angular/common';
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300 animate-fade-in"></div>
 
         <!-- Modal Content with popup animation -->
-        <div class="relative z-10 w-full max-w-md mx-4 transform transition-all duration-300 scale-100 animate-modal-bounce-in">
-          <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
-            <!-- Success Icon & Header with slide-in animation -->
-            <div class="px-8 py-6 text-center border-b border-white/10 bg-gradient-to-r from-green-500/10 to-emerald-500/10 animate-slide-in-down">
-              <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+        <div class="relative z-10 w-full max-w-md mx-4 transform transition-all duration-300 scale-100">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+            <!-- Success Icon & Header -->
+            <div class="px-8 py-6 text-center border-b border-gray-100 bg-green-50">
+              <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
               </div>
-              <h3 class="text-2xl font-bold text-white mb-2 animate-fade-in-up">{{ title || 'Success!' }}</h3>
-              <p class="text-gray-300 animate-fade-in-up">{{ message || 'Operation completed successfully' }}</p>
+              <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ title || 'Success!' }}</h3>
+              <p class="text-gray-600">{{ message || 'Operation completed successfully' }}</p>
             </div>
 
-            <!-- Modal Body with fade-in animation -->
-            <div class="px-8 py-6 animate-fade-in-up">
+            <!-- Modal Body -->
+            <div class="px-8 py-6">
               @if (details) {
-                <div class="bg-white/5 rounded-2xl p-4 mb-6 border border-white/10 animate-slide-in-up">
-                  <p class="text-gray-300 text-sm">{{ details }}</p>
+                <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+                  <p class="text-gray-700 text-sm">{{ details }}</p>
                 </div>
               }
 
-              <!-- Action Buttons with slide-in animation -->
-              <div class="flex space-x-3 animate-slide-in-up">
+              <!-- Action Buttons -->
+              <div class="flex space-x-3">
                 @if (showSecondaryAction && secondaryActionText) {
                   <button
                     (click)="onSecondaryAction()"
-                    class="flex-1 backdrop-blur-sm bg-white/10 border border-white/20 text-white py-3 px-4 rounded-2xl font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:scale-105 active:scale-95"
+                    class="flex-1 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold transition-all duration-200 hover:bg-gray-50 hover:border-gray-400"
                   >
                     {{ secondaryActionText }}
                   </button>
                 }
                 <button
                   (click)="onPrimaryAction()"
-                  class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white py-3 px-4 rounded-2xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95"
+                  class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200"
                 >
                   {{ primaryActionText || 'OK' }}
                 </button>

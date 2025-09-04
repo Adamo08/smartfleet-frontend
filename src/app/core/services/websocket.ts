@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import SockJS from 'sockjs-client';
-// @ts-ignore
-import * as Stomp from 'stompjs/lib/stomp.min.js';
+import * as Stomp from 'stompjs';
 
 export interface WebSocketMessage {
   type: string;
@@ -107,7 +106,7 @@ export class WebSocketService {
       console.log('📡 Subscribing to destination:', destination);
       console.log('🔧 STOMP client connected state:', this.stompClient.connected);
 
-      this.stompClient.subscribe(destination, (message: Stomp.Message) => {
+      this.stompClient.subscribe(destination, (message: any) => {
         console.log('📨 === WebSocket Message Received ===');
         console.log('📨 Raw message:', message);
         console.log('📨 Message body:', message.body);

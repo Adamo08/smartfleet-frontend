@@ -1,1 +1,11 @@
-<p>loading-spinner works!</p>
+<div class="flex items-center justify-center p-4">
+  <div class="relative">
+    <!-- Outer ring -->
+    <div [class]="getSpinnerClasses()"></div>
+    <!-- Inner ring -->
+    <div [class]="getInnerSpinnerClasses()"></div>
+  </div>
+  @if (message) {
+    <p class="ml-3 text-gray-600 font-medium">{{ message }}</p>
+  }
+</div>

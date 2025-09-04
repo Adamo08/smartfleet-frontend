@@ -2,6 +2,54 @@
 @import "tailwindcss";
 @import "ngx-toastr/toastr";
 
+/* Dreams Rent Inspired Color Palette */
+:root {
+  /* Primary Colors - Professional Blue */
+  --color-primary: #2563eb;        /* Blue-600 */
+  --color-primary-dark: #1d4ed8;   /* Blue-700 */
+  --color-primary-light: #3b82f6;  /* Blue-500 */
+  --color-primary-50: #eff6ff;     /* Blue-50 */
+  --color-primary-100: #dbeafe;    /* Blue-100 */
+  
+  /* Accent Colors */
+  --color-accent: #f59e0b;         /* Amber-500 */
+  --color-accent-dark: #d97706;    /* Amber-600 */
+  --color-accent-light: #fbbf24;   /* Amber-400 */
+  
+  /* Neutral Colors */
+  --color-white: #ffffff;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* Success, Warning, Error */
+  --color-success: #059669;        /* Green-600 */
+  --color-warning: #d97706;        /* Amber-600 */
+  --color-error: #dc2626;          /* Red-600 */
+  
+  /* Background Colors */
+  --bg-primary: var(--color-white);
+  --bg-secondary: var(--color-gray-50);
+  --bg-tertiary: var(--color-gray-100);
+  
+  /* Text Colors */
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-600);
+  --text-muted: var(--color-gray-500);
+  --text-inverse: var(--color-white);
+  
+  /* Border Colors */
+  --border-default: var(--color-gray-200);
+  --border-focus: var(--color-primary);
+}
+
 /* Custom Animation Classes for Admin Components */
 
 /* Fade In Animations */

@@ -1,23 +1,23 @@
-<div class="p-6 backdrop-blur-2xl  bg-opacity-5 border border-white border-opacity-10 rounded-3xl">
+<div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-xl font-semibold text-white">Vehicle Brands</h2>
+    <h2 class="text-xl font-semibold text-gray-900">Vehicle Brands</h2>
     <button 
       (click)="openAddModal()" 
-      class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200">
+      class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200">
       New Brand
     </button>
   </div>
 
   <!-- Message Display -->
   @if (message) {
-    <div class="mb-6 p-4 rounded-xl border" 
+    <div class="mb-6 p-4 rounded-lg border" 
          [ngClass]="{
            'bg-green-500 bg-opacity-20 border-green-500 border-opacity-30 text-green-300': messageType === 'success',
            'bg-red-500 bg-opacity-20 border-red-500 border-opacity-30 text-red-300': messageType === 'error'
          }">
       <div class="flex items-center justify-between">
         <span>{{ message }}</span>
-        <button (click)="clearMessage()" class="text-white text-opacity-70 hover:text-white">
+        <button (click)="clearMessage()" class="text-gray-900 text-opacity-70 hover:text-gray-900">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -37,25 +37,25 @@
     </app-skeleton-page>
   } @else if (brandsPage && brandsPage.content.length > 0) {
     <div class="overflow-x-auto rounded-lg shadow-xl">
-      <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+      <table class="min-w-full text-sm text-gray-900 bg-white">
         <thead>
-            <tr class="text-left border-b border-indigo-500 border-opacity-20 bg-slate-700">
-            <th class="p-3 text-white">ID</th>
-            <th class="p-3 text-white">Name</th>
-            <th class="p-3 text-white">Description</th>
-            <th class="p-3 text-white">Logo</th>
-            <th class="p-3 text-white">Origin</th>
-            <th class="p-3 text-white">Status</th>
-            <th class="p-3 text-white">Created</th>
-            <th class="p-3 text-white">Actions</th>
+            <tr class="text-left border-b border-gray-200 bg-gray-50">
+            <th class="p-3 text-gray-900">ID</th>
+            <th class="p-3 text-gray-900">Name</th>
+            <th class="p-3 text-gray-900">Description</th>
+            <th class="p-3 text-gray-900">Logo</th>
+            <th class="p-3 text-gray-900">Origin</th>
+            <th class="p-3 text-gray-900">Status</th>
+            <th class="p-3 text-gray-900">Created</th>
+            <th class="p-3 text-gray-900">Actions</th>
           </tr>
         </thead>
         <tbody>
           @for (brand of brandsPage.content; track brand.id) {
-                         <tr class="border-b border-indigo-500 border-opacity-10 hover:bg-slate-700 hover:bg-opacity-50 transition-colors duration-200">
+                         <tr class="border-b border-gray-100 hover:bg-gray-50 hover:bg-opacity-50 transition-colors duration-200">
               <td class="p-3">{{ brand.id }}</td>
               <td class="p-3 font-medium">{{ brand.name }}</td>
-              <td class="p-3 text-gray-300">{{ brand.description || 'No description' }}</td>
+              <td class="p-3 text-gray-600">{{ brand.description || 'No description' }}</td>
               <td class="p-3">
                 @if (brand.logoUrl) {
                   <img [src]="brand.logoUrl" alt="{{ brand.name }} Logo" class="h-8 w-auto object-contain">
@@ -63,7 +63,7 @@
                   <span>N/A</span>
                 }
               </td>
-              <td class="p-3 text-gray-300">{{ brand.countryOfOrigin || 'N/A' }}</td>
+              <td class="p-3 text-gray-600">{{ brand.countryOfOrigin || 'N/A' }}</td>
               <td class="p-3">
                                  <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
                    'bg-green-500 bg-opacity-20 text-green-300': brand.isActive,
@@ -72,7 +72,7 @@
                   {{ brand.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
-              <td class="p-3 text-gray-300">{{ brand.createdAt | date:'short' }}</td>
+              <td class="p-3 text-gray-600">{{ brand.createdAt | date:'short' }}</td>
               <td class="p-3 flex space-x-2">
                 <app-action-icons
                   [actions]="{ edit: true, delete: true }"
@@ -107,7 +107,7 @@
       </div>
     }
   } @else if (!isLoading) {
-         <div class="text-gray-300 text-center py-8 border border-white border-opacity-10 rounded-xl bg-slate-900 bg-opacity-40">
+         <div class="text-gray-600 text-center py-8 border border-white border-opacity-10 rounded-lg bg-slate-900 bg-opacity-40">
       No brands found. Create your first brand to get started.
     </div>
   }
@@ -117,56 +117,56 @@
     <app-modal [title]="'Add New Brand'" (close)="closeAddModal()">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Name *</label>
           <input 
             type="text" 
             [(ngModel)]="currentBrand.name"
             placeholder="Enter brand name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
           <textarea 
             [(ngModel)]="currentBrand.description"
             placeholder="Enter brand description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Logo URL</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Logo URL</label>
           <input 
             type="url" 
             [(ngModel)]="currentBrand.logoUrl"
             placeholder="Enter logo URL (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Country of Origin</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Country of Origin</label>
           <input 
             type="text" 
             [(ngModel)]="currentBrand.countryOfOrigin"
             placeholder="Enter country of origin (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div class="flex items-center space-x-2">
           <input 
             type="checkbox" 
             [(ngModel)]="currentBrand.isActive"
             id="isActive"
-            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white border-opacity-20 rounded focus:ring-indigo-500 focus:ring-2">
-          <label for="isActive" class="text-sm text-gray-300">Active</label>
+            class="w-4 h-4 text-indigo-600 bg-gray-50 border-white border-opacity-20 rounded focus:ring-indigo-500 focus:ring-2">
+          <label for="isActive" class="text-sm text-gray-600">Active</label>
         </div>
       </div>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
         <button 
           (click)="closeAddModal()" 
-          class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
+          class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200">
           Cancel
         </button>
         <button 
           (click)="saveBrand()" 
           [disabled]="isSaving"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+          class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
           {{ isSaving ? 'Saving...' : 'Save Brand' }}
         </button>
       </div>
@@ -178,56 +178,56 @@
     <app-modal [title]="'Edit Brand'" (close)="closeEditModal()">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Name *</label>
           <input 
             type="text" 
             [(ngModel)]="currentBrand.name"
             placeholder="Enter brand name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Description</label>
           <textarea 
             [(ngModel)]="currentBrand.description"
             placeholder="Enter brand description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Logo URL</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Logo URL</label>
           <input 
             type="url" 
             [(ngModel)]="currentBrand.logoUrl"
             placeholder="Enter logo URL (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Country of Origin</label>
+          <label class="block text-sm font-medium text-gray-600 mb-2">Country of Origin</label>
           <input 
             type="text" 
             [(ngModel)]="currentBrand.countryOfOrigin"
             placeholder="Enter country of origin (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-gray-50 text-gray-900 border border-white border-opacity-10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div class="flex items-center space-x-2">
           <input 
             type="checkbox" 
             [(ngModel)]="currentBrand.isActive"
             id="editIsActive"
-            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white border-opacity-20 rounded focus:ring-indigo-500 focus:ring-2">
-          <label for="editIsActive" class="text-sm text-gray-300">Active</label>
+            class="w-4 h-4 text-indigo-600 bg-gray-50 border-white border-opacity-20 rounded focus:ring-indigo-500 focus:ring-2">
+          <label for="editIsActive" class="text-sm text-gray-600">Active</label>
         </div>
       </div>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
         <button 
           (click)="closeEditModal()" 
-          class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
+          class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200">
           Cancel
         </button>
         <button 
           (click)="saveBrand()" 
           [disabled]="isSaving"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+          class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
           {{ isSaving ? 'Saving...' : 'Update Brand' }}
         </button>
       </div>

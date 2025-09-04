@@ -1,6 +1,6 @@
 <div class="space-y-6">
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-xl font-semibold text-white">Update Reservation</h2>
+    <h2 class="text-xl font-semibold text-gray-900">Update Reservation</h2>
     <div class="px-3 py-1 rounded-full text-sm font-medium border" 
          [ngClass]="getStatusColor(reservation?.status || ReservationStatus.PENDING)">
       {{ reservation?.status }}
@@ -9,32 +9,32 @@
 
   @if (reservation) {
     <!-- Reservation Summary -->
-    <div class="p-4 bg-slate-800/30 rounded-xl border border-white/10">
-      <h3 class="text-lg font-medium text-white mb-3">Reservation Details</h3>
+    <div class="p-4 bg-white rounded-lg border border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900 mb-3">Reservation Details</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
         <div>
-          <span class="text-gray-400">ID:</span>
-          <span class="text-white ml-2">#{{ reservation.id }}</span>
+          <span class="text-gray-500">ID:</span>
+          <span class="text-gray-900 ml-2">#{{ reservation.id }}</span>
         </div>
         <div>
-          <span class="text-gray-400">Customer:</span>
-          <span class="text-white ml-2">{{ reservation.user.firstName }} {{ reservation.user.lastName }}</span>
+          <span class="text-gray-500">Customer:</span>
+          <span class="text-gray-900 ml-2">{{ reservation.user.firstName }} {{ reservation.user.lastName }}</span>
         </div>
         <div>
-          <span class="text-gray-400">Vehicle:</span>
-          <span class="text-white ml-2">{{ reservation.vehicle.brandName }} {{ reservation.vehicle.modelName }}</span>
+          <span class="text-gray-500">Vehicle:</span>
+          <span class="text-gray-900 ml-2">{{ reservation.vehicle.brandName }} {{ reservation.vehicle.modelName }}</span>
         </div>
         <div>
-          <span class="text-gray-400">License Plate:</span>
-          <span class="text-white ml-2">{{ reservation.vehicle.licensePlate }}</span>
+          <span class="text-gray-500">License Plate:</span>
+          <span class="text-gray-900 ml-2">{{ reservation.vehicle.licensePlate }}</span>
         </div>
         <div>
-          <span class="text-gray-400">Start Date:</span>
-          <span class="text-white ml-2">{{ reservation.startDate | date:'medium' }}</span>
+          <span class="text-gray-500">Start Date:</span>
+          <span class="text-gray-900 ml-2">{{ reservation.startDate | date:'medium' }}</span>
         </div>
         <div>
-          <span class="text-gray-400">End Date:</span>
-          <span class="text-white ml-2">{{ reservation.endDate | date:'medium' }}</span>
+          <span class="text-gray-500">End Date:</span>
+          <span class="text-gray-900 ml-2">{{ reservation.endDate | date:'medium' }}</span>
         </div>
       </div>
     </div>
@@ -43,10 +43,10 @@
     <form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="space-y-6">
       <!-- Status Update -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Reservation Status</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Reservation Status</label>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           @for (statusOption of getAvailableStatuses(); track statusOption.value) {
-            <label class="relative flex items-center p-4 rounded-xl border cursor-pointer transition-all duration-200"
+            <label class="relative flex items-center p-4 rounded-lg border cursor-pointer transition-all duration-200"
                    [ngClass]="updateForm.get('status')?.value === statusOption.value 
                      ? 'border-indigo-500 bg-indigo-500/10' 
                      : 'border-white/20 bg-slate-800/30 hover:border-white/30'">
@@ -63,9 +63,9 @@
                          ? 'border-indigo-500 bg-indigo-500' 
                          : 'border-gray-400'">
                   </div>
-                  <span class="font-medium text-white">{{ statusOption.label }}</span>
+                  <span class="font-medium text-gray-900">{{ statusOption.label }}</span>
                 </div>
-                <p class="text-sm text-gray-400 mt-1 ml-5">{{ statusOption.description }}</p>
+                <p class="text-sm text-gray-500 mt-1 ml-5">{{ statusOption.description }}</p>
               </div>
             </label>
           }
@@ -78,8 +78,8 @@
       <!-- Customer Comment (Read-only) -->
       @if (reservation.comment) {
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Customer Comment</label>
-          <div class="p-3 rounded-xl bg-slate-800/30 border border-white/10 text-gray-300">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Customer Comment</label>
+          <div class="p-3 rounded-lg bg-slate-800/30 border border-white/10 text-gray-700">
             {{ reservation.comment }}
           </div>
         </div>
@@ -87,14 +87,14 @@
 
       <!-- Admin Notes -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Admin Notes</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notes</label>
         <textarea 
           formControlName="adminNotes"
           rows="4"
-          class="w-full p-3 rounded-xl bg-slate-800/50 border border-white/20 text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors resize-none"
+          class="w-full p-3 rounded-lg bg-slate-800/50 border border-white/20 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors resize-none"
           placeholder="Add internal notes about this reservation update..."
         ></textarea>
-        <p class="text-gray-400 text-sm mt-1">These notes are for internal use only and won't be visible to the customer</p>
+        <p class="text-gray-500 text-sm mt-1">These notes are for internal use only and won't be visible to the customer</p>
       </div>
 
       <!-- Action Buttons -->
@@ -102,18 +102,18 @@
         <button 
           type="button" 
           (click)="onCancel()"
-          class="px-6 py-3 rounded-xl bg-gray-600 hover:bg-gray-700 text-white font-medium transition-colors duration-200"
+          class="px-6 py-3 rounded-lg bg-gray-600 hover:bg-gray-700 text-gray-900 font-medium transition-colors duration-200"
         >
           Cancel
         </button>
         <button 
           type="submit" 
           [disabled]="updateForm.invalid || isSubmitting"
-          class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-6 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-gray-900 font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           @if (isSubmitting) {
             <span class="inline-flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-900" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>

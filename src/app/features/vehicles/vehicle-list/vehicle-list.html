@@ -1,35 +1,28 @@
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
-  <!-- Background Effects -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
-    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
-  </div>
-
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
-        Our <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Vehicle Fleet</span>
+    <div class="mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Our <span class="text-blue-600">Vehicle Fleet</span>
       </h1>
-      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+      <p class="text-lg text-gray-600 max-w-3xl">
         Discover our premium selection of vehicles for your next journey. Find the perfect ride that matches your style and needs.
       </p>
     </div>
 
     <!-- Enhanced Search and Filters -->
-    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-8 mb-8">
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <!-- Search -->
         <div class="lg:col-span-2">
-          <label class="block text-sm font-semibold text-white mb-2">Search Vehicles</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Search Vehicles</label>
           <div class="relative">
             <input
               type="text"
               placeholder="Search by brand, model, or license plate..."
               [(ngModel)]="searchTerm"
               (ngModelChange)="onSearchChange()"
-              class="w-full px-4 py-3 pl-10 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+              class="w-full px-4 py-3 pl-10 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
             >
             <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -39,11 +32,11 @@
 
         <!-- Category Filter -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Category</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
           <select
             [(ngModel)]="selectedCategory"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option value="">All Categories</option>
             @for (category of categories; track category.id) {
@@ -54,11 +47,11 @@
 
         <!-- Brand Filter -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Brand</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Brand</label>
           <select
             [(ngModel)]="selectedBrand"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option value="">All Brands</option>
             @for (brand of brands; track brand.id) {
@@ -69,11 +62,11 @@
 
         <!-- Model Filter -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Model</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Model</label>
           <select
             [(ngModel)]="selectedModel"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option value="">All Models</option>
             @for (model of models; track model.id) {
@@ -84,11 +77,11 @@
 
         <!-- Status Filter -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Status</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
           <select
             [(ngModel)]="selectedStatus"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option [value]="null">All Status</option>
             @for (status of VehicleStatus; track status) {
@@ -99,11 +92,11 @@
 
         <!-- Fuel Type Filter -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Fuel Type</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Fuel Type</label>
           <select
             [(ngModel)]="selectedFuelType"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
           >
             <option [value]="null">All Fuel Types</option>
             @for (type of FuelType; track type) {
@@ -114,63 +107,63 @@
 
         <!-- Price Range Filter -->
         <div class="lg:col-span-2">
-          <label class="block text-sm font-semibold text-white mb-2">Price Range/Day</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Price Range/Day</label>
           <div class="flex space-x-4">
             <input
               type="number"
               placeholder="Min Price"
               [(ngModel)]="minPrice"
               (ngModelChange)="onFilterChange()"
-              class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
             >
             <input
               type="number"
               placeholder="Max Price"
               [(ngModel)]="maxPrice"
               (ngModelChange)="onFilterChange()"
-              class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
             >
           </div>
         </div>
 
         <!-- Year Range Filter -->
         <div class="lg:col-span-2">
-          <label class="block text-sm font-semibold text-white mb-2">Year Range</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Year Range</label>
           <div class="flex space-x-4">
             <input
               type="number"
               placeholder="Min Year"
               [(ngModel)]="minYear"
               (ngModelChange)="onFilterChange()"
-              class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
             >
             <input
               type="number"
               placeholder="Max Year"
               [(ngModel)]="maxYear"
               (ngModelChange)="onFilterChange()"
-              class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
             >
           </div>
         </div>
 
         <!-- Mileage Range Filter -->
         <div class="lg:col-span-2">
-          <label class="block text-sm font-semibold text-white mb-2">Mileage Range</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Mileage Range</label>
           <div class="flex space-x-4">
             <input
               type="number"
               placeholder="Min Mileage"
               [(ngModel)]="minMileage"
               (ngModelChange)="onFilterChange()"
-              class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
             >
             <input
               type="number"
               placeholder="Max Mileage"
               [(ngModel)]="maxMileage"
               (ngModelChange)="onFilterChange()"
-              class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400"
+              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 placeholder-gray-500"
             >
           </div>
         </div>
@@ -179,7 +172,7 @@
         <div class="lg:col-span-4 flex justify-center mt-6">
           <button
             (click)="clearFilters()"
-            class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 hover:shadow-xl"
+            class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200"
           >
             Clear All Filters
           </button>
@@ -191,16 +184,16 @@
     @if (loading) {
       <div class="flex justify-center items-center py-16">
         <div class="text-center">
-          <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-400 mx-auto mb-4"></div>
-          <p class="text-gray-300 text-lg">Loading vehicles...</p>
+          <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p class="text-gray-600 text-lg">Loading vehicles...</p>
         </div>
       </div>
     } @else {
       <!-- Results Count and Sort -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div>
-          <p class="text-lg text-white">
-            <span class="font-semibold text-indigo-400">{{ vehiclesPage.totalElements }}</span> vehicles found
+          <p class="text-lg text-gray-900">
+            <span class="font-semibold text-blue-600">{{ vehiclesPage.totalElements }}</span> vehicles found
           </p>
           @if (searchTerm || selectedCategory || selectedStatus || selectedFuelType || maxPrice || minYear || maxMileage) {
             <button
@@ -212,11 +205,11 @@
           }
         </div>
         <div class="flex items-center space-x-4 mt-4 sm:mt-0">
-          <label class="text-sm font-semibold text-white">Sort by:</label>
+          <label class="text-sm font-semibold text-gray-700">Sort by:</label>
           <select
             [(ngModel)]="sortBy"
             (ngModelChange)="onSortChange()"
-            class="px-4 py-2 bg-white/5 border border-white/20 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white"
+            class="px-4 py-2 bg-white border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 text-gray-900"
           >
             <option value="createdAt">Newest First</option>
             <option value="pricePerDay">Price: Low to High</option>
@@ -248,17 +241,17 @@
         </div>
       } @else {
         <!-- No Results -->
-        <div class="text-center py-16 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl">
+        <div class="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-lg">
           <svg class="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
           </svg>
-          <h3 class="text-2xl font-bold text-white mb-4">No vehicles found</h3>
-          <p class="text-gray-300 mb-6 max-w-md mx-auto">
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">No vehicles found</h3>
+          <p class="text-gray-600 mb-6 max-w-md mx-auto">
             Try adjusting your search criteria or filters to find the perfect vehicle for your needs.
           </p>
           <button
             (click)="clearFilters()"
-            class="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 hover:shadow-xl"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg"
           >
             Clear All Filters
           </button>

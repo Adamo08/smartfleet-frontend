@@ -17,13 +17,13 @@
   <!-- Slot Type Selection (only show if not pre-selected by parent) -->
   @if (!isSlotTypePreSelected) {
     <div class="slot-type-section mb-6">
-      <h3 class="text-lg font-semibold text-white mb-3">Select Booking Type</h3>
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">Select Booking Type</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         @for (option of slotTypeOptions; track option.value) {
           <div
             class="slot-type-option cursor-pointer p-3 rounded-lg border transition-all duration-200"
             [class.border-indigo-500]="selectedSlotType === option.value"
-            [class.border-white]="selectedSlotType !== option.value"
+            [class.border-gray-300]="selectedSlotType !== option.value"
             [class.bg-indigo-500]="selectedSlotType === option.value"
             [class.bg-white]="selectedSlotType !== option.value"
             (click)="selectedSlotType = option.value; onSlotTypeChange()"
@@ -38,15 +38,15 @@
 
   <!-- Duration Selection -->
   <div class="duration-section mb-6">
-    <h3 class="text-lg font-semibold text-white mb-3">Select Duration</h3>
-    <p class="text-gray-300 text-sm mb-4">
+    <h3 class="text-lg font-semibold text-gray-900 mb-3">Select Duration</h3>
+    <p class="text-gray-600 text-sm mb-4">
       Click on calendar days to select your rental duration. The duration will be automatically calculated based on your selection.
     </p>
     
     <!-- Selection Status -->
     @if (isSelectingRange) {
-      <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3 mb-4">
-        <p class="text-blue-300 text-sm">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <p class="text-blue-600 text-sm">
           <span class="font-medium">Selecting range...</span> Click another date to complete your selection.
         </p>
       </div>
@@ -66,9 +66,9 @@
     
     <div class="flex items-center gap-4">
       <div class="flex-1">
-        <label class="block text-sm text-gray-300 mb-2">Selected Duration: {{ getDurationLabel() }}</label>
-        <div class="w-full h-2 bg-gray-700 rounded-lg flex items-center">
-          <div class="h-2 bg-indigo-500 rounded-lg transition-all duration-300" 
+        <label class="block text-sm text-gray-600 mb-2">Selected Duration: {{ getDurationLabel() }}</label>
+        <div class="w-full h-2 bg-gray-200 rounded-lg flex items-center">
+          <div class="h-2 bg-blue-600 rounded-lg transition-all duration-300" 
                [style.width]="getDurationPercentage() + '%'"></div>
         </div>
         
@@ -78,18 +78,18 @@
             <button 
               (click)="adjustDuration(duration)"
               class="px-3 py-1 text-xs rounded-lg transition-all duration-200"
-              [class.bg-indigo-500]="selectedDuration === duration"
-              [class.bg-gray-600]="selectedDuration !== duration"
+              [class.bg-blue-600]="selectedDuration === duration"
+              [class.bg-gray-200]="selectedDuration !== duration"
               [class.text-white]="selectedDuration === duration"
-              [class.text-gray-300]="selectedDuration !== duration"
-              [class.hover:bg-indigo-400]="selectedDuration !== duration"
+              [class.text-gray-600]="selectedDuration !== duration"
+              [class.hover:bg-blue-500]="selectedDuration !== duration"
             >
               {{ duration < 24 ? duration + 'h' : Math.round(duration / 24) + 'd' }}
             </button>
           }
         </div>
       </div>
-      <div class="text-white font-medium min-w-[80px] text-right">
+      <div class="text-gray-900 font-medium min-w-[80px] text-right">
         {{ getDurationLabel() }}
       </div>
     </div>
@@ -110,15 +110,15 @@
 
       <!-- Hourly Time Selector (only for HOURLY booking type) -->
       @if (selectedSlotType === 'HOURLY' && selectedStartDate) {
-        <div class="hourly-selector mb-6 p-4 bg-slate-800/50 rounded-xl border border-white/10">
-          <h4 class="text-md font-semibold text-white mb-3">Select Time Range</h4>
+        <div class="hourly-selector mb-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
+          <h4 class="text-md font-semibold text-gray-900 mb-3">Select Time Range</h4>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm text-gray-300 mb-2">Start Time</label>
+              <label class="block text-sm text-gray-700 mb-2">Start Time</label>
               <select 
                 [(ngModel)]="selectedStartHour" 
                 (ngModelChange)="updateHourlySelection()"
-                class="w-full p-2 rounded-lg bg-slate-700 border border-white/20 text-white"
+                class="w-full p-2 rounded-lg bg-white border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 @for (hour of getAvailableHours(); track hour) {
                   <option [value]="hour">{{ formatHour(hour) }}</option>
@@ -126,11 +126,11 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm text-gray-300 mb-2">End Time</label>
+              <label class="block text-sm text-gray-700 mb-2">End Time</label>
               <select 
                 [(ngModel)]="selectedEndHour" 
                 (ngModelChange)="updateHourlySelection()"
-                class="w-full p-2 rounded-lg bg-slate-700 border border-white/20 text-white"
+                class="w-full p-2 rounded-lg bg-white border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 [disabled]="!selectedStartHour"
               >
                 @for (hour of getAvailableEndHours(); track hour) {
@@ -139,7 +139,7 @@
               </select>
             </div>
           </div>
-          <div class="mt-3 text-sm text-gray-400">
+          <div class="mt-3 text-sm text-gray-600">
             Duration: {{ getHourlyDuration() }} hours
           </div>
         </div>

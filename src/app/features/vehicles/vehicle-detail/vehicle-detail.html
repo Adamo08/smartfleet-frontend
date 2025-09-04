@@ -1,32 +1,90 @@
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
-  <!-- Background Effects -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
-    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
-  </div>
-
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Loading State -->
     @if (loading) {
-      <div class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
+      <div class="space-y-8">
+        <!-- Breadcrumb Skeleton -->
+        <div class="mb-8">
+          <app-skeleton width="300px" height="20px"></app-skeleton>
+        </div>
+
+        <!-- Vehicle Header Skeleton -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden mb-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Image Skeleton -->
+            <div class="h-96 lg:h-full bg-gray-100">
+              <app-skeleton width="100%" height="100%" borderRadius="0"></app-skeleton>
+            </div>
+
+            <!-- Info Skeleton -->
+            <div class="p-8 space-y-6">
+              <div class="space-y-2">
+                <app-skeleton width="70%" height="36px"></app-skeleton>
+                <app-skeleton width="50%" height="24px"></app-skeleton>
+              </div>
+
+              <div class="space-y-2">
+                <app-skeleton width="40%" height="48px"></app-skeleton>
+                <app-skeleton width="30%" height="20px"></app-skeleton>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                @for (spec of [1,2,3,4]; track spec) {
+                  <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <app-skeleton width="60%" height="14px" additionalClasses="mb-2"></app-skeleton>
+                    <app-skeleton width="80%" height="18px"></app-skeleton>
+                  </div>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <app-skeleton width="30%" height="24px"></app-skeleton>
+                <app-skeleton width="100%" height="60px"></app-skeleton>
+              </div>
+
+              <app-skeleton width="100%" height="48px" borderRadius="8px"></app-skeleton>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonials Section Skeleton -->
+        <div class="bg-white border border-gray-200 rounded-xl p-8 space-y-6">
+          <div class="text-center space-y-4">
+            <app-skeleton width="50%" height="32px" additionalClasses="mx-auto"></app-skeleton>
+            <app-skeleton width="70%" height="20px" additionalClasses="mx-auto"></app-skeleton>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (testimonial of [1,2,3]; track testimonial) {
+              <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                <div class="flex items-center mb-4">
+                  <app-skeleton width="48px" height="48px" borderRadius="50%" additionalClasses="mr-4"></app-skeleton>
+                  <div class="flex-1 space-y-2">
+                    <app-skeleton width="60%" height="16px"></app-skeleton>
+                    <app-skeleton width="40%" height="14px"></app-skeleton>
+                  </div>
+                </div>
+                <app-skeleton width="100%" height="80px"></app-skeleton>
+              </div>
+            }
+          </div>
+        </div>
       </div>
     } @else if (vehicle) {
       <!-- Breadcrumb -->
       <nav class="mb-8">
-        <ol class="flex items-center space-x-2 text-sm text-gray-400">
-          <li><a routerLink="/vehicles" class="hover:text-indigo-400 transition-colors duration-200">Vehicles</a></li>
+        <ol class="flex items-center space-x-2 text-sm text-gray-600">
+          <li><a routerLink="/vehicles" class="hover:text-blue-600 transition-colors duration-200">Vehicles</a></li>
           <li><span class="mx-2">/</span></li>
-          <li class="text-white">{{ vehicle.brand }} {{ vehicle.model }}</li>
+          <li class="text-gray-900 font-medium">{{ vehicle.brand }} {{ vehicle.model }}</li>
         </ol>
       </nav>
 
       <!-- Vehicle Header -->
-      <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden mb-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden mb-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- Vehicle Image -->
-          <div class="relative h-96 lg:h-full bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center">
+          <div class="relative h-96 lg:h-full bg-gray-100 flex items-center justify-center">
             @if (vehicle.imageUrl) {
               <img [src]="vehicle.imageUrl" [alt]="vehicle.brand + ' ' + vehicle.model" class="w-full h-full object-cover">
             } @else {
@@ -70,43 +128,43 @@
           <!-- Vehicle Info -->
           <div class="p-8">
             <div class="mb-6">
-              <h1 class="text-3xl font-bold text-white mb-2">{{ vehicle.brand }} {{ vehicle.model }}</h1>
-              <p class="text-lg text-gray-300">{{ vehicle.year }} • {{ vehicle.licensePlate }}</p>
+              <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ vehicle.brand }} {{ vehicle.model }}</h1>
+              <p class="text-lg text-gray-600">{{ vehicle.year }} • {{ vehicle.licensePlate }}</p>
             </div>
 
             <!-- Price -->
             <div class="mb-6">
               <div class="flex items-baseline space-x-2">
-                <span class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">${{ vehicle.pricePerDay }}</span>
-                <span class="text-lg text-gray-400">per day</span>
+                <span class="text-4xl font-bold text-blue-600">${{ vehicle.pricePerDay }}</span>
+                <span class="text-lg text-gray-600">per day</span>
               </div>
             </div>
 
             <!-- Quick Specs -->
             <div class="grid grid-cols-2 gap-4 mb-6">
-              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
-                <div class="text-sm text-gray-400 mb-1">Vehicle Type</div>
-                <div class="font-semibold text-white">{{ vehicle.categoryName }}</div>
+              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="text-sm text-gray-600 mb-1">Vehicle Type</div>
+                <div class="font-semibold text-gray-900">{{ vehicle.categoryName }}</div>
               </div>
-              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
-                <div class="text-sm text-gray-400 mb-1">Fuel Type</div>
-                <div class="font-semibold text-white">{{ vehicle.fuelType }}</div>
+              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="text-sm text-gray-600 mb-1">Fuel Type</div>
+                <div class="font-semibold text-gray-900">{{ vehicle.fuelType }}</div>
               </div>
-              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
-                <div class="text-sm text-gray-400 mb-1">Mileage</div>
-                <div class="font-semibold text-white">{{ vehicle.mileage }}km</div>
+              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="text-sm text-gray-600 mb-1">Mileage</div>
+                <div class="font-semibold text-gray-900">{{ vehicle.mileage }}km</div>
               </div>
-              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4">
-                <div class="text-sm text-gray-400 mb-1">Year</div>
-                <div class="font-semibold text-white">{{ vehicle.year }}</div>
+              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="text-sm text-gray-600 mb-1">Year</div>
+                <div class="font-semibold text-gray-900">{{ vehicle.year }}</div>
               </div>
             </div>
 
             <!-- Description -->
             @if (vehicle.description) {
               <div class="mb-6">
-                <h3 class="text-lg font-semibold text-white mb-2">Description</h3>
-                <p class="text-gray-300 leading-relaxed">{{ vehicle.description }}</p>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+                <p class="text-gray-600 leading-relaxed">{{ vehicle.description }}</p>
               </div>
             }
 
@@ -115,7 +173,7 @@
               <button
                 [disabled]="!bookNowEnabled || vehicle.status !== 'AVAILABLE'"
                 (click)="bookVehicle()"
-                class="flex-1 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white py-3 px-6 rounded-2xl hover:shadow-xl transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Book Now
               </button>
@@ -125,53 +183,56 @@
       </div>
 
       <!-- Vehicle Testimonials Section -->
-      @if (vehicleTestimonials.length > 0) {
-        <div class="py-16 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl my-8">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-              <h2 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
-                Customer <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Reviews</span>
-              </h2>
-              <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+      <div class="py-16 bg-white border border-gray-200 rounded-xl shadow-sm my-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Customer <span class="text-blue-600">Reviews</span>
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+              @if (vehicleTestimonials.length > 0) {
                 See what other customers have to say about their experience with this {{ vehicle.brand }} {{ vehicle.model }}.
-              </p>
-            </div>
+              } @else {
+                Be the first to share your experience with this {{ vehicle.brand }} {{ vehicle.model }}.
+              }
+            </p>
+          </div>
 
-            <!-- Add Testimonial Form -->
-            @if (isLoggedIn && !hasSubmittedTestimonial) {
+          <!-- Add Testimonial Form -->
+          @if (isLoggedIn && !hasSubmittedTestimonial) {
               <div class="mb-12">
-                <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
-                  <h3 class="text-xl font-bold text-white mb-6">Share Your Experience</h3>
-                  <p class="text-gray-300 mb-6">Help other customers by sharing your experience with this vehicle.</p>
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 shadow-sm">
+                  <h3 class="text-xl font-bold text-gray-900 mb-6">Share Your Experience</h3>
+                  <p class="text-gray-600 mb-6">Help other customers by sharing your experience with this vehicle.</p>
 
                   <form [formGroup]="testimonialForm" (ngSubmit)="submitTestimonial()" class="space-y-6">
                     <!-- Rating -->
                     <div>
-                      <label class="block text-sm font-medium text-gray-300 mb-3">Rating</label>
+                      <label class="block text-sm font-medium text-gray-700 mb-3">Rating</label>
                       <div class="flex items-center space-x-2">
                         @for (star of [1,2,3,4,5]; track star) {
                           <button
                             type="button"
                             (click)="setRating(star)"
-                            [class.text-yellow-400]="testimonialRating >= star"
-                            [class.text-gray-600]="testimonialRating < star"
-                            class="text-2xl hover:text-yellow-300 transition-colors duration-200 focus:outline-none">
+                            [class.text-yellow-500]="testimonialRating >= star"
+                            [class.text-gray-400]="testimonialRating < star"
+                            class="text-2xl hover:text-yellow-400 transition-colors duration-200 focus:outline-none">
                             ★
                           </button>
                         }
-                        <span class="ml-4 text-gray-400">{{ testimonialRating }}/5</span>
+                        <span class="ml-4 text-gray-600">{{ testimonialRating }}/5</span>
                       </div>
                     </div>
 
                     <!-- Title -->
                     <div>
-                      <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+                      <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
                       <input
                         type="text"
                         id="title"
                         formControlName="title"
                         placeholder="Give your review a title..."
-                        class="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-white/10 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 transition-all duration-200"
+                        class="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
                       />
                       @if (testimonialForm.get('title')?.invalid && testimonialForm.get('title')?.touched) {
                         <p class="mt-2 text-sm text-red-400">Title is required</p>
@@ -180,13 +241,13 @@
 
                     <!-- Content -->
                     <div>
-                      <label for="content" class="block text-sm font-medium text-gray-300 mb-2">Your Review</label>
+                      <label for="content" class="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
                       <textarea
                         id="content"
                         formControlName="content"
                         rows="4"
                         placeholder="Tell us about your experience with this vehicle..."
-                        class="w-full px-4 py-3 rounded-xl bg-slate-800 text-white border border-white/10 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 transition-all duration-200 resize-none"
+                        class="w-full px-4 py-3 rounded-xl bg-white text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 resize-none"
                       ></textarea>
                       @if (testimonialForm.get('content')?.invalid && testimonialForm.get('content')?.touched) {
                         <p class="mt-2 text-sm text-red-400">Review content is required</p>
@@ -195,11 +256,11 @@
 
                     <!-- Submit Button -->
                     <div class="flex items-center justify-between">
-                      <p class="text-sm text-gray-400">Your review will be moderated before being published.</p>
+                      <p class="text-sm text-gray-500">Your review will be moderated before being published.</p>
                       <button
                         type="submit"
                         [disabled]="testimonialForm.invalid || isSubmittingTestimonial"
-                        class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-medium hover:from-indigo-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                         @if (isSubmittingTestimonial) {
                           <span class="flex items-center">
                             <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
@@ -219,79 +280,90 @@
             }
 
             <!-- Enhanced Testimonials Display -->
-            <div class="space-y-6">
-              @for (testimonial of vehicleTestimonials; track testimonial.id) {
-                <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300">
-                  <!-- Header with user info and timestamp -->
-                  <div class="flex items-start justify-between mb-4">
-                    <div class="flex items-center space-x-4">
-                      <div class="w-14 h-14 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                        {{ testimonial.userName?.[0] || 'U' }}
-                      </div>
-                      <div>
-                        <h4 class="font-semibold text-white text-lg">{{ testimonial.userName || 'Anonymous User' }}</h4>
-                        <p class="text-sm text-gray-400">{{ formatDate(testimonial.createdAt) }}</p>
-                        <!-- Rating stars -->
-                        <div class="flex items-center space-x-1 mt-1">
-                          @for (star of getStarRating(testimonial.rating); track $index) {
-                            <span class="text-yellow-400 text-lg">{{ star }}</span>
-                          }
-                          <span class="text-gray-400 text-sm ml-2">({{ testimonial.rating }}/5)</span>
+            @if (vehicleTestimonials.length > 0) {
+              <div class="space-y-6">
+                @for (testimonial of vehicleTestimonials; track testimonial.id) {
+                  <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <!-- Header with user info and timestamp -->
+                    <div class="flex items-start justify-between mb-4">
+                      <div class="flex items-center space-x-4">
+                        <div class="w-14 h-14 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-lg">
+                          {{ testimonial.userName?.[0] || 'U' }}
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Testimonial title and content -->
-                  <div class="mb-4">
-                    <h5 class="font-semibold text-white mb-3 text-xl">{{ testimonial.title }}</h5>
-                    <p class="text-gray-300 leading-relaxed text-lg">{{ testimonial.content }}</p>
-                  </div>
-
-                  <!-- Admin reply if exists -->
-                  @if (testimonial.adminReplyContent) {
-                    <div class="mt-6 border-l-4 border-indigo-400 bg-indigo-500/10 rounded-r-lg">
-                      <div class="flex items-start space-x-3 p-4">
-                        <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                          SF
-                        </div>
-                        <div class="flex-1">
-                          <div class="flex items-center space-x-2 mb-2">
-                            <p class="text-sm font-medium text-indigo-300">SmartFleet Team</p>
-                            <span class="text-xs text-indigo-400 bg-indigo-500/20 px-2 py-1 rounded-full">Official Response</span>
+                        <div>
+                          <h4 class="font-semibold text-gray-900 text-lg">{{ testimonial.userName || 'Anonymous User' }}</h4>
+                          <p class="text-sm text-gray-500">{{ formatDate(testimonial.createdAt) }}</p>
+                          <!-- Rating stars -->
+                          <div class="flex items-center space-x-1 mt-1">
+                            @for (star of getStarRating(testimonial.rating); track $index) {
+                              <span class="text-amber-400 text-lg">{{ star }}</span>
+                            }
+                            <span class="text-gray-500 text-sm ml-2">({{ testimonial.rating }}/5)</span>
                           </div>
-                          <p class="text-indigo-200 leading-relaxed">{{ testimonial.adminReplyContent }}</p>
                         </div>
                       </div>
-                    </div>
-                  }
-                </div>
-              }
+                    </div>,o,o
 
-              <!-- Load more testimonials button -->
-              @if (vehicleTestimonials.length > 0 && hasMoreTestimonials) {
-                <div class="text-center pt-8">
-                  <button
-                    (click)="loadMoreTestimonials()"
-                    [disabled]="loadingMoreTestimonials"
-                    class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl">
-                    {{ loadingMoreTestimonials ? 'Loading...' : 'Load More Reviews' }}
-                  </button>
+                    <!-- Testimonial title and content -->
+                    <div class="mb-4">
+                      <h5 class="font-semibold text-gray-900 mb-3 text-xl">{{ testimonial.title }}</h5>
+                      <p class="text-gray-600 leading-relaxed text-lg">{{ testimonial.content }}</p>
+                    </div>
+
+                    <!-- Admin reply if exists -->
+                    @if (testimonial.adminReplyContent) {
+                      <div class="mt-6 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
+                        <div class="flex items-start space-x-3 p-4">
+                          <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            SF
+                          </div>
+                          <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                              <p class="text-sm font-medium text-blue-700">SmartFleet Team</p>
+                              <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Official Response</span>
+                            </div>
+                            <p class="text-blue-800 leading-relaxed">{{ testimonial.adminReplyContent }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-12">
+                <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                  </svg>
                 </div>
-              }
-            </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No Reviews Yet</h3>
+                <p class="text-gray-600">Be the first to share your experience with this vehicle!</p>
+              </div>
+            }
+
+            <!-- Load more testimonials button -->
+            @if (vehicleTestimonials.length > 0 && hasMoreTestimonials) {
+              <div class="text-center pt-8">
+                <button
+                  (click)="loadMoreTestimonials()"
+                  [disabled]="loadingMoreTestimonials"
+                  class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-xl">
+                  {{ loadingMoreTestimonials ? 'Loading...' : 'Load More Reviews' }}
+                </button>
+              </div>
+            }
           </div>
         </div>
-      }
 
       <!-- Similar Vehicles -->
       @if (similarVehicles.length > 0) {
-        <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-8">
-          <h2 class="text-2xl font-bold text-white mb-6">Similar Vehicles</h2>
+        <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Similar Vehicles</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @for (similarVehicle of similarVehicles; track similarVehicle.id) {
-              <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300">
-                <div class="h-32 bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center">
+              <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
+                <div class="h-32 bg-gray-100 flex items-center justify-center">
                   @if (similarVehicle.imageUrl) {
                     <img [src]="similarVehicle.imageUrl" [alt]="similarVehicle.brand + ' ' + similarVehicle.model" class="w-full h-full object-cover">
                   } @else {
@@ -301,13 +373,13 @@
                   }
                 </div>
                 <div class="p-4">
-                  <h3 class="font-semibold text-white mb-2">{{ similarVehicle.brand }} {{ similarVehicle.model }}</h3>
-                  <p class="text-sm text-gray-400 mb-2">{{ similarVehicle.year }} • {{ similarVehicle.categoryName }}</p>
+                  <h3 class="font-semibold text-gray-900 mb-2">{{ similarVehicle.brand }} {{ similarVehicle.model }}</h3>
+                  <p class="text-sm text-gray-500 mb-2">{{ similarVehicle.year }} • {{ similarVehicle.categoryName }}</p>
                   <div class="flex items-center justify-between">
-                    <span class="font-bold text-indigo-400">${{ similarVehicle.pricePerDay }}/day</span>
+                    <span class="font-bold text-blue-600">${{ similarVehicle.pricePerDay }}/day</span>
                     <a
                       [routerLink]="['/vehicles', similarVehicle.id]"
-                      class="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors duration-200"
+                      class="text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors duration-200"
                     >
                       View Details →
                     </a>
@@ -324,9 +396,9 @@
         <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
         </svg>
-        <h3 class="text-lg font-medium text-white mb-2">Vehicle not found</h3>
-        <p class="text-gray-300">The vehicle you're looking for doesn't exist or has been removed.</p>
-        <a routerLink="/vehicles" class="mt-4 inline-block bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-6 py-3 rounded-2xl hover:shadow-xl transition-all duration-300 font-semibold">
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Vehicle not found</h3>
+        <p class="text-gray-600">The vehicle you're looking for doesn't exist or has been removed.</p>
+        <a routerLink="/vehicles" class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl hover:shadow-xl transition-all duration-300 font-semibold">
           Browse Vehicles
         </a>
       </div>

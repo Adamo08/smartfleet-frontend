@@ -1,52 +1,52 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center animate-fade-in">
-  <!-- Backdrop with blur effect and fade-in animation -->
-  <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm transition-all duration-300 animate-fade-in"></div>
+<div class="fixed inset-0 z-50 flex items-center justify-center">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-all duration-300"></div>
   
-  <!-- Modal content with popup animation -->
-  <div class="relative max-w-sm w-full mx-4 rounded-3xl overflow-hidden shadow-2xl border border-white/10 animate-modal-bounce-in">
-    <!-- Header with slide-in animation -->
-    <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between animate-slide-in-down" [ngClass]="headerClass">
+  <!-- Modal content -->
+  <div class="relative max-w-sm w-full mx-4 rounded-xl overflow-hidden shadow-xl bg-white border border-gray-200">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
       <div class="flex items-center">
         @if (actionType === 'delete') {
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400 mr-3 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
         } @else if (actionType === 'success') {
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400 mr-3 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         } @else if (actionType === 'warning') {
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400 mr-3 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         } @else if (actionType === 'info') {
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400 mr-3 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         }
-        <h3 class="text-white font-semibold text-lg animate-fade-in-up">{{ title }}</h3>
+        <h3 class="text-gray-900 font-semibold text-lg">{{ title }}</h3>
       </div>
-      <button (click)="onCancel()" class="text-gray-400 hover:text-white transition-all duration-200 hover:scale-110 active:scale-95">
+      <button (click)="onCancel()" class="text-gray-400 hover:text-gray-600 transition-all duration-200">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
     
-    <!-- Body with fade-in animation -->
-    <div class="bg-slate-900/95 p-6 text-gray-300 animate-fade-in-up">
+    <!-- Body -->
+    <div class="bg-white p-6 text-gray-700">
       <p>{{ message }}</p>
     </div>
     
-    <!-- Footer with slide-in animation -->
-    <div class="bg-slate-900/95 px-6 py-4 border-t border-white/10 flex justify-end space-x-2 animate-slide-in-up">
-      <button (click)="onCancel()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-all duration-200 hover:scale-105 active:scale-95">{{ cancelButtonText }}</button>
-      <button (click)="onConfirm()" class="px-4 py-2 rounded-xl text-white transition-all duration-200 hover:scale-105 active:scale-95" [ngClass]="{
+    <!-- Footer -->
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+      <button (click)="onCancel()" class="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200">{{ cancelButtonText }}</button>
+      <button (click)="onConfirm()" class="px-4 py-2 rounded-lg text-white transition-all duration-200" [ngClass]="{
         'bg-red-600 hover:bg-red-700': actionType === 'delete',
         'bg-green-600 hover:bg-green-700': actionType === 'success',
         'bg-yellow-600 hover:bg-yellow-700': actionType === 'warning',
         'bg-blue-600 hover:bg-blue-700': actionType === 'info',
-        'bg-indigo-600 hover:bg-indigo-700': actionType === 'none'
+        'bg-gray-600 hover:bg-gray-700': actionType === 'none'
       }">{{ confirmButtonText }}</button>
     </div>
   </div>

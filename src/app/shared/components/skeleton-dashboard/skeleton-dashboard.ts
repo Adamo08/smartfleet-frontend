@@ -25,7 +25,7 @@ import { SkeletonChart } from '../skeleton-chart/skeleton-chart';
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         @for (stat of Array(stats); track $index) {
-          <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+          <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
             <div class="flex items-center">
               <app-skeleton
                 width="48px"
@@ -61,7 +61,7 @@ import { SkeletonChart } from '../skeleton-chart/skeleton-chart';
       </div>
 
       <!-- Recent Activity -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-6">
+      <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-6">
           <app-skeleton
             width="200px"

@@ -1,5 +1,5 @@
-<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
-  <h2 class="text-xl font-semibold text-white mb-6">Testimonials Moderation</h2>
+<div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+  <h2 class="text-xl font-semibold text-gray-900 mb-6">Testimonials Moderation</h2>
   @if (isLoading) {
     <!-- Advanced Skeleton Loading -->
     <app-skeleton-page
@@ -10,45 +10,45 @@
   } @else {
     <!-- Results Summary -->
     <div class="mb-6 flex justify-between items-center">
-      <div class="text-gray-400 text-sm">
+      <div class="text-gray-500 text-sm">
         Showing {{ testimonials.length }} of {{ totalElements }} testimonials
       </div>
-      <div class="text-gray-400 text-sm">
+      <div class="text-gray-500 text-sm">
         Page {{ currentPage + 1 }} of {{ totalPages }}
       </div>
     </div>
 
     @if (testimonials.length === 0) {
       <div class="text-center py-12">
-        <div class="w-16 h-16 mx-auto mb-4 bg-slate-700/50 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10m0 0V6a2 2 0 00-2-2H9a2 2 0 00-2 2v2m10 0v10a2 2 0 01-2 2H9a2 2 0 01-2-2V8m10 0V6a2 2 0 00-2-2H9a2 2 0 00-2 2v2"/>
           </svg>
         </div>
-        <h3 class="text-lg font-medium text-white mb-2">No testimonials found</h3>
-        <p class="text-gray-400">No testimonials have been submitted yet.</p>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No testimonials found</h3>
+        <p class="text-gray-500">No testimonials have been submitted yet.</p>
       </div>
     } @else {
       <div class="space-y-4">
         @for (testimonial of testimonials; track testimonial.id) {
-          <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6 hover:bg-slate-800/40 transition-colors duration-200">
+          <div class="bg-white border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors duration-200">
             <div class="flex justify-between items-start">
               <div class="flex-1">
                 <div class="flex items-center gap-3 mb-3">
-                  <h3 class="text-lg font-semibold text-white">{{ testimonial.userName || 'Anonymous User' }}</h3>
+                  <h3 class="text-lg font-semibold text-gray-900">{{ testimonial.userName || 'Anonymous User' }}</h3>
                   <div class="flex items-center gap-1">
                     @for (star of [1,2,3,4,5]; track star) {
                       <svg class="w-4 h-4" [class]="star <= testimonial.rating ? 'text-yellow-400' : 'text-gray-600'" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                       </svg>
                     }
-                    <span class="ml-2 text-sm text-gray-400">({{ testimonial.rating }}/5)</span>
+                    <span class="ml-2 text-sm text-gray-500">({{ testimonial.rating }}/5)</span>
                   </div>
                 </div>
                 
-                <p class="text-gray-300 mb-3 leading-relaxed">{{ testimonial.content }}</p>
+                <p class="text-gray-600 mb-3 leading-relaxed">{{ testimonial.content }}</p>
                 
-                <div class="flex items-center gap-4 text-sm text-gray-400">
+                <div class="flex items-center gap-4 text-sm text-gray-500">
                   <span>{{ testimonial.createdAt | date:'medium' }}</span>
                   @if (testimonial.vehicleBrand && testimonial.vehicleModel) {
                     <span class="flex items-center gap-1">
@@ -65,14 +65,14 @@
                 @if (!testimonial.approved) {
                   <button 
                     (click)="approve(testimonial.id)"
-                    class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-gray-900 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                     <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                     Approve
                   </button>
                 } @else {
-                  <div class="flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-400 rounded-lg border border-green-500/30">
+                  <div class="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-lg border border-green-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -88,7 +88,7 @@
       <!-- Pagination -->
       @if (totalPages > 1) {
         <div class="mt-8">
-                      <app-pagination
+            <app-pagination
               [currentPage]="currentPage"
               [totalPages]="totalPages"
               (pageChange)="onPageChange($event)">

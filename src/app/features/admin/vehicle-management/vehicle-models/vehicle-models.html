@@ -1,23 +1,23 @@
-<div class="p-6 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl">
+<div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-xl font-semibold text-white">Vehicle Models</h2>
+    <h2 class="text-xl font-semibold text-gray-900">Vehicle Models</h2>
     <button 
       (click)="openAddModal()" 
-      class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200">
+      class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200">
       New Model
     </button>
   </div>
 
   <!-- Message Display -->
   @if (message) {
-    <div class="mb-6 p-4 rounded-xl border" 
+    <div class="mb-6 p-4 rounded-lg border" 
          [ngClass]="{
            'bg-green-500/20 border-green-500/30 text-green-300': messageType === 'success',
            'bg-red-500/20 border-red-500/30 text-red-300': messageType === 'error'
          }">
       <div class="flex items-center justify-between">
         <span>{{ message }}</span>
-        <button (click)="clearMessage()" class="text-white/70 hover:text-white">
+        <button (click)="clearMessage()" class="text-gray-900/70 hover:text-gray-900">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -40,14 +40,14 @@
       <table class="min-w-full text-sm text-gray-200 bg-slate-800">
         <thead>
           <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
-            <th class="p-3 text-white">ID</th>
-            <th class="p-3 text-white">Name</th>
-            <th class="p-3 text-white">Brand</th>
-            <th class="p-3 text-white">Description</th>
-            <th class="p-3 text-white">Status</th>
-            <th class="p-3 text-white">Created</th>
-            <th class="p-3 text-white">Updated</th>
-            <th class="p-3 text-white">Actions</th>
+            <th class="p-3 text-gray-900">ID</th>
+            <th class="p-3 text-gray-900">Name</th>
+            <th class="p-3 text-gray-900">Brand</th>
+            <th class="p-3 text-gray-900">Description</th>
+            <th class="p-3 text-gray-900">Status</th>
+            <th class="p-3 text-gray-900">Created</th>
+            <th class="p-3 text-gray-900">Updated</th>
+            <th class="p-3 text-gray-900">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -101,7 +101,7 @@
       </div>
     }
   } @else if (!isLoading) {
-    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-xl bg-slate-900/40">
+    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-lg bg-slate-900/40">
       No models found. Create your first model to get started.
     </div>
   }
@@ -116,13 +116,13 @@
             type="text" 
             [(ngModel)]="currentModel.name"
             placeholder="Enter model name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Brand *</label>
           <select 
             [(ngModel)]="currentModel.brandId"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             <option value="">Select a brand</option>
             @for (brand of brands; track brand.id) {
               <option [value]="brand.id">{{ brand.name }}</option>
@@ -135,7 +135,7 @@
             [(ngModel)]="currentModel.description"
             placeholder="Enter model description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
         <div class="flex items-center space-x-2">
           <input 
@@ -149,13 +149,13 @@
       <div modal-actions class="flex justify-end space-x-2 mt-4">
         <button 
           (click)="closeAddModal()" 
-          class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
+          class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200">
           Cancel
         </button>
         <button 
           (click)="saveModel()" 
           [disabled]="isSaving"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+          class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
           {{ isSaving ? 'Saving...' : 'Save Model' }}
         </button>
       </div>
@@ -172,13 +172,13 @@
             type="text" 
             [(ngModel)]="currentModel.name"
             placeholder="Enter model name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">Brand *</label>
           <select 
             [(ngModel)]="currentModel.brandId"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             <option value="">Select a brand</option>
             @for (brand of brands; track brand.id) {
               <option [value]="brand.id">{{ brand.name }}</option>
@@ -191,7 +191,7 @@
             [(ngModel)]="currentModel.description"
             placeholder="Enter model description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
         </div>
         <div class="flex items-center space-x-2">
           <input 
@@ -205,13 +205,13 @@
       <div modal-actions class="flex justify-end space-x-2 mt-4">
         <button 
           (click)="closeEditModal()" 
-          class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
+          class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200">
           Cancel
         </button>
         <button 
           (click)="saveModel()" 
           [disabled]="isSaving"
-          class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
+          class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
           {{ isSaving ? 'Saving...' : 'Update Model' }}
         </button>
       </div>

@@ -1,17 +1,17 @@
 <div class="space-y-6">
   <!-- User Profile Header -->
-  <div class="flex items-center space-x-4 p-4 bg-gradient-to-r from-indigo-600/20 to-cyan-600/20 rounded-xl border border-white/10">
-    <div class="w-16 h-16 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+  <div class="flex items-center space-x-4 p-6 bg-blue-50 rounded-xl border border-blue-200">
+    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
       {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
     </div>
     <div>
-      <h3 class="text-xl font-bold text-white">{{ user.firstName }} {{ user.lastName }}</h3>
-      <p class="text-gray-300">{{ user.email }}</p>
+      <h3 class="text-xl font-bold text-gray-900">{{ user.firstName }} {{ user.lastName }}</h3>
+      <p class="text-gray-600">{{ user.email }}</p>
       <div class="flex items-center space-x-2 mt-1">
         <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="{
-          'bg-red-500/20 text-red-300': user.role === 'ADMIN',
-          'bg-blue-500/20 text-blue-300': user.role === 'CUSTOMER',
-          'bg-gray-500/20 text-gray-300': user.role === 'GUEST'
+          'bg-red-100 text-red-800': user.role === 'ADMIN',
+          'bg-blue-100 text-blue-800': user.role === 'CUSTOMER',
+          'bg-gray-100 text-gray-800': user.role === 'GUEST'
         }">
           {{ user.role }}
         </span>
@@ -22,83 +22,83 @@
   <!-- User Details Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Personal Information -->
-    <div class="space-y-4">
-      <h4 class="text-lg font-semibold text-white border-b border-white/10 pb-2">Personal Information</h4>
+    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
+      <h4 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Personal Information</h4>
       
       <div class="space-y-3">
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">User ID</span>
-          <span class="text-white font-mono">#{{ user.id }}</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">User ID</span>
+          <span class="text-gray-900 font-mono">#{{ user.id }}</span>
         </div>
         
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">Full Name</span>
-          <span class="text-white">{{ user.firstName }} {{ user.lastName }}</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">Full Name</span>
+          <span class="text-gray-900">{{ user.firstName }} {{ user.lastName }}</span>
         </div>
         
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">Email Address</span>
-          <span class="text-white">{{ user.email }}</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">Email Address</span>
+          <span class="text-gray-900">{{ user.email }}</span>
         </div>
         
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">Phone Number</span>
-          <span class="text-white">{{ user.phoneNumber || 'Not provided' }}</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">Phone Number</span>
+          <span class="text-gray-900">{{ user.phoneNumber || 'Not provided' }}</span>
         </div>
       </div>
     </div>
 
     <!-- Account Information -->
-    <div class="space-y-4">
-      <h4 class="text-lg font-semibold text-white border-b border-white/10 pb-2">Account Information</h4>
+    <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4">
+      <h4 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Account Information</h4>
       
       <div class="space-y-3">
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">Role</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">Role</span>
           <span class="px-3 py-1 rounded-full text-sm font-medium" [ngClass]="{
-            'bg-red-500/20 text-red-300': user.role === 'ADMIN',
-            'bg-blue-500/20 text-blue-300': user.role === 'CUSTOMER',
-            'bg-gray-500/20 text-gray-300': user.role === 'GUEST'
+            'bg-red-100 text-red-800': user.role === 'ADMIN',
+            'bg-blue-100 text-blue-800': user.role === 'CUSTOMER',
+            'bg-gray-100 text-gray-800': user.role === 'GUEST'
           }">
             {{ user.role }}
           </span>
         </div>
         
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">Auth Provider</span>
-          <span class="text-white">{{ user.authProvider || 'Local' }}</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">Auth Provider</span>
+          <span class="text-gray-900">{{ user.authProvider || 'Local' }}</span>
         </div>
         
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">Account Created</span>
-          <span class="text-white">{{ user.createdAt | date:'medium' }}</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">Account Created</span>
+          <span class="text-gray-900">{{ user.createdAt | date:'medium' }}</span>
         </div>
         
-        <div class="flex items-center justify-between py-2 border-b border-white/5">
-          <span class="text-gray-300">Last Updated</span>
-          <span class="text-white">{{ user.updatedAt | date:'medium' }}</span>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-gray-600">Last Updated</span>
+          <span class="text-gray-900">{{ user.updatedAt | date:'medium' }}</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- User Statistics (if available) -->
-  <div class="p-4 bg-slate-800/30 rounded-xl border border-white/10">
-    <h4 class="text-lg font-semibold text-white mb-4">Account Statistics</h4>
+  <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <h4 class="text-lg font-semibold text-gray-900 mb-4">Account Statistics</h4>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="text-center p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-        <div class="text-2xl font-bold text-blue-400">-</div>
-        <div class="text-sm text-gray-300">Total Reservations</div>
+      <div class="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div class="text-2xl font-bold text-blue-600">-</div>
+        <div class="text-sm text-gray-600">Total Reservations</div>
       </div>
-      <div class="text-center p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-        <div class="text-2xl font-bold text-green-400">-</div>
-        <div class="text-sm text-gray-300">Completed Bookings</div>
+      <div class="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+        <div class="text-2xl font-bold text-green-600">-</div>
+        <div class="text-sm text-gray-600">Completed Bookings</div>
       </div>
-      <div class="text-center p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
-        <div class="text-2xl font-bold text-purple-400">-</div>
-        <div class="text-sm text-gray-300">Total Spent</div>
+      <div class="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+        <div class="text-2xl font-bold text-purple-600">-</div>
+        <div class="text-sm text-gray-600">Total Spent</div>
       </div>
     </div>
-    <p class="text-gray-400 text-sm mt-3 text-center">User statistics will be available in a future update</p>
+    <p class="text-gray-500 text-sm mt-3 text-center">User statistics will be available in a future update</p>
   </div>
 </div>

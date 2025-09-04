@@ -1,19 +1,19 @@
-<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
+<div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-3xl font-bold text-white mb-2">Fleet Status Overview</h1>
-      <p class="text-gray-400">Monitor the status and availability of your entire vehicle fleet</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Fleet Status Overview</h1>
+      <p class="text-gray-600">Monitor the status and availability of your entire vehicle fleet</p>
     </div>
     <div class="flex space-x-3">
       <button
         routerLink="/admin/vehicles/maintenance"
-        class="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white hover:from-orange-500 hover:to-red-500 transition-all duration-200">
+        class="px-4 py-2 rounded-lg bg-orange-600 text-white hover:bg-orange-700 transition-all duration-200">
         Manage Maintenance
       </button>
       <button
         routerLink="/admin/vehicles"
-        class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200">
+        class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200">
         View All Vehicles
       </button>
     </div>
@@ -21,7 +21,7 @@
 
   <!-- Status Summary Cards -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
       <div class="flex items-center">
         <div class="p-2 bg-green-500/20 rounded-lg">
           <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,13 +29,13 @@
           </svg>
         </div>
         <div class="ml-4">
-          <p class="text-gray-400 text-sm">Available</p>
-          <p class="text-2xl font-bold text-white">{{ statusSummary['AVAILABLE'] || 0 }}</p>
+          <p class="text-gray-600 text-sm">Available</p>
+          <p class="text-2xl font-bold text-gray-900">{{ statusSummary['AVAILABLE'] || 0 }}</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
       <div class="flex items-center">
         <div class="p-2 bg-blue-500/20 rounded-lg">
           <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,13 +43,13 @@
           </svg>
         </div>
         <div class="ml-4">
-          <p class="text-gray-400 text-sm">Rented</p>
-          <p class="text-2xl font-bold text-white">{{ statusSummary['RENTED'] || 0 }}</p>
+          <p class="text-gray-600 text-sm">Rented</p>
+          <p class="text-2xl font-bold text-gray-900">{{ statusSummary['RENTED'] || 0 }}</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
       <div class="flex items-center">
         <div class="p-2 bg-red-500/20 rounded-lg">
           <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,13 +57,13 @@
           </svg>
         </div>
         <div class="ml-4">
-          <p class="text-gray-400 text-sm">In Maintenance</p>
-          <p class="text-2xl font-bold text-white">{{ statusSummary['IN_MAINTENANCE'] || 0 }}</p>
+          <p class="text-gray-600 text-sm">In Maintenance</p>
+          <p class="text-2xl font-bold text-gray-900">{{ statusSummary['IN_MAINTENANCE'] || 0 }}</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-slate-800/30 border border-white/10 rounded-xl p-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
       <div class="flex items-center">
         <div class="p-2 bg-orange-500/20 rounded-lg">
           <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,8 +71,8 @@
           </svg>
         </div>
         <div class="ml-4">
-          <p class="text-gray-400 text-sm">Out of Service</p>
-          <p class="text-2xl font-bold text-white">{{ statusSummary['OUT_OF_SERVICE'] || 0 }}</p>
+          <p class="text-gray-600 text-sm">Out of Service</p>
+          <p class="text-2xl font-bold text-gray-900">{{ statusSummary['OUT_OF_SERVICE'] || 0 }}</p>
         </div>
       </div>
     </div>
@@ -87,16 +87,16 @@
       [tableRows]="10">
     </app-skeleton-page>
   } @else if (vehiclesPage && vehiclesPage.content.length > 0) {
-    <div class="bg-slate-800/30 border border-white/10 rounded-xl overflow-hidden">
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <table class="min-w-full text-sm text-gray-200">
         <thead class="bg-slate-700/50">
           <tr>
-            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Vehicle</th>
-            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">License Plate</th>
-            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
-            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Price/Day</th>
-            <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Last Updated</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Vehicle</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">License Plate</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Category</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Price/Day</th>
+            <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Last Updated</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-white/10">
@@ -108,32 +108,32 @@
                     <img [src]="vehicle.imageUrl" [alt]="vehicle.brandName + ' ' + vehicle.modelName" class="h-10 w-10 rounded-lg object-cover mr-3">
                   } @else {
                     <div class="h-10 w-10 bg-slate-600 rounded-lg flex items-center justify-center mr-3">
-                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h3a1 1 0 110 2h-1v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z"/>
                       </svg>
                     </div>
                   }
                   <div>
-                    <div class="text-sm font-medium text-white">{{ vehicle.brandName }} {{ vehicle.modelName }}</div>
-                    <div class="text-sm text-gray-400">{{ vehicle.year }}</div>
+                    <div class="text-sm font-medium text-gray-900">{{ vehicle.brandName }} {{ vehicle.modelName }}</div>
+                    <div class="text-sm text-gray-600">{{ vehicle.year }}</div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-white">{{ vehicle.licensePlate }}</div>
+                <div class="text-sm font-medium text-gray-900">{{ vehicle.licensePlate }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-3 py-1 rounded-full text-xs font-medium" [ngClass]="getStatusColor(vehicle.status)">
                   {{ getStatusDisplayName(vehicle.status) }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {{ vehicle.categoryName }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 ${{ vehicle.pricePerDay }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {{ vehicle.updatedAt | date:'short' }}
               </td>
             </tr>
@@ -155,12 +155,12 @@
   } @else {
     <div class="text-center py-12">
       <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-500/20 rounded-full mb-4">
-        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h3a1 1 0 110 2h-1v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z"/>
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-white mb-2">No Vehicles Found</h3>
-      <p class="text-gray-400">There are no vehicles in your fleet yet.</p>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No Vehicles Found</h3>
+      <p class="text-gray-600">There are no vehicles in your fleet yet.</p>
     </div>
   }
 </div>

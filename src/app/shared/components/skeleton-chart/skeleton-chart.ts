@@ -7,7 +7,7 @@ import { Skeleton } from '../skeleton/skeleton';
   standalone: true,
   imports: [CommonModule, Skeleton],
   template: `
-    <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+    <div class="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
       <!-- Chart Title -->
       <div class="flex items-center justify-between mb-6">
         <app-skeleton 
@@ -31,14 +31,14 @@ import { Skeleton } from '../skeleton/skeleton';
             <!-- Grid Lines -->
             <div class="absolute inset-0 grid grid-cols-7 grid-rows-4 gap-4">
               @for (item of [1,2,3,4,5,6,7]; track item) {
-                <div class="border-r border-white/10 last:border-r-0"></div>
+                <div class="border-r border-gray-200 last:border-r-0"></div>
               }
             </div>
             <!-- Chart Line -->
             <svg class="absolute inset-0 w-full h-full">
               <path 
                 d="M 10 180 Q 50 120 90 140 T 170 100 T 250 120 T 330 80" 
-                stroke="rgb(6 182 212 / 0.5)" 
+                stroke="rgb(37 99 235 / 0.5)" 
                 stroke-width="3" 
                 fill="none"
                 class="animate-pulse"

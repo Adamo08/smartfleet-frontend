@@ -44,9 +44,7 @@ export const ADMIN_ROUTES: Routes = [
     path: 'reservations',
     children: [
       { path: '', loadComponent: () => import('./reservations/reservation-list/reservation-list').then(m => m.ReservationList) },
-      { path: 'calendar', loadComponent: () => import('./reservations/reservation-calendar/reservation-calendar').then(m => m.ReservationCalendar) },
-      { path: ':id', loadComponent: () => import('./reservations/reservation-detail/reservation-detail').then(m => m.ReservationDetail) },
-      { path: ':id/assign', loadComponent: () => import('./reservations/reservation-assign/reservation-assign').then(m => m.ReservationAssign) },
+      { path: ':id', loadComponent: () => import('./reservations/reservation-detail/reservation-detail').then(m => m.ReservationDetail) }
     ]
   },
   {
@@ -54,7 +52,7 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       { path: '', redirectTo: 'transactions', pathMatch: 'full' },
       { path: 'transactions', loadComponent: () => import('./payments/transaction-list/transaction-list').then(m => m.TransactionList) },
-      { path: 'transactions/:id', loadComponent: () => import('./payments/transaction-detail/transaction-detail').then(m => m.TransactionDetail) },
+      { path: 'transactions/:id', loadComponent: () => import('./payments/payment-detail/payment-detail').then(m => m.PaymentDetail) },
       { path: 'refund-requests', loadComponent: () => import('./payments/refund-requests/refund-requests').then(m => m.RefundRequests) },
       { path: 'refunds', loadComponent: () => import('./payments/refund-list/refund-list').then(m => m.RefundList) },
       { path: 'refunds/:id', loadComponent: () => import('./payments/refund-detail/refund-detail').then(m => m.RefundDetail) },
@@ -80,10 +78,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'analytics',
     children: [
-      { path: '', loadComponent: () => import('./analytics/analytics').then(m => m.Analytics) },
-      { path: 'reservations', loadComponent: () => import('./analytics/reservation-stats/reservation-stats').then(m => m.ReservationStats) },
-      { path: 'revenue', loadComponent: () => import('./analytics/revenue-chart/revenue-chart').then(m => m.RevenueChart) },
-      { path: 'vehicle-utilization', loadComponent: () => import('./analytics/vehicle-utilization/vehicle-utilization').then(m => m.VehicleUtilization) },
+      { path: '', loadComponent: () => import('./analytics/analytics').then(m => m.Analytics) }
     ]
   },
 

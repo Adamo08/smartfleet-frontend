@@ -1,32 +1,25 @@
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
-  <!-- Background Effects -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
-    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
-  </div>
-
-  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Loading State -->
     @if (loading) {
     <div class="text-center py-20">
-      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
-      <p class="mt-4 text-gray-300">Loading reservation details...</p>
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p class="mt-4 text-gray-600">Loading reservation details...</p>
     </div>
     }
 
     <!-- Error State -->
     @if (error && !loading) {
     <div class="text-center py-20">
-      <div class="inline-flex items-center px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg">
-        <svg class="w-6 h-6 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="inline-flex items-center px-4 py-2 bg-red-50 border border-red-200 rounded-lg">
+        <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <span class="text-red-400 font-medium">{{ error }}</span>
+        <span class="text-red-600 font-medium">{{ error }}</span>
       </div>
       <button
         (click)="onBackToList()"
-        class="mt-4 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200"
+        class="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200"
       >
         Back to Reservations
       </button>
@@ -38,10 +31,10 @@
     <div class="space-y-8">
       <!-- Header -->
       <div class="text-center">
-        <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
-          Reservation <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Details</span>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Reservation <span class="text-blue-600">Details</span>
         </h1>
-        <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           View and manage your vehicle reservation
         </p>
       </div>
@@ -61,7 +54,7 @@
         @if (canEdit()) {
         <button
           (click)="onEditReservation()"
-          class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 font-medium"
+          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium"
         >
           <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -84,7 +77,7 @@
 
         <button
           (click)="onToggleBookmark()"
-          [class]="isBookmarked ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 hover:bg-gray-700'"
+          [class]="isBookmarked ? 'bg-amber-500 hover:bg-amber-600' : 'bg-gray-600 hover:bg-gray-700'"
           class="px-6 py-3 text-white rounded-lg transition-all duration-200 font-medium"
         >
           <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,9 +92,9 @@
         <!-- Left Column - Reservation Info -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Reservation Status Card -->
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
             <div class="flex items-center justify-between mb-4">
-              <h2 class="text-2xl font-bold text-white">Reservation Status</h2>
+              <h2 class="text-2xl font-bold text-gray-900">Reservation Status</h2>
               <span class="px-4 py-2 text-sm font-medium text-white rounded-full"
                     [class]="getStatusColor(reservation.status)">
                 {{ getStatusText(reservation.status) }}
@@ -110,56 +103,56 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Reservation ID</label>
-                <p class="text-white font-mono">#{{ reservation.id }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Reservation ID</label>
+                <p class="text-gray-900 font-mono">#{{ reservation.id }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Created</label>
-                <p class="text-white">{{ formatDate(reservation.createdAt) }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Created</label>
+                <p class="text-gray-900">{{ formatDate(reservation.createdAt) }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Start Date</label>
-                <p class="text-white">{{ formatDate(reservation.startDate) }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Start Date</label>
+                <p class="text-gray-900">{{ formatDate(reservation.startDate) }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">End Date</label>
-                <p class="text-white">{{ formatDate(reservation.endDate) }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">End Date</label>
+                <p class="text-gray-900">{{ formatDate(reservation.endDate) }}</p>
               </div>
             </div>
           </div>
 
           <!-- Vehicle Information Card -->
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
-            <h2 class="text-2xl font-bold text-white mb-4">Vehicle Information</h2>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Vehicle Information</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Brand</label>
-                <p class="text-white">{{ reservation.vehicle.brand }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Brand</label>
+                <p class="text-gray-900">{{ reservation.vehicle.brand }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Model</label>
-                <p class="text-white">{{ reservation.vehicle.model }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Model</label>
+                <p class="text-gray-900">{{ reservation.vehicle.model }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Year</label>
-                <p class="text-white">{{ reservation.vehicle.year }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Year</label>
+                <p class="text-gray-900">{{ reservation.vehicle.year }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">License Plate</label>
-                <p class="text-white font-mono">{{ reservation.vehicle.licensePlate }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">License Plate</label>
+                <p class="text-gray-900 font-mono">{{ reservation.vehicle.licensePlate }}</p>
               </div>
             </div>
 
-            <div class="mt-4 p-4 bg-white/5 rounded-lg">
-              <label class="block text-sm font-semibold text-gray-300 mb-1">Description</label>
-              <p class="text-white">{{ reservation.vehicle.description || 'No description available' }}</p>
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+              <label class="block text-sm font-semibold text-gray-500 mb-1">Description</label>
+              <p class="text-gray-900">{{ reservation.vehicle.description || 'No description available' }}</p>
             </div>
           </div>
 
           <!-- Slot Information Card -->
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
-            <h2 class="text-2xl font-bold text-white mb-4 flex items-center">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
               <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
@@ -169,12 +162,12 @@
             @if (reservation.slots && reservation.slots.length > 0) {
               <div class="space-y-4">
                 @for (slot of reservation.slots; track slot.id) {
-                  <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                  <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="flex items-center justify-between mb-2">
-                      <h3 class="text-lg font-semibold text-white">Slot #{{ slot.id }}</h3>
+                      <h3 class="text-lg font-semibold text-gray-900">Slot #{{ slot.id }}</h3>
                       <span class="px-3 py-1 rounded-full text-xs font-medium" [ngClass]="{
-                        'bg-red-500/20 text-red-300': !slot.available,
-                        'bg-green-500/20 text-green-300': slot.available
+                        'bg-red-100 text-red-800': !slot.available,
+                        'bg-green-100 text-green-800': slot.available
                       }">
                         {{ slot.available ? 'Available' : 'Reserved' }}
                       </span>
@@ -182,18 +175,18 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Time Period</label>
-                        <p class="text-white text-sm">
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Time Period</label>
+                        <p class="text-gray-900 text-sm">
                           {{ slot.startTime | date:'short' }} - {{ slot.endTime | date:'short' }}
                         </p>
                       </div>
                       <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Slot Type</label>
-                        <p class="text-white text-sm">{{ slot.slotType }}</p>
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Slot Type</label>
+                        <p class="text-gray-900 text-sm">{{ slot.slotType }}</p>
                       </div>
                       <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Price</label>
-                        <p class="text-white text-sm font-mono">{{ formatCurrency(slot.price || 0) }}</p>
+                        <label class="block text-sm font-medium text-gray-500 mb-1">Price</label>
+                        <p class="text-gray-900 text-sm font-mono">{{ formatCurrency(slot.price || 0) }}</p>
                       </div>
                     </div>
                   </div>
@@ -204,7 +197,7 @@
                 <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <p class="text-gray-400 mb-2">No slots created yet</p>
+                <p class="text-gray-600 mb-2">No slots created yet</p>
                 <p class="text-gray-500 text-sm">
                   @if (reservation.status === 'PENDING') {
                     Slots will be created automatically once payment is completed.
@@ -218,43 +211,43 @@
 
           <!-- Booking Context Information Card -->
           @if (reservation.bookingContext) {
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
-            <h2 class="text-2xl font-bold text-white mb-4">Booking Details</h2>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Booking Details</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Slot Type</label>
-                <p class="text-white">{{ reservation.bookingContext.slotType }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Slot Type</label>
+                <p class="text-gray-900">{{ reservation.bookingContext.slotType }}</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Duration</label>
-                <p class="text-white">{{ reservation.bookingContext.duration }} hours</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Duration</label>
+                <p class="text-gray-900">{{ reservation.bookingContext.duration }} hours</p>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Calculation Method</label>
-                <p class="text-white">{{ reservation.bookingContext.calculationMethod }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Calculation Method</label>
+                <p class="text-gray-900">{{ reservation.bookingContext.calculationMethod }}</p>
               </div>
               @if (reservation.bookingContext.originalAmount) {
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Original Amount</label>
-                <p class="text-white">{{ formatCurrency(reservation.bookingContext.originalAmount) }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Original Amount</label>
+                <p class="text-gray-900">{{ formatCurrency(reservation.bookingContext.originalAmount) }}</p>
               </div>
               }
             </div>
 
             @if (reservation.bookingContext.preferences) {
-            <div class="mt-4 p-4 bg-white/5 rounded-lg">
-              <label class="block text-sm font-semibold text-gray-300 mb-2">Preferences</label>
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+              <label class="block text-sm font-semibold text-gray-500 mb-2">Preferences</label>
               @if (reservation.bookingContext.preferences.preferredPaymentMethod) {
               <div class="mb-2">
-                <span class="text-gray-300 text-sm">Payment Method:</span>
-                <span class="text-white ml-2">{{ reservation.bookingContext.preferences.preferredPaymentMethod }}</span>
+                <span class="text-gray-500 text-sm">Payment Method:</span>
+                <span class="text-gray-900 ml-2">{{ reservation.bookingContext.preferences.preferredPaymentMethod }}</span>
               </div>
               }
               @if (reservation.bookingContext.preferences.specialRequests) {
               <div>
-                <span class="text-gray-300 text-sm">Special Requests:</span>
-                <p class="text-white mt-1">{{ reservation.bookingContext.preferences.specialRequests }}</p>
+                <span class="text-gray-500 text-sm">Special Requests:</span>
+                <p class="text-gray-900 mt-1">{{ reservation.bookingContext.preferences.specialRequests }}</p>
               </div>
               }
             </div>
@@ -263,19 +256,19 @@
           }
 
           <!-- Comments Card -->
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
-            <h2 class="text-2xl font-bold text-white mb-4">Comments</h2>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Comments</h2>
             
             <form [formGroup]="commentForm" class="space-y-4">
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-2">Add or Update Comment</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Add or Update Comment</label>
                 <textarea
                   formControlName="comment"
                   rows="3"
                   placeholder="Add a comment about your reservation..."
-                  class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400 resize-none"
+                  class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 text-gray-900 placeholder-gray-400 resize-none"
                 ></textarea>
-                <div class="mt-1 text-sm text-gray-400">
+                <div class="mt-1 text-sm text-gray-500">
                   {{ commentForm.get('comment')?.value?.length || 0 }}/500 characters
                 </div>
               </div>
@@ -284,7 +277,7 @@
                 type="button"
                 (click)="onUpdateComment()"
                 [disabled]="!commentForm.valid"
-                class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
+                class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium"
               >
                 Update Comment
               </button>
@@ -295,13 +288,13 @@
         <!-- Right Column - Payment & Summary -->
         <div class="space-y-6">
           <!-- Payment Information Card -->
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
-            <h2 class="text-2xl font-bold text-white mb-4">Payment Information</h2>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Payment Information</h2>
             
             @if (payment) {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Status:</span>
+                <span class="text-gray-600">Status:</span>
                 <span class="px-3 py-1 text-sm font-medium text-white rounded-full"
                       [class]="getPaymentStatusColor(payment.status)">
                   {{ getPaymentStatusText(payment.status) }}
@@ -309,24 +302,24 @@
               </div>
               
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Amount:</span>
-                <span class="text-white font-semibold">{{ formatCurrency(payment.amount) }}</span>
+                <span class="text-gray-600">Amount:</span>
+                <span class="text-gray-900 font-semibold">{{ formatCurrency(payment.amount) }}</span>
               </div>
               
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Currency:</span>
-                <span class="text-white">{{ payment.currency }}</span>
+                <span class="text-gray-600">Currency:</span>
+                <span class="text-gray-900">{{ payment.currency }}</span>
               </div>
               
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Provider:</span>
-                <span class="text-white">{{ payment.provider }}</span>
+                <span class="text-gray-600">Provider:</span>
+                <span class="text-gray-900">{{ payment.provider }}</span>
               </div>
               
               <div class="pt-4 space-y-2">
                 <button
                   (click)="onViewPayment()"
-                  class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all duration-200 font-medium"
+                  class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium"
                 >
                   View Payment Details
                 </button>
@@ -334,7 +327,7 @@
                 @if (canRequestRefund()) {
                 <button
                   (click)="onRequestRefund()"
-                  class="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-all duration-200 font-medium"
+                  class="w-full px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-all duration-200 font-medium"
                 >
                   Request Refund
                 </button>
@@ -353,46 +346,46 @@
           </div>
 
           <!-- Reservation Summary Card -->
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
-            <h2 class="text-2xl font-bold text-white mb-4">Reservation Summary</h2>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Reservation Summary</h2>
             
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Duration:</span>
-                <span class="text-white font-semibold">{{ getTotalDays() }} day(s)</span>
+                <span class="text-gray-600">Duration:</span>
+                <span class="text-gray-900 font-semibold">{{ getTotalDays() }} day(s)</span>
               </div>
               
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Total Amount:</span>
-                <span class="text-white font-semibold text-xl">{{ formatCurrency(getTotalAmount()) }}</span>
+                <span class="text-gray-600">Total Amount:</span>
+                <span class="text-gray-900 font-semibold text-xl">{{ formatCurrency(getTotalAmount()) }}</span>
               </div>
               
               <div class="flex items-center justify-between">
-                <span class="text-gray-300">Per Day:</span>
-                <span class="text-white">{{ formatCurrency(getTotalAmount() / getTotalDays()) }}</span>
+                <span class="text-gray-600">Per Day:</span>
+                <span class="text-gray-900">{{ formatCurrency(getTotalAmount() / getTotalDays()) }}</span>
               </div>
             </div>
           </div>
 
           <!-- User Information Card -->
-          <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6">
-            <h2 class="text-2xl font-bold text-white mb-4">User Information</h2>
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">User Information</h2>
             
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Name</label>
-                <p class="text-white">{{ reservation.user.firstName }} {{ reservation.user.lastName }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Name</label>
+                <p class="text-gray-900">{{ reservation.user.firstName }} {{ reservation.user.lastName }}</p>
               </div>
               
               <div>
-                <label class="block text-sm font-semibold text-gray-300 mb-1">Email</label>
-                <p class="text-white">{{ reservation.user.email }}</p>
+                <label class="block text-sm font-semibold text-gray-500 mb-1">Email</label>
+                <p class="text-gray-900">{{ reservation.user.email }}</p>
               </div>
               
               @if (reservation.user.phoneNumber) {
                 <div>
-                  <label class="block text-sm font-semibold text-gray-300 mb-1">Phone</label>
-                  <p class="text-white">{{ reservation.user.phoneNumber }}</p>
+                  <label class="block text-sm font-semibold text-gray-500 mb-1">Phone</label>
+                  <p class="text-gray-900">{{ reservation.user.phoneNumber }}</p>
                 </div>
               }
             </div>

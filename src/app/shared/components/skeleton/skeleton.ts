@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div 
-      class="animate-pulse bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 bg-[length:200%_100%]"
+      class="animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%] skeleton-shimmer"
       [style.width]="width"
       [style.height]="height"
       [style.border-radius]="borderRadius"
@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
       100% { background-position: -200% 0; }
     }
     
-    .animate-pulse {
+    .skeleton-shimmer {
       animation: shimmer 1.5s ease-in-out infinite;
     }
   `]

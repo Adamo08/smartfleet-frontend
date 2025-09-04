@@ -7,12 +7,12 @@ import { Skeleton } from '../skeleton/skeleton';
   standalone: true,
   imports: [CommonModule, Skeleton],
   template: `
-    <div class="overflow-x-auto rounded-lg shadow-xl">
-      <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+    <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+      <table class="min-w-full text-sm bg-white">
         <thead>
-          <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
+          <tr class="text-left border-b border-gray-200 bg-gray-50">
             @for (header of headers; track header) {
-              <th class="p-3 text-white">
+              <th class="p-3">
                 <app-skeleton 
                   width="80px" 
                   height="16px"
@@ -23,7 +23,7 @@ import { Skeleton } from '../skeleton/skeleton';
         </thead>
         <tbody>
           @for (row of [1,2,3,4,5]; track row) {
-            <tr class="border-b border-indigo-500/10">
+            <tr class="border-b border-gray-100">
               @for (cell of headers; track cell) {
                 <td class="p-3">
                   @if (cell === 'Image') {

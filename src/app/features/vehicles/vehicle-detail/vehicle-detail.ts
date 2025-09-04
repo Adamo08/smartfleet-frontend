@@ -22,11 +22,12 @@ import { BookingContextService } from '../../../core/services/booking-context.se
 import { PaymentCalculationService } from '../../../core/services/payment-calculation.service';
 import { Modal } from '../../../shared/components/modal/modal';
 import { SlotSelector } from '../../reservations/slot-selector/slot-selector';
+import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 
 @Component({
   selector: 'app-vehicle-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, Modal, SlotSelector],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, Modal, SlotSelector, Skeleton],
   templateUrl: './vehicle-detail.html',
   styleUrl: './vehicle-detail.css'
 })

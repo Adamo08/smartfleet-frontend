@@ -1,40 +1,40 @@
-<div class="p-6 backdrop-blur-2xl bg-gradient-to-br from-slate-900/40 via-indigo-900/30 to-slate-900/40 border border-white/10 rounded-3xl">
+<div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-xl font-semibold text-white">Vehicles</h2>
+    <h2 class="text-xl font-semibold text-gray-900">Vehicles</h2>
     <div class="flex space-x-3">
       <button 
         routerLink="/admin/vehicles/fleet-status"
-        class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-500 hover:to-pink-500 transition-all duration-200 flex items-center space-x-2">
+        class="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 flex items-center space-x-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 00-2 2h-2a2 2 0 00-2-2z"/>
         </svg>
         <span>Fleet Status</span>
       </button>
-      <button (click)="openAddVehicleModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white hover:from-indigo-500 hover:to-cyan-500 transition-all duration-200">New Vehicle</button>
+      <button (click)="openAddVehicleModal()" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200">New Vehicle</button>
     </div>
   </div>
 
   <!-- Advanced Filters -->
-  <div class="mb-6 p-4 bg-slate-800/50 rounded-xl border border-white/10">
+  <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <!-- Search -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Search</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
         <input
           type="text"
           [(ngModel)]="filters.search"
           (input)="applyFilters()"
           placeholder="Brand, model, license..."
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Category -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
         <select
           [(ngModel)]="filters.categoryId"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="">All Categories</option>
           @for (category of categories; track category.id) {
             <option [value]="category.id">{{ category.name }}</option>
@@ -44,11 +44,11 @@
 
       <!-- Fuel Type -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Fuel Type</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
         <select
           [(ngModel)]="filters.fuelType"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="">All Fuels</option>
           @for (fuel of fuelTypes; track fuel.value) {
             <option [value]="fuel.value">{{ fuel.label }}</option>
@@ -58,11 +58,11 @@
 
       <!-- Status -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
         <select
           [(ngModel)]="filters.status"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="">All Statuses</option>
           @for (status of vehicleStatuses; track status.value) {
             <option [value]="status.value">{{ status.label }}</option>
@@ -75,11 +75,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
       <!-- Brand -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Brand</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
         <select
           [(ngModel)]="filters.brandId"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="" selected>All Brands</option>
           @for (brand of brands; track brand.id) {
             <option [value]="brand.id">{{ brand.name }}</option>
@@ -89,11 +89,11 @@
 
       <!-- Model -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Model</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
         <select
           [(ngModel)]="filters.modelId"
           (change)="applyFilters()"
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <option value="" selected>All Models</option>
           @for (model of models; track model.id) {
             <option [value]="model.id">{{ model.name }}</option>
@@ -103,20 +103,20 @@
 
       <!-- Price Range -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Price Range</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
         <div class="flex space-x-2">
           <input
             type="number"
             [(ngModel)]="filters.minPrice"
             (input)="applyFilters()"
             placeholder="Min"
-            class="flex-1 p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="flex-1 p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
           <input
             type="number"
             [(ngModel)]="filters.maxPrice"
             (input)="applyFilters()"
             placeholder="Max"
-            class="flex-1 p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="flex-1 p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
         </div>
       </div>
     </div>
@@ -125,46 +125,46 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
       <!-- Min Year -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Min Year</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Min Year</label>
         <input
           type="number"
           [(ngModel)]="filters.minYear"
           (input)="applyFilters()"
           placeholder="Min year..."
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Max Year -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Max Year</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Max Year</label>
         <input
           type="number"
           [(ngModel)]="filters.maxYear"
           (input)="applyFilters()"
           placeholder="Max year..."
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Min Mileage -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Min Mileage</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Min Mileage</label>
         <input
           type="number"
           [(ngModel)]="filters.minMileage"
           (input)="applyFilters()"
           placeholder="Min mileage..."
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
 
       <!-- Max Mileage -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Max Mileage</label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Max Mileage</label>
         <input
           type="number"
           [(ngModel)]="filters.maxMileage"
           (input)="applyFilters()"
           placeholder="Max mileage..."
-          class="w-full p-2 rounded-lg bg-slate-700 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+          class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
       </div>
     </div>
 
@@ -172,12 +172,12 @@
     <div class="flex justify-between items-center mt-4">
       <button
         (click)="clearFilters()"
-        class="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">
+        class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200">
         Clear Filters
       </button>
       <button
         (click)="exportToCSV()"
-        class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-500 hover:to-emerald-500 transition-all duration-200">
+        class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 text-gray-900 hover:from-green-500 hover:to-emerald-500 transition-all duration-200">
         Export CSV
       </button>
     </div>
@@ -200,20 +200,20 @@
     <div class="overflow-x-auto rounded-lg shadow-xl">
       <table class="min-w-full text-sm text-gray-200 bg-slate-800">
         <thead>
-          <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
-            <th class="p-3 text-white">ID</th>
-            <th class="p-3 text-white">Image</th>
-            <th class="p-3 text-white">Brand</th>
-            <th class="p-3 text-white">Model</th>
-            <th class="p-3 text-white">Year</th>
-            <th class="p-3 text-white">Status</th>
-            <th class="p-3 text-white">Price/Day</th>
-            <th class="p-3 text-white">Actions</th>
+          <tr class="text-left border-b border-indigo-500/20 bg-white">
+            <th class="p-3 text-gray-900">ID</th>
+            <th class="p-3 text-gray-900">Image</th>
+            <th class="p-3 text-gray-900">Brand</th>
+            <th class="p-3 text-gray-900">Model</th>
+            <th class="p-3 text-gray-900">Year</th>
+            <th class="p-3 text-gray-900">Status</th>
+            <th class="p-3 text-gray-900">Price/Day</th>
+            <th class="p-3 text-gray-900">Actions</th>
           </tr>
         </thead>
         <tbody>
           @for (v of vehiclesPage.content; track v.id) {
-            <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
+            <tr class="border-b border-indigo-500/10 hover:bg-white/50 transition-colors duration-200">
               <td class="p-3">{{ v.id }}</td>
               <td class="p-3">
                 @if (v.imageUrl) {
@@ -252,7 +252,7 @@
       </app-pagination>
     </div>
   } @else {
-    <div class="text-gray-300 text-center py-8 border border-white/10 rounded-xl bg-slate-900/40">
+    <div class="text-gray-700 text-center py-8 border border-gray-200 rounded-lg bg-slate-900/40">
       No vehicles found.
     </div>
   }
@@ -267,7 +267,7 @@
     <app-modal [title]="'Add New Vehicle'" (close)="closeAddVehicleModal()">
       <app-vehicle-form (formSubmitted)="closeAddVehicleModal()"></app-vehicle-form>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
-        <button (click)="closeAddVehicleModal()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">Cancel</button>
+        <button (click)="closeAddVehicleModal()" class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200">Cancel</button>
       </div>
     </app-modal>
   }
@@ -276,7 +276,7 @@
     <app-modal [title]="'Edit Vehicle'" (close)="closeEditVehicleModal()">
       <app-vehicle-form [vehicle]="selectedVehicle" (formSubmitted)="closeEditVehicleModal()"></app-vehicle-form>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
-        <button (click)="closeEditVehicleModal()" class="px-4 py-2 rounded-xl bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200">Cancel</button>
+        <button (click)="closeEditVehicleModal()" class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200">Cancel</button>
       </div>
     </app-modal>
   }

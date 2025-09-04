@@ -44,7 +44,7 @@ export class ErrorService {
             errorMessage = '500 Internal Server Error: The server had an issue. Please try again later.';
             break;
           default:
-            errorMessage = `Backend returned status code: ${error.status}. Message: ${error.message}`;
+            errorMessage = `Error ${error.status}: ${this.getSimpleErrorMessage(error.status)}`;
             break;
         }
       }
@@ -52,5 +52,20 @@ export class ErrorService {
 
     this.toastr.error(errorMessage, 'Error');
     console.error(error);
+  }
+
+  private getSimpleErrorMessage(status: number): string {
+    switch (status) {
+      case 403:
+        return 'Access denied. You do not have permission to perform this action.';
+      case 422:
+        return 'Invalid data provided. Please check your input.';
+      case 429:
+        return 'Too many requests. Please try again later.';
+      case 503:
+        return 'Service temporarily unavailable. Please try again later.';
+      default:
+        return 'An unexpected error occurred. Please try again.';
+    }
   }
 }

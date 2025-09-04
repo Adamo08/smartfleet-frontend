@@ -1,30 +1,24 @@
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 py-8">
-  <!-- Background Effects -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
-    <div class="absolute top-40 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-20 left-1/2 w-72 h-72 bg-purple-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
-  </div>
+<div class="min-h-screen bg-gray-50 py-8">
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="text-center mb-8">
-      <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent mb-4">
-        Payment <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">History</span>
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        Payment <span class="text-blue-600">History</span>
       </h1>
-      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
         View and manage all your payment transactions in one place
       </p>
     </div>
 
     <!-- Filters -->
-    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-6 mb-8">
-      <h3 class="text-xl font-semibold text-white mb-4">Filters</h3>
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-8">
+      <h3 class="text-xl font-semibold text-gray-900 mb-4">Filters</h3>
       <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Status Filter -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Status</label>
-          <select formControlName="status" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white">
+          <label class="block text-sm font-semibold text-gray-900 mb-2">Status</label>
+          <select formControlName="status" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-gray-900">
             <option value="">All Statuses</option>
             <option value="COMPLETED">Completed</option>
             <option value="PENDING">Pending</option>
@@ -36,23 +30,23 @@
         </div>
         <!-- Search Term -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Search</label>
-          <input type="text" formControlName="searchTerm" placeholder="Search payments..." class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white placeholder-gray-400">
+          <label class="block text-sm font-semibold text-gray-900 mb-2">Search</label>
+          <input type="text" formControlName="searchTerm" placeholder="Search payments..." class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-gray-900 placeholder-gray-400">
         </div>
         <!-- Start Date -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">Start Date</label>
-          <input type="date" formControlName="startDate" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white">
+          <label class="block text-sm font-semibold text-gray-900 mb-2">Start Date</label>
+          <input type="date" formControlName="startDate" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-gray-900">
         </div>
         <!-- End Date -->
         <div>
-          <label class="block text-sm font-semibold text-white mb-2">End Date</label>
-          <input type="date" formControlName="endDate" class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-white">
+          <label class="block text-sm font-semibold text-gray-900 mb-2">End Date</label>
+          <input type="date" formControlName="endDate" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-all duration-200 text-gray-900">
         </div>
       </form>
       <!-- Filter Actions -->
       <div class="flex justify-end mt-4">
-        <button (click)="onFilterReset()" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium">Reset Filters</button>
+        <button (click)="onFilterReset()" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-gray-900 rounded-lg transition-all duration-200 font-medium">Reset Filters</button>
       </div>
     </div>
 
@@ -60,7 +54,7 @@
     @if (loading) {
     <div class="text-center py-20">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-400"></div>
-      <p class="mt-4 text-gray-300">Loading payment history...</p>
+      <p class="mt-4 text-gray-600">Loading payment history...</p>
     </div>
     }
 
@@ -78,11 +72,11 @@
 
     <!-- Payment History Table -->
     @if (!loading && !error) {
-    <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+    <div class="backdrop-blur-2xl bg-gray-50 border border-gray-200 rounded-lg shadow-2xl overflow-hidden">
       <!-- Table Header -->
-      <div class="grid grid-cols-12 gap-4 p-6 border-b border-white/10 bg-white/5">
+      <div class="grid grid-cols-12 gap-4 p-6 border-b border-gray-200 bg-gray-50">
         <div class="col-span-2">
-          <button (click)="onSort('transactionId')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+          <button (click)="onSort('transactionId')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all duration-200">
             <span>Transaction ID</span>
             <span [class]="getSortIconClass('transactionId')">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +86,7 @@
           </button>
         </div>
         <div class="col-span-2">
-          <button (click)="onSort('amount')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+          <button (click)="onSort('amount')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all duration-200">
             <span>Amount</span>
             <span [class]="getSortIconClass('amount')">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -102,7 +96,7 @@
           </button>
         </div>
         <div class="col-span-2">
-          <button (click)="onSort('status')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+          <button (click)="onSort('status')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all duration-200">
             <span>Status</span>
             <span [class]="getSortIconClass('status')">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -112,7 +106,7 @@
           </button>
         </div>
         <div class="col-span-2">
-          <button (click)="onSort('provider')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+          <button (click)="onSort('provider')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all duration-200">
             <span>Provider</span>
             <span [class]="getSortIconClass('provider')">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -122,7 +116,7 @@
           </button>
         </div>
         <div class="col-span-2">
-          <button (click)="onSort('createdAt')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200">
+          <button (click)="onSort('createdAt')" class="flex items-center space-x-2 text-left w-full text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all duration-200">
             <span>Date</span>
             <span [class]="getSortIconClass('createdAt')">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -131,36 +125,36 @@
             </span>
           </button>
         </div>
-        <div class="col-span-2 text-sm font-semibold text-gray-300">Actions</div>
+        <div class="col-span-2 text-sm font-semibold text-gray-600">Actions</div>
       </div>
 
       <!-- Table Body -->
       <div class="divide-y divide-white/10">
         @for (payment of paymentsPage.content; track payment.id) {
-        <div (click)="onPaymentClick(payment)" class="grid grid-cols-12 gap-4 p-6 hover:bg-white/5 transition-all duration-200 cursor-pointer">
+        <div (click)="onPaymentClick(payment)" class="grid grid-cols-12 gap-4 p-6 hover:bg-gray-50 transition-all duration-200 cursor-pointer">
           <div class="col-span-2">
-            <div class="text-sm font-medium text-white">{{ payment.transactionId || 'N/A' }}</div>
+            <div class="text-sm font-medium text-gray-900">{{ payment.transactionId || 'N/A' }}</div>
           </div>
           <div class="col-span-2">
-            <div class="text-sm text-white font-semibold">{{ formatCurrency(payment.amount, payment.currency) }}</div>
+            <div class="text-sm text-gray-900 font-semibold">{{ formatCurrency(payment.amount, payment.currency) }}</div>
           </div>
           <div class="col-span-2">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white" [class]="getStatusColor(payment.status)">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-900" [class]="getStatusColor(payment.status)">
               {{ getStatusText(payment.status) }}
             </span>
           </div>
           <div class="col-span-2">
-            <div class="text-sm text-gray-300">{{ payment.provider }}</div>
+            <div class="text-sm text-gray-600">{{ payment.provider }}</div>
           </div>
           <div class="col-span-2">
-            <div class="text-sm text-gray-300">{{ formatDate(payment.createdAt) }}</div>
+            <div class="text-sm text-gray-600">{{ formatDate(payment.createdAt) }}</div>
           </div>
           <div class="col-span-2">
             <div class="flex space-x-2">
-              <button (click)="openPaymentDetailModal(payment); $event.stopPropagation()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition-all duration-200">View</button>
+              <button (click)="openPaymentDetailModal(payment); $event.stopPropagation()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-gray-900 text-xs rounded transition-all duration-200">View</button>
               @if (payment.status === 'COMPLETED') {
               <a routerLink="/payments/refund-request" [queryParams]="{ paymentId: payment.id }" 
-                 class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-all duration-200 inline-block"
+                 class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-gray-900 text-xs rounded transition-all duration-200 inline-block"
                  (click)="$event.stopPropagation()">Refund</a>
               }
             </div>
@@ -172,11 +166,11 @@
       <!-- Empty State -->
       @if (paymentsPage.content.length === 0 && !loading) {
       <div class="text-center py-20">
-        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        <h3 class="text-lg font-medium text-gray-300 mb-2">No payments found</h3>
-        <p class="text-gray-400">Your payment history will appear here once you make transactions.</p>
+        <h3 class="text-lg font-medium text-gray-600 mb-2">No payments found</h3>
+        <p class="text-gray-500">Your payment history will appear here once you make transactions.</p>
       </div>
       }
     </div>
@@ -201,79 +195,79 @@
       @if (selectedPayment) {
         <div class="space-y-6">
           <!-- Payment Information -->
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Payment Information</h3>
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Payment ID</label>
-                <p class="text-sm text-white">{{ selectedPayment.id }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Payment ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.id }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Transaction ID</label>
-                <p class="text-sm text-white">{{ selectedPayment.transactionId || 'N/A' }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Transaction ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.transactionId || 'N/A' }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Amount</label>
-                <p class="text-sm text-white font-semibold">{{ formatCurrency(selectedPayment.amount, selectedPayment.currency) }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Amount</label>
+                <p class="text-sm text-gray-900 font-semibold">{{ formatCurrency(selectedPayment.amount, selectedPayment.currency) }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Currency</label>
-                <p class="text-sm text-white">{{ selectedPayment.currency }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Currency</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.currency }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Status</label>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white" [class]="getStatusColor(selectedPayment.status)">
+                <label class="block text-sm font-medium text-gray-600 mb-1">Status</label>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-900" [class]="getStatusColor(selectedPayment.status)">
                   {{ getStatusText(selectedPayment.status) }}
                 </span>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Provider</label>
-                <p class="text-sm text-white">{{ selectedPayment.provider }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Provider</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.provider }}</p>
               </div>
             </div>
           </div>
 
           <!-- Reservation Information -->
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Reservation Information</h3>
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Reservation Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Reservation ID</label>
-                <p class="text-sm text-white">{{ selectedPayment.reservationId }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Reservation ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.reservationId }}</p>
               </div>
               @if (selectedPayment.captureId) {
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Capture ID</label>
-                <p class="text-sm text-white">{{ selectedPayment.captureId }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Capture ID</label>
+                <p class="text-sm text-gray-900">{{ selectedPayment.captureId }}</p>
               </div>
               }
             </div>
           </div>
 
           <!-- Timestamps -->
-          <div class="bg-white/5 border border-white/10 rounded-xl p-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Timeline</h3>
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Timeline</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Created At</label>
-                <p class="text-sm text-white">{{ formatDate(selectedPayment.createdAt) }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Created At</label>
+                <p class="text-sm text-gray-900">{{ formatDate(selectedPayment.createdAt) }}</p>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Last Updated</label>
-                <p class="text-sm text-white">{{ formatDate(selectedPayment.updatedAt) }}</p>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Last Updated</label>
+                <p class="text-sm text-gray-900">{{ formatDate(selectedPayment.updatedAt) }}</p>
               </div>
             </div>
           </div>
 
           <!-- Actions -->
-          <div class="flex justify-end space-x-3 pt-4 border-t border-white/10">
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
             @if (selectedPayment.status === 'COMPLETED') {
             <a routerLink="/payments/refund-request" [queryParams]="{ paymentId: selectedPayment.id }" 
-               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium inline-block">
+               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-gray-900 rounded-lg transition-all duration-200 font-medium inline-block">
               Request Refund
             </a>
             }
-            <button (click)="closePaymentDetailModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 font-medium">
+            <button (click)="closePaymentDetailModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-gray-900 rounded-lg transition-all duration-200 font-medium">
               Close
             </button>
           </div>

@@ -1,113 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartFleet VRS - Premium Vehicle Rental System</title>
-</head>
-<body>
 <!-- Hero Section -->
-<div class="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
-  <!-- Animated Background Elements -->
-  <div class="absolute inset-0">
-    <div class="absolute top-20 left-20 w-96 h-96 bg-indigo-500/30 rounded-full filter blur-3xl animate-pulse"></div>
-    <div class="absolute top-1/2 right-20 w-80 h-80 bg-cyan-500/20 rounded-full filter blur-3xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-20 left-1/3 w-72 h-72 bg-purple-500/25 rounded-full filter blur-3xl animate-pulse animation-delay-4000"></div>
+<div class="relative bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-0 left-0 w-full h-full" style="background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 100&quot;><defs><pattern id=&quot;grain&quot; width=&quot;100&quot; height=&quot;100&quot; patternUnits=&quot;userSpaceOnUse&quot;><circle cx=&quot;25&quot; cy=&quot;25&quot; r=&quot;1&quot; fill=&quot;%23000&quot;/><circle cx=&quot;75&quot; cy=&quot;75&quot; r=&quot;1&quot; fill=&quot;%23000&quot;/></pattern></defs><rect width=&quot;100%&quot; height=&quot;100%&quot; fill=&quot;url(%23grain)&quot;/></svg>');"></div>
   </div>
 
   <!-- Hero Content -->
-  <div class="relative z-10 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
-    <div class="text-center max-w-5xl mx-auto">
-      <!-- Main Heading -->
-      <div class="mb-8">
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Left Content -->
+      <div class="text-left">
         @if (isLoggedIn) {
-          <h1 class="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent leading-tight mb-6">
-            Welcome back, {{ currentUser?.firstName || 'User' }}!
+          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            Welcome back, 
+            <span class="text-blue-600">{{ currentUser?.firstName || 'User' }}</span>!
           </h1>
-          <p class="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto">
+          <p class="text-xl text-gray-600 leading-relaxed mb-8 max-w-xl">
             Ready for your next adventure? Explore our premium fleet and book your perfect vehicle today.
           </p>
         } @else {
-          <h1 class="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-indigo-200 to-cyan-200 bg-clip-text text-transparent leading-tight mb-6">
-            Premium Vehicle
-            <span class="block">Rental Experience</span>
+          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
+            Explore our Verified & 
+            <span class="text-blue-600">Professional Cars</span>
           </h1>
-          <p class="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto">
-            Discover our premium fleet of vehicles with instant booking, real-time availability, and seamless reservations.
-            Your journey starts here.
+          <p class="text-xl text-gray-600 leading-relaxed mb-8 max-w-xl">
+            Modern design sports cruisers for those who crave adventure & grandeur. Cars for relaxing with your loved ones.
           </p>
         }
+        
+        <!-- Stats -->
+        <div class="flex items-center space-x-8 mb-8">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-blue-600">6K+</div>
+            <div class="text-sm text-gray-500">Customers</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-amber-500">500+</div>
+            <div class="text-sm text-gray-500">Vehicles</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-green-600">24/7</div>
+            <div class="text-sm text-gray-500">Support</div>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+          @if (isLoggedIn) {
+            <a routerLink="/vehicles"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2">
+              <span>Browse Our Fleet</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </a>
+            <a routerLink="/reservations"
+               class="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2">
+              <span>View Reservations</span>
+            </a>
+          } @else {
+            <a routerLink="/vehicles"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2">
+              <span>Rent a Car</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </a>
+            <a routerLink="/auth/register"
+               class="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2">
+              <span>Join SmartFleet</span>
+            </a>
+          }
+        </div>
+      </div>
+      
+      <!-- Right Content - Hero Image/Car -->
+      <div class="relative">
+        <div class="relative z-10">
+          <div class="bg-white rounded-2xl shadow-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span class="text-sm text-gray-600">Available for Rent</span>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-gray-500">Starts From</div>
+                <div class="text-2xl font-bold text-gray-900">$650 <span class="text-sm font-normal text-gray-500">/day</span></div>
+              </div>
+            </div>
+            
+            <!-- Car Image Placeholder -->
+            <div class="bg-gray-100 rounded-xl h-48 flex items-center justify-center mb-4">
+              <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            
+            <div class="text-center">
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Premium Vehicle</h3>
+              <p class="text-sm text-gray-600">Experience luxury and comfort</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Background decorations -->
+        <div class="absolute top-4 right-4 w-32 h-32 bg-blue-200 rounded-full opacity-20 -z-10"></div>
+        <div class="absolute bottom-4 left-4 w-24 h-24 bg-amber-200 rounded-full opacity-20 -z-10"></div>
       </div>
 
-      <!-- CTA Buttons -->
-      <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
-        @if (isLoggedIn) {
-          <a routerLink="/vehicles"
-             class="group bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:shadow-2xl hover:scale-105 flex items-center space-x-3">
-            <span>Browse Our Fleet</span>
-            <svg class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-            </svg>
-          </a>
-          <a routerLink="/reservations"
-             class="group backdrop-blur-sm bg-white/10 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/30 flex items-center space-x-3">
-            <span>View Reservations</span>
-            <svg class="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 0h8m-8 0a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2"/>
-            </svg>
-          </a>
-        } @else {
-          <a routerLink="/vehicles"
-             class="group bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:shadow-2xl hover:scale-105 flex items-center space-x-3">
-            <span>Browse Our Fleet</span>
-            <svg class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-            </svg>
-          </a>
-          <a routerLink="/auth/register"
-             class="group backdrop-blur-sm bg-white/10 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/30 flex items-center space-x-3">
-            <span>Start Renting</span>
-            <svg class="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-          </a>
-        }
-      </div>
-
-      <!-- Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-        <div class="text-center">
-          <div class="text-3xl md:text-4xl font-bold text-indigo-400 mb-2">500+</div>
-          <div class="text-gray-400">Premium Vehicles</div>
-        </div>
-        <div class="text-center">
-          <div class="text-3xl md:text-4xl font-bold text-cyan-400 mb-2">10K+</div>
-          <div class="text-gray-400">Happy Customers</div>
-        </div>
-        <div class="text-center">
-          <div class="text-3xl md:text-4xl font-bold text-purple-400 mb-2">24/7</div>
-          <div class="text-gray-400">Support Available</div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
 
-<!-- Featured Vehicles Section -->
-<div class="py-24 bg-gradient-to-br from-slate-800 via-indigo-900 to-slate-800 relative overflow-hidden">
+<!-- Vehicle Brands Section -->
+<div class="py-20 bg-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
-        Featured <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Vehicles</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Popular <span class="text-blue-600">Brands</span>
       </h2>
-      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-        Discover our most popular vehicles, carefully selected for comfort, style, and performance.
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Choose from our trusted partners and premium vehicle manufacturers
+      </p>
+    </div>
+
+    @if (brandsLoading) {
+      <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
+        @for (brand of vehicleBrands; track brand.id) {
+          <div class="group bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 cursor-pointer"
+               [routerLink]="['/vehicles']" [queryParams]="{brandId: brand.id}">
+            <div class="text-center">
+              @if (brand.logoUrl) {
+                <img [src]="brand.logoUrl" [alt]="brand.name" class="w-12 h-12 mx-auto mb-3 object-contain">
+              } @else {
+                <div class="w-12 h-12 mx-auto mb-3 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <span class="text-white font-bold text-lg">{{ brand.name[0] }}</span>
+                </div>
+              }
+              <h3 class="font-semibold text-gray-900 text-sm">{{ brand.name }}</h3>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (vehicleBrands.length > 0) {
+        <div class="text-center mt-12">
+          <a routerLink="/vehicles"
+             class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all duration-200">
+            <span>View All Brands</span>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </a>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<!-- Featured Vehicles Section -->
+<div class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Featured <span class="text-blue-600">Vehicles</span>
+      </h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Discover our handpicked selection of premium vehicles ready for your next adventure
       </p>
     </div>
 
     @if (loading) {
       <div class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     } @else {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -123,7 +192,7 @@
 
       <div class="text-center mt-12">
         <a routerLink="/vehicles"
-           class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-2xl text-lg font-semibold transition-all duration-300 hover:from-indigo-500 hover:to-cyan-500 hover:shadow-2xl hover:scale-105">
+           class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-semibold transition-all duration-200">
           <span>View All Vehicles</span>
           <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -135,125 +204,120 @@
 </div>
 
 <!-- Features Section -->
-<div class="py-24 bg-slate-800 relative overflow-hidden">
-  <div class="absolute inset-0">
-    <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-indigo-500/10 rounded-full filter blur-3xl"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-500/10 rounded-full filter blur-3xl"></div>
-  </div>
-
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
-        Why Choose <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">SmartFleet</span>?
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        Why Choose <span class="text-blue-600">SmartFleet</span>?
       </h2>
-      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
         Experience the future of vehicle rental with our cutting-edge platform designed for convenience and reliability.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <!-- Feature 1 -->
-      <div class="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-105">
-        <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+      <div class="group bg-gray-50 border border-gray-200 rounded-xl p-8 transition-all duration-200 hover:bg-gray-100 hover:border-gray-300">
+        <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-white mb-4">Instant Booking</h3>
-        <p class="text-gray-300">Book your vehicle in seconds with our streamlined reservation system. No waiting, no hassle.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Instant Booking</h3>
+        <p class="text-gray-600">Book your vehicle in seconds with our streamlined reservation system. No waiting, no hassle.</p>
       </div>
 
       <!-- Feature 2 -->
-      <div class="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-105">
-        <div class="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+      <div class="group bg-gray-50 border border-gray-200 rounded-xl p-8 transition-all duration-200 hover:bg-gray-100 hover:border-gray-300">
+        <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mb-6">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-white mb-4">Premium Fleet</h3>
-        <p class="text-gray-300">Choose from our carefully curated selection of premium vehicles, from luxury sedans to spacious SUVs.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Premium Fleet</h3>
+        <p class="text-gray-600">Choose from our carefully curated selection of premium vehicles, from luxury sedans to spacious SUVs.</p>
       </div>
 
       <!-- Feature 3 -->
-      <div class="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-105">
-        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+      <div class="group bg-gray-50 border border-gray-200 rounded-xl p-8 transition-all duration-200 hover:bg-gray-100 hover:border-gray-300">
+        <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mb-6">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-white mb-4">Secure Payments</h3>
-        <p class="text-gray-300">Multiple payment options with bank-level security. Your financial information is always protected.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Secure Payments</h3>
+        <p class="text-gray-600">Multiple payment options with bank-level security. Your financial information is always protected.</p>
       </div>
 
       <!-- Feature 4 -->
-      <div class="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-105">
-        <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+      <div class="group bg-gray-50 border border-gray-200 rounded-xl p-8 transition-all duration-200 hover:bg-gray-100 hover:border-gray-300">
+        <div class="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mb-6">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z"/>
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-white mb-4">Real-time Updates</h3>
-        <p class="text-gray-300">Stay informed with real-time notifications about your booking status and vehicle availability.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Real-time Updates</h3>
+        <p class="text-gray-600">Stay informed with real-time notifications about your booking status and vehicle availability.</p>
       </div>
 
       <!-- Feature 5 -->
-      <div class="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-105">
-        <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+      <div class="group bg-gray-50 border border-gray-200 rounded-xl p-8 transition-all duration-200 hover:bg-gray-100 hover:border-gray-300">
+        <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mb-6">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-white mb-4">24/7 Support</h3>
-        <p class="text-gray-300">Our dedicated support team is available around the clock to assist you with any questions or concerns.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">24/7 Support</h3>
+        <p class="text-gray-600">Our dedicated support team is available around the clock to assist you with any questions or concerns.</p>
       </div>
 
       <!-- Feature 6 -->
-      <div class="group backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-105">
-        <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+      <div class="group bg-gray-50 border border-gray-200 rounded-xl p-8 transition-all duration-200 hover:bg-gray-100 hover:border-gray-300">
+        <div class="w-16 h-16 bg-yellow-600 rounded-lg flex items-center justify-center mb-6">
           <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <h3 class="text-xl font-semibold text-white mb-4">Flexible Cancellation</h3>
-        <p class="text-gray-300">Change your plans? No problem. Cancel or modify your reservation up to 24 hours before pickup.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Flexible Cancellation</h3>
+        <p class="text-gray-600">Change your plans? No problem. Cancel or modify your reservation up to 24 hours before pickup.</p>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Testimonials Section -->
-<div class="py-24 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 relative overflow-hidden">
+<div class="py-20 bg-gray-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
-      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
-        What Our <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Customers</span> Say
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        What Our <span class="text-blue-600">Customers</span> Say
       </h2>
-      <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
         Don't just take our word for it. Here's what our satisfied customers have to say about their SmartFleet experience.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       @for (testimonial of serviceTestimonials; track testimonial.id) {
-        <div class="backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-white/10">
+        <div class="bg-white border border-gray-200 rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-200">
           <div class="flex items-center mb-6">
-            <div class="w-12 h-12 bg-gradient-to-r from-indigo-600 to-cyan-600 rounded-full flex items-center justify-center text-white font-semibold">
+            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
               {{ testimonial.userName[0] }}
             </div>
             <div class="ml-4">
-              <h4 class="font-semibold text-white">{{ testimonial.userName }}</h4>
-              <p class="text-sm text-gray-400">SmartFleet Customer</p>
+              <h4 class="font-semibold text-gray-900">{{ testimonial.userName }}</h4>
+              <p class="text-sm text-gray-500">SmartFleet Customer</p>
             </div>
           </div>
 
           <div class="flex items-center mb-4">
             @for (star of getStarRating(testimonial.rating); track $index) {
-              <span class="text-yellow-400 text-lg">{{ star }}</span>
+              <span class="text-yellow-500 text-lg">{{ star }}</span>
             }
           </div>
 
-          <h5 class="font-semibold text-white mb-3">{{ testimonial.title }}</h5>
-          <p class="text-gray-300 leading-relaxed">{{ testimonial.content }}</p>
+          <h5 class="font-semibold text-gray-900 mb-3">{{ testimonial.title }}</h5>
+          <p class="text-gray-600 leading-relaxed">{{ testimonial.content }}</p>
         </div>
       }
     </div>
@@ -261,57 +325,53 @@
 </div>
 
 <!-- CTA Section -->
-<div class="py-24 bg-gradient-to-r from-indigo-900 to-cyan-900 relative overflow-hidden">
-  <div class="absolute inset-0">
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full filter blur-3xl"></div>
-  </div>
-
-  <div class="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+<div class="py-20 bg-blue-600">
+  <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
     @if (isLoggedIn) {
-      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
         Ready for Your Next Adventure?
       </h2>
-      <p class="text-xl text-gray-200 mb-10 max-w-2xl mx-auto">
+      <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
         Explore our premium fleet and book your perfect vehicle for an unforgettable journey.
       </p>
 
       <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
         <a routerLink="/vehicles"
-           class="group bg-white text-indigo-900 hover:bg-gray-100 px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:shadow-2xl hover:scale-105 flex items-center space-x-3">
+           class="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 flex items-center space-x-3">
           <span>Explore Vehicles</span>
-          <svg class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
           </svg>
         </a>
         <a routerLink="/reservations"
-           class="group backdrop-blur-sm bg-white/10 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/30 flex items-center space-x-3">
+           class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:bg-white hover:text-blue-600 flex items-center space-x-3">
           <span>View Reservations</span>
-          <svg class="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 0h8m-8 0a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2"/>
           </svg>
         </a>
       </div>
     } @else {
-      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
         Ready to Start Your Journey?
       </h2>
-      <p class="text-xl text-gray-200 mb-10 max-w-2xl mx-auto">
+      <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
         Join thousands of satisfied customers who trust SmartFleet for their vehicle rental needs.
         Experience the difference today.
       </p>
 
       <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
         <a routerLink="/vehicles"
-           class="group bg-white text-indigo-900 hover:bg-gray-100 px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:shadow-2xl hover:scale-105 flex items-center space-x-3">
+           class="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 flex items-center space-x-3">
           <span>Explore Vehicles</span>
-          <svg class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
           </svg>
         </a>
         <a routerLink="/auth/register"
-           class="group backdrop-blur-sm bg-white/10 border border-white/20 text-white px-8 py-4 rounded-2xl text-lg font-semibold transition-all duration-300 hover:bg-white/20 hover:border-white/30 flex items-center space-x-3">
+           class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:bg-white hover:text-blue-600 flex items-center space-x-3">
           <span>Create Account</span>
-          <svg class="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
           </svg>
         </a>
@@ -328,5 +388,3 @@
     animation-delay: 4s;
   }
 </style>
-</body>
-</html>

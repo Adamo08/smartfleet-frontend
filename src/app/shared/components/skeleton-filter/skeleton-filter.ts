@@ -7,7 +7,7 @@ import { Skeleton } from '../skeleton/skeleton';
   standalone: true,
   imports: [CommonModule, Skeleton],
   template: `
-    <div class="mb-6 p-4 bg-slate-800/50 rounded-xl border border-white/10">
+    <div class="mb-6 p-4 bg-gray-100 rounded-xl border border-gray-200">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         @for (filter of Array(filters); track $index) {
           <app-skeleton

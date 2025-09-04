@@ -1,26 +1,26 @@
-<nav class="flex justify-center items-center space-x-2" aria-label="Pagination">
+<nav class="flex justify-center items-center space-x-1" aria-label="Pagination">
   <button
     (click)="prevPage()"
     [disabled]="currentPage === 0"
-    class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200"
+    class="px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border"
     [ngClass]="{
-      'bg-indigo-600 text-white hover:bg-indigo-700': currentPage > 0,
-      'bg-gray-700 text-gray-400 cursor-not-allowed': currentPage === 0
+      'bg-blue-600 text-white hover:bg-blue-700 border-blue-600': currentPage > 0,
+      'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200': currentPage === 0
     }"
   >
     Previous
   </button>
   @for (page of pages; track page) {
     @if (page === '...') {
-      <span class="px-3 py-1 text-gray-400">...</span>
+      <span class="px-3 py-2 text-gray-500">...</span>
     } @else {
       <button
         (click)="goToPage(page)"
         [class.current]="page === currentPage"
-        class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200"
+        class="px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border"
         [ngClass]="{
-          'bg-indigo-600 text-white': page === currentPage,
-          'bg-slate-800 text-gray-300 hover:bg-slate-700': page !== currentPage
+          'bg-blue-600 text-white border-blue-600': page === currentPage,
+          'bg-white text-gray-700 hover:bg-gray-50 border-gray-200': page !== currentPage
         }"
       >
         {{ getDisplayPage(page) }}
@@ -30,10 +30,10 @@
   <button
     (click)="nextPage()"
     [disabled]="currentPage === totalPages - 1"
-    class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200"
+    class="px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border"
     [ngClass]="{
-      'bg-indigo-600 text-white hover:bg-indigo-700': currentPage < totalPages - 1,
-      'bg-gray-700 text-gray-400 cursor-not-allowed': currentPage === totalPages - 1
+      'bg-blue-600 text-white hover:bg-blue-700 border-blue-600': currentPage < totalPages - 1,
+      'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200': currentPage === totalPages - 1
     }"
   >
     Next

@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
+  mobileMenuOpen = false;
 
   constructor(
     public authService: AuthService,
@@ -80,5 +81,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.authService.switchToAdminMode();
       this.router.navigate(['/admin']);
     }
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
   }
 }

@@ -1,1 +1,74 @@
-<p>error-message works!</p>
+<div [ngClass]="containerClasses" class="shadow-sm">
+  <div class="flex items-start">
+    <!-- Icon -->
+    @if (showIcon) {
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5" [ngClass]="iconColor" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="iconPath"/>
+        </svg>
+      </div>
+    }
+
+    <!-- Content -->
+    <div class="ml-3 flex-1">
+      @if (title) {
+        <h3 class="text-sm font-medium mb-1">{{ title }}</h3>
+      }
+      
+      @if (message) {
+        <div class="text-sm">
+          <p>{{ message }}</p>
+        </div>
+      }
+
+      @if (details.length > 0) {
+        <div class="mt-2 text-sm">
+          <ul class="list-disc list-inside space-y-1">
+            @for (detail of details; track detail) {
+              <li>{{ detail }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="mt-4 flex space-x-3">
+        @if (retry.observed) {
+          <button
+            (click)="onRetry()"
+            class="text-sm font-medium underline hover:no-underline focus:outline-none focus:underline"
+            [class.text-red-700]="type === 'error'"
+            [class.text-yellow-700]="type === 'warning'"
+            [class.text-blue-700]="type === 'info'"
+          >
+            Try Again
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Close Button -->
+    @if (showClose || dismissible) {
+      <div class="ml-auto pl-3">
+        <button
+          (click)="onClose()"
+          class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+          [class.text-red-400]="type === 'error'"
+          [class.hover:bg-red-100]="type === 'error'"
+          [class.focus:ring-red-600]="type === 'error'"
+          [class.text-yellow-400]="type === 'warning'"
+          [class.hover:bg-yellow-100]="type === 'warning'"
+          [class.focus:ring-yellow-600]="type === 'warning'"
+          [class.text-blue-400]="type === 'info'"
+          [class.hover:bg-blue-100]="type === 'info'"
+          [class.focus:ring-blue-600]="type === 'info'"
+        >
+          <span class="sr-only">Dismiss</span>
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+    }
+  </div>
+</div>
