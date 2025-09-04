@@ -37,9 +37,9 @@
     </app-skeleton-page>
   } @else if (modelsPage && modelsPage.content.length > 0) {
     <div class="overflow-x-auto rounded-lg shadow-xl">
-      <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+      <table class="min-w-full text-sm bg-white border border-gray-200">
         <thead>
-          <tr class="text-left border-b border-indigo-500/20 bg-slate-700">
+          <tr class="text-left border-b border-gray-200 bg-gray-50">
             <th class="p-3 text-gray-900">ID</th>
             <th class="p-3 text-gray-900">Name</th>
             <th class="p-3 text-gray-900">Brand</th>
@@ -52,21 +52,21 @@
         </thead>
         <tbody>
           @for (model of modelsPage.content; track model.id) {
-            <tr class="border-b border-indigo-500/10 hover:bg-slate-700/50 transition-colors duration-200">
+            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 text-gray-900">
               <td class="p-3">{{ model.id }}</td>
               <td class="p-3 font-medium">{{ model.name }}</td>
-              <td class="p-3 text-gray-300">{{ getBrandName(model.brandId) }}</td>
-              <td class="p-3 text-gray-300">{{ model.description || 'No description' }}</td>
+              <td class="p-3 text-gray-600">{{ getBrandName(model.brandId) }}</td>
+              <td class="p-3 text-gray-600">{{ model.description || 'No description' }}</td>
               <td class="p-3">
                 <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
-                  'bg-green-500/20 text-green-300': model.isActive,
-                  'bg-red-500/20 text-red-300': !model.isActive
+                  'bg-green-100 text-green-700': model.isActive,
+                  'bg-red-100 text-red-700': !model.isActive
                 }">
                   {{ model.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
-              <td class="p-3 text-gray-300">{{ model.createdAt | date:'short' }}</td>
-              <td class="p-3 text-gray-300">{{ model.updatedAt | date:'short' }}</td>
+              <td class="p-3 text-gray-600">{{ model.createdAt | date:'short' }}</td>
+              <td class="p-3 text-gray-600">{{ model.updatedAt | date:'short' }}</td>
               <td class="p-3">
                 <app-action-icons
                   [actions]="{ edit: true, delete: true }"
@@ -76,8 +76,8 @@
                 <button 
                   class="px-2 py-1 rounded text-xs font-medium transition-colors duration-200 ml-2" 
                   [ngClass]="{
-                    'bg-red-500/20 text-red-300 hover:bg-red-500/30': model.isActive,
-                    'bg-green-500/20 text-green-300 hover:bg-green-500/30': !model.isActive
+                    'bg-red-100 text-red-700 hover:bg-red-200': model.isActive,
+                    'bg-green-100 text-green-700 hover:bg-green-200': !model.isActive
                   }"
                   (click)="toggleModelStatus(model)" 
                   title="{{ model.isActive ? 'Deactivate' : 'Activate' }}">

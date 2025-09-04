@@ -3,7 +3,7 @@
   @if (loading) {
     <div class="space-y-8">
       <!-- Fleet Overview Skeleton -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
         <div class="flex items-center justify-between mb-6">
           <app-skeleton width="150px" height="24px"></app-skeleton>
           <app-skeleton width="80px" height="32px" borderRadius="8px"></app-skeleton>
@@ -19,7 +19,7 @@
       </div>
 
       <!-- Fleet Diversity Skeleton -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
         <app-skeleton width="120px" height="20px" additionalClasses="mb-4"></app-skeleton>
         <div class="grid grid-cols-3 gap-6">
           @for (item of [1,2,3]; track item) {
@@ -32,11 +32,11 @@
       </div>
 
       <!-- Status Distribution Skeleton -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
         <app-skeleton width="180px" height="20px" additionalClasses="mb-6"></app-skeleton>
         <div class="space-y-4">
           @for (item of [1,2,3,4]; track item) {
-            <div class="flex items-center justify-between p-4 rounded-lg border border-white/10">
+            <div class="flex items-center justify-between p-4 rounded-lg border border-gray-200">
               <div class="flex items-center space-x-3">
                 <app-skeleton width="16px" height="16px" borderRadius="50%"></app-skeleton>
                 <div>
@@ -187,10 +187,10 @@
   @if (vehicleData && !loading) {
     <div class="space-y-8">
       <!-- Fleet Overview -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-xl font-semibold text-white">Fleet Overview</h2>
-          <button (click)="refresh()" class="px-4 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-200 border border-white/20">
+          <h2 class="text-xl font-semibold text-gray-900">Fleet Overview</h2>
+          <button (click)="refresh()" class="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl transition-all duration-200 border border-gray-300">
             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
@@ -200,65 +200,65 @@
         
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl p-4 border border-blue-400/20">
-            <div class="text-2xl font-bold text-blue-300">{{ formatNumber(vehicleData.overview.totalVehicles) }}</div>
-            <div class="text-sm text-blue-200">Total Vehicles</div>
+            <div class="text-2xl font-bold text-blue-700">{{ formatNumber(vehicleData.overview.totalVehicles) }}</div>
+            <div class="text-sm text-blue-600">Total Vehicles</div>
           </div>
           <div class="bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-xl p-4 border border-green-400/20">
-            <div class="text-2xl font-bold text-green-300">{{ formatNumber(vehicleData.overview.availableVehicles) }}</div>
-            <div class="text-sm text-green-200">Available</div>
+            <div class="text-2xl font-bold text-green-700">{{ formatNumber(vehicleData.overview.availableVehicles) }}</div>
+            <div class="text-sm text-green-600">Available</div>
           </div>
           <div class="bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl p-4 border border-purple-400/20">
-            <div class="text-2xl font-bold text-purple-300">{{ formatNumber(vehicleData.overview.inUseVehicles) }}</div>
-            <div class="text-sm text-purple-200">In Use</div>
+            <div class="text-2xl font-bold text-purple-700">{{ formatNumber(vehicleData.overview.inUseVehicles) }}</div>
+            <div class="text-sm text-purple-600">In Use</div>
           </div>
           <div class="bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-xl p-4 border border-orange-400/20">
-            <div class="text-2xl font-bold text-orange-300">{{ formatPercentage(vehicleData.overview.utilizationRate) }}</div>
-            <div class="text-sm text-orange-200">Utilization Rate</div>
+            <div class="text-2xl font-bold text-orange-700">{{ formatPercentage(vehicleData.overview.utilizationRate) }}</div>
+            <div class="text-sm text-orange-600">Utilization Rate</div>
           </div>
           <div class="bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 rounded-xl p-4 border border-cyan-400/20">
-            <div class="text-2xl font-bold text-cyan-300">{{ formatPercentage(vehicleData.overview.availabilityRate) }}</div>
-            <div class="text-sm text-cyan-200">Availability Rate</div>
+            <div class="text-2xl font-bold text-cyan-700">{{ formatPercentage(vehicleData.overview.availabilityRate) }}</div>
+            <div class="text-sm text-cyan-600">Availability Rate</div>
           </div>
         </div>
       </div>
 
       <!-- Fleet Diversity -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-        <h3 class="text-xl font-semibold text-white mb-6">Fleet Diversity</h3>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6">Fleet Diversity</h3>
         <div class="grid grid-cols-3 gap-6">
           <div class="text-center">
-            <div class="text-3xl font-bold text-indigo-300">{{ vehicleData.overview.totalBrands }}</div>
-            <div class="text-sm text-gray-300">Brands</div>
+            <div class="text-3xl font-bold text-indigo-700">{{ vehicleData.overview.totalBrands }}</div>
+            <div class="text-sm text-gray-600">Brands</div>
           </div>
           <div class="text-center">
-            <div class="text-3xl font-bold text-indigo-300">{{ vehicleData.overview.totalCategories }}</div>
-            <div class="text-sm text-gray-300">Categories</div>
+            <div class="text-3xl font-bold text-indigo-700">{{ vehicleData.overview.totalCategories }}</div>
+            <div class="text-sm text-gray-600">Categories</div>
           </div>
           <div class="text-center">
-            <div class="text-3xl font-bold text-indigo-300">{{ vehicleData.overview.totalModels }}</div>
-            <div class="text-sm text-gray-300">Models</div>
+            <div class="text-3xl font-bold text-indigo-700">{{ vehicleData.overview.totalModels }}</div>
+            <div class="text-sm text-gray-600">Models</div>
           </div>
         </div>
       </div>
 
       <!-- Status Distribution -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-        <h3 class="text-xl font-semibold text-white mb-6">Vehicle Status Distribution</h3>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6">Vehicle Status Distribution</h3>
         <div class="space-y-4">
           @for (status of vehicleData.statuses; track status.status) {
-            <div class="flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5" 
+            <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 bg-gray-50" 
                  [style.border-color]="status.color + '40'"
                  [style.background-color]="status.color + '20'">
               <div class="flex items-center space-x-3">
                 <div class="w-4 h-4 rounded-full" [style.background-color]="status.color"></div>
                 <div>
-                  <div class="font-medium text-white">{{ status.status.replace('_', ' ') | titlecase }}</div>
-                  <div class="text-sm text-gray-300">{{ status.description }}</div>
+                  <div class="font-medium text-gray-900">{{ status.status.replace('_', ' ') | titlecase }}</div>
+                  <div class="text-sm text-gray-600">{{ status.description }}</div>
                 </div>
               </div>
               <div class="text-right">
-                <div class="text-xl font-bold text-white">{{ formatNumber(status.count) }}</div>
-                <div class="text-sm text-gray-300">{{ formatPercentage(status.percentage) }}</div>
+                <div class="text-xl font-bold text-gray-900">{{ formatNumber(status.count) }}</div>
+                <div class="text-sm text-gray-600">{{ formatPercentage(status.percentage) }}</div>
               </div>
             </div>
           }
@@ -266,9 +266,9 @@
       </div>
 
       <!-- Category Analytics -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-white">Category Performance</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Category Performance</h3>
           @if (vehicleData.categories && vehicleData.categories.length > 3) {
             <div class="flex space-x-1">
               <button (click)="previousCategoryPage()" [disabled]="categoryAnalyticsPage === 0" 
@@ -288,46 +288,46 @@
         </div>
         <div class="space-y-6">
           @for (category of getCurrentCategoriesPage(); track category.name) {
-            <div class="border border-white/10 rounded-xl p-6 bg-white/5">
+            <div class="border border-gray-200 rounded-xl p-6 bg-gray-50">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-3">
                   @if (category.iconUrl) {
                     <img [src]="category.iconUrl" [alt]="category.name" class="w-6 h-6">
                   } @else {
-                    <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center text-white text-xs font-bold">
+                    <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center text-gray-900 text-xs font-bold">
                       {{ category.name[0] }}
                     </div>
                   }
-                  <span class="font-medium text-white">{{ category.name }}</span>
+                  <span class="font-medium text-gray-900">{{ category.name }}</span>
                 </div>
                 <div class="text-right">
-                  <div class="font-semibold text-white">{{ formatCurrency(category.totalRevenue) }}</div>
-                  <div class="text-sm text-gray-300">Revenue</div>
+                  <div class="font-semibold text-gray-900">{{ formatCurrency(category.totalRevenue) }}</div>
+                  <div class="text-sm text-gray-600">Revenue</div>
                 </div>
               </div>
               
               <div class="grid grid-cols-4 gap-4 mb-4">
                 <div class="text-center">
-                  <div class="text-lg font-semibold text-white">{{ formatNumber(category.totalVehicles) }}</div>
-                  <div class="text-xs text-gray-300">Total</div>
+                  <div class="text-lg font-semibold text-gray-900">{{ formatNumber(category.totalVehicles) }}</div>
+                  <div class="text-xs text-gray-600">Total</div>
                 </div>
                 <div class="text-center">
                   <div class="text-lg font-semibold text-green-400">{{ formatNumber(category.availableVehicles) }}</div>
-                  <div class="text-xs text-gray-300">Available</div>
+                  <div class="text-xs text-gray-600">Available</div>
                 </div>
                 <div class="text-center">
                   <div class="text-lg font-semibold text-blue-400">{{ formatNumber(category.rentedVehicles) }}</div>
-                  <div class="text-xs text-gray-300">Rented</div>
+                  <div class="text-xs text-gray-600">Rented</div>
                 </div>
                 <div class="text-center">
-                  <div class="text-lg font-semibold text-white">{{ formatCurrency(category.averagePrice) }}</div>
-                  <div class="text-xs text-gray-300">Avg Price</div>
+                  <div class="text-lg font-semibold text-gray-900">{{ formatCurrency(category.averagePrice) }}</div>
+                  <div class="text-xs text-gray-600">Avg Price</div>
                 </div>
               </div>
 
               <!-- Utilization Bar -->
               <div class="mb-3">
-                <div class="flex justify-between text-sm text-gray-300 mb-2">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
                   <span>Utilization Rate</span>
                   <span>{{ formatPercentage(category.utilizationRate) }}</span>
                 </div>
@@ -339,7 +339,7 @@
 
               <!-- Revenue Bar -->
               <div>
-                <div class="flex justify-between text-sm text-gray-300 mb-2">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
                   <span>Revenue Performance</span>
                   <span>{{ formatCurrency(category.totalRevenue) }}</span>
                 </div>
@@ -354,9 +354,9 @@
       </div>
 
       <!-- Brand Analytics -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl font-semibold text-white">Brand Performance</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Brand Performance</h3>
           @if (vehicleData.brands && vehicleData.brands.length > 3) {
             <div class="flex space-x-1">
               <button (click)="previousBrandPage()" [disabled]="brandAnalyticsPage === 0" 
@@ -376,49 +376,49 @@
         </div>
         <div class="grid gap-6">
           @for (brand of getCurrentBrandsPage(); track brand.name) {
-            <div class="border border-white/10 rounded-xl p-6 bg-white/5">
+            <div class="border border-gray-200 rounded-xl p-6 bg-gray-50">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-3">
-                  <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                  <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-gray-900 font-bold">
                     {{ brand.name[0] }}
                   </div>
                   <div>
-                    <div class="font-semibold text-white">{{ brand.name }}</div>
-                    <div class="text-sm text-gray-300">{{ formatNumber(brand.modelCount) }} models</div>
+                    <div class="font-semibold text-gray-900">{{ brand.name }}</div>
+                    <div class="text-sm text-gray-600">{{ formatNumber(brand.modelCount) }} models</div>
                   </div>
                 </div>
                 <div class="text-right">
-                  <div class="font-semibold text-white">{{ formatPercentage(brand.marketShare) }}</div>
-                  <div class="text-sm text-gray-300">Market Share</div>
+                  <div class="font-semibold text-gray-900">{{ formatPercentage(brand.marketShare) }}</div>
+                  <div class="text-sm text-gray-600">Market Share</div>
                 </div>
               </div>
 
               <div class="grid grid-cols-5 gap-3 mb-4">
                 <div class="text-center">
-                  <div class="text-lg font-semibold text-white">{{ formatNumber(brand.totalVehicles) }}</div>
-                  <div class="text-xs text-gray-300">Vehicles</div>
+                  <div class="text-lg font-semibold text-gray-900">{{ formatNumber(brand.totalVehicles) }}</div>
+                  <div class="text-xs text-gray-600">Vehicles</div>
                 </div>
                 <div class="text-center">
                   <div class="text-lg font-semibold text-green-400">{{ formatNumber(brand.availableVehicles) }}</div>
-                  <div class="text-xs text-gray-300">Available</div>
+                  <div class="text-xs text-gray-600">Available</div>
                 </div>
                 <div class="text-center">
                   <div class="text-lg font-semibold text-yellow-400">{{ brand.averageRating.toFixed(1) }}★</div>
-                  <div class="text-xs text-gray-300">Rating</div>
+                  <div class="text-xs text-gray-600">Rating</div>
                 </div>
                 <div class="text-center">
-                  <div class="text-lg font-semibold text-white">{{ formatCurrency(brand.averagePrice) }}</div>
-                  <div class="text-xs text-gray-300">Avg Price</div>
+                  <div class="text-lg font-semibold text-gray-900">{{ formatCurrency(brand.averagePrice) }}</div>
+                  <div class="text-xs text-gray-600">Avg Price</div>
                 </div>
                 <div class="text-center">
                   <div class="text-lg font-semibold text-emerald-400">{{ formatCurrency(brand.totalRevenue) }}</div>
-                  <div class="text-xs text-gray-300">Revenue</div>
+                  <div class="text-xs text-gray-600">Revenue</div>
                 </div>
               </div>
 
               <!-- Market Share Bar -->
               <div class="mb-2">
-                <div class="flex justify-between text-sm text-gray-300 mb-2">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
                   <span>Market Share</span>
                   <span>{{ formatPercentage(brand.marketShare) }}</span>
                 </div>
@@ -434,9 +434,9 @@
 
       <!-- Top Models -->
       @if (vehicleData.topModels && vehicleData.topModels.length > 0) {
-        <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-semibold text-white">Top Performing Models</h3>
+            <h3 class="text-xl font-semibold text-gray-900">Top Performing Models</h3>
             @if (vehicleData.topModels && vehicleData.topModels.length > 3) {
               <div class="flex space-x-1">
                 <button (click)="previousModelPage()" [disabled]="modelAnalyticsPage === 0" 
@@ -456,32 +456,32 @@
           </div>
           <div class="space-y-4">
             @for (model of getCurrentModelsPage(); track model.modelName; let i = $index) {
-              <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-200">
                 <div class="flex items-center space-x-4">
-                  <div class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  <div class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-gray-900 font-bold text-sm">
                     #{{ i + 1 }}
                   </div>
                   <div>
-                    <div class="font-semibold text-white">{{ model.modelName }}</div>
-                    <div class="text-sm text-gray-300">{{ model.brandName }} • {{ model.categoryName }}</div>
+                    <div class="font-semibold text-gray-900">{{ model.modelName }}</div>
+                    <div class="text-sm text-gray-600">{{ model.brandName }} • {{ model.categoryName }}</div>
                   </div>
                 </div>
                 <div class="grid grid-cols-4 gap-4 text-center">
                   <div>
-                    <div class="font-semibold text-white">{{ formatNumber(model.totalVehicles) }}</div>
-                    <div class="text-xs text-gray-300">Vehicles</div>
+                    <div class="font-semibold text-gray-900">{{ formatNumber(model.totalVehicles) }}</div>
+                    <div class="text-xs text-gray-600">Vehicles</div>
                   </div>
                   <div>
                     <div class="font-semibold text-blue-400">{{ formatNumber(model.reservationCount) }}</div>
-                    <div class="text-xs text-gray-300">Reservations</div>
+                    <div class="text-xs text-gray-600">Reservations</div>
                   </div>
                   <div>
                     <div class="font-semibold text-yellow-400">{{ model.averageRating.toFixed(1) }}★</div>
-                    <div class="text-xs text-gray-300">Rating</div>
+                    <div class="text-xs text-gray-600">Rating</div>
                   </div>
                   <div>
                     <div class="font-semibold text-emerald-400">{{ formatCurrency(model.totalRevenue) }}</div>
-                    <div class="text-xs text-gray-300">Revenue</div>
+                    <div class="text-xs text-gray-600">Revenue</div>
                   </div>
                 </div>
               </div>
@@ -491,13 +491,13 @@
       }
 
       <!-- Utilization Insights -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-        <h3 class="text-xl font-semibold text-white mb-6">Utilization Insights</h3>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6">Utilization Insights</h3>
         
         <div class="grid md:grid-cols-2 gap-6 mb-6">
           <div class="space-y-4">
             <div class="p-4 bg-green-500/20 rounded-xl border border-green-400/30">
-              <div class="text-sm text-green-300 font-medium">Most Utilized Category</div>
+              <div class="text-sm text-green-700 font-medium">Most Utilized Category</div>
               <div class="text-lg font-bold text-green-100">{{ vehicleData.utilization.mostUtilizedCategory }}</div>
             </div>
             <div class="p-4 bg-red-500/20 rounded-xl border border-red-400/30">
@@ -507,11 +507,11 @@
           </div>
           <div class="space-y-4">
             <div class="p-4 bg-blue-500/20 rounded-xl border border-blue-400/30">
-              <div class="text-sm text-blue-300 font-medium">Leading Brand</div>
+              <div class="text-sm text-blue-700 font-medium">Leading Brand</div>
               <div class="text-lg font-bold text-blue-100">{{ vehicleData.utilization.mostUtilizedBrand }}</div>
             </div>
             <div class="p-4 bg-purple-500/20 rounded-xl border border-purple-400/30">
-              <div class="text-sm text-purple-300 font-medium">Peak Usage Hour</div>
+              <div class="text-sm text-purple-700 font-medium">Peak Usage Hour</div>
               <div class="text-lg font-bold text-purple-100">{{ vehicleData.utilization.peakUsageHour }}</div>
             </div>
           </div>
@@ -520,20 +520,20 @@
         <!-- Peak Hours Chart -->
         @if (getPeakHours().length > 0) {
           <div>
-            <h4 class="text-md font-semibold text-white mb-4">Peak Hours Analysis</h4>
+            <h4 class="text-md font-semibold text-gray-900 mb-4">Peak Hours Analysis</h4>
             <div class="space-y-3">
               @for (hour of getPeakHours(); track hour.hour; let i = $index) {
-                <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200">
                   <div class="flex items-center space-x-3">
-                    <div class="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                    <div class="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-gray-900 text-xs font-bold">
                       {{ i + 1 }}
                     </div>
-                    <span class="font-medium text-white">{{ formatHour(hour.hour) }}</span>
+                    <span class="font-medium text-gray-900">{{ formatHour(hour.hour) }}</span>
                   </div>
                   <div class="flex items-center space-x-4">
                     <div class="text-right">
-                      <div class="font-semibold text-white">{{ formatNumber(hour.reservations) }}</div>
-                      <div class="text-xs text-gray-300">Reservations</div>
+                      <div class="font-semibold text-gray-900">{{ formatNumber(hour.reservations) }}</div>
+                      <div class="text-xs text-gray-600">Reservations</div>
                     </div>
                     <div class="w-24 bg-gray-700 rounded-full h-2">
                       <div class="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full" 
@@ -548,8 +548,8 @@
       </div>
 
       <!-- Revenue Analytics -->
-      <div class="backdrop-blur-sm bg-white/5 border border-white/10 rounded-3xl p-8">
-        <h3 class="text-xl font-semibold text-white mb-6">Revenue Analytics</h3>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6">Revenue Analytics</h3>
         
         <div class="grid md:grid-cols-4 gap-4 mb-6">
           <div class="p-4 bg-emerald-500/20 rounded-xl border border-emerald-400/30">
@@ -557,24 +557,24 @@
             <div class="text-xl font-bold text-emerald-100">{{ formatCurrency(vehicleData.revenue.totalRevenue) }}</div>
           </div>
           <div class="p-4 bg-blue-500/20 rounded-xl border border-blue-400/30">
-            <div class="text-sm text-blue-300 font-medium">Avg per Vehicle</div>
+            <div class="text-sm text-blue-700 font-medium">Avg per Vehicle</div>
             <div class="text-xl font-bold text-blue-100">{{ formatCurrency(vehicleData.revenue.averageRevenuePerVehicle) }}</div>
           </div>
           <div class="p-4 bg-purple-500/20 rounded-xl border border-purple-400/30">
-            <div class="text-sm text-purple-300 font-medium">Top Category</div>
+            <div class="text-sm text-purple-700 font-medium">Top Category</div>
             <div class="text-lg font-bold text-purple-100">{{ vehicleData.revenue.topRevenueCategory }}</div>
           </div>
           <div class="p-4 bg-indigo-500/20 rounded-xl border border-indigo-400/30">
-            <div class="text-sm text-indigo-300 font-medium">Top Brand</div>
+            <div class="text-sm text-indigo-700 font-medium">Top Brand</div>
             <div class="text-lg font-bold text-indigo-100">{{ vehicleData.revenue.topRevenueBrand }}</div>
           </div>
         </div>
 
         <!-- Monthly Growth -->
-        <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+        <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <div class="text-sm text-gray-300 font-medium">Monthly Growth Rate</div>
+              <div class="text-sm text-gray-600 font-medium">Monthly Growth Rate</div>
               <div class="text-2xl font-bold" [class]="vehicleData.revenue.monthlyGrowth > 0 ? 'text-green-400' : 'text-red-400'">
                 {{ vehicleData.revenue.monthlyGrowth > 0 ? '+' : '' }}{{ formatPercentage(vehicleData.revenue.monthlyGrowth) }}
               </div>

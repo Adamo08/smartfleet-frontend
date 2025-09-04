@@ -28,8 +28,8 @@
             [class.bg-white]="selectedSlotType !== option.value"
             (click)="selectedSlotType = option.value; onSlotTypeChange()"
           >
-            <div class="font-medium text-white mb-1">{{ option.label }}</div>
-            <div class="text-xs text-gray-300">{{ option.description }}</div>
+            <div class="font-medium" [class.text-white]="selectedSlotType === option.value" [class.text-gray-900]="selectedSlotType !== option.value" class="mb-1">{{ option.label }}</div>
+            <div class="text-xs" [class.text-gray-200]="selectedSlotType === option.value" [class.text-gray-600]="selectedSlotType !== option.value">{{ option.description }}</div>
           </div>
         }
       </div>
@@ -176,18 +176,18 @@
             <!-- Booking type indicator -->
             @if (selectedSlotType === 'HOURLY' && isDateInRange(date)) {
               <div class="booking-type-indicator">
-                <span class="text-xs text-orange-300 font-medium">{{ getHourRangeForDate(date) }}</span>
+                <span class="text-xs text-orange-700 font-medium">{{ getHourRangeForDate(date) }}</span>
               </div>
             } @else if (selectedSlotType === 'WEEKLY' && isDateInRange(date)) {
               <div class="booking-type-indicator">
-                <span class="text-xs text-purple-300 font-medium">Week</span>
+                <span class="text-xs text-purple-700 font-medium">Week</span>
               </div>
             } @else if (isDateInRange(date)) {
               <div class="selection-indicator">
                 @if (date.getTime() === selectedStartDate.getTime()) {
-                  <span class="text-xs text-blue-300 font-medium">Start</span>
+                  <span class="text-xs text-blue-700 font-medium">Start</span>
                 } @else if (date.getTime() === selectedEndDate.getTime()) {
-                  <span class="text-xs text-blue-300 font-medium">End</span>
+                  <span class="text-xs text-blue-700 font-medium">End</span>
                 }
               </div>
             }
@@ -203,44 +203,44 @@
       </div>
 
       <!-- Date Range Summary -->
-      <div class="date-range-summary mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
+      <div class="date-range-summary mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-white font-medium">Selected Range:</span>
-          <span class="text-indigo-400 font-semibold">{{ getDurationLabel() }}</span>
+          <span class="text-gray-900 font-medium">Selected Range:</span>
+          <span class="text-blue-600 font-semibold">{{ getDurationLabel() }}</span>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="date-input-group">
-            <label for="startDate" class="block text-sm text-gray-300 mb-1">Start Date:</label>
+            <label for="startDate" class="block text-sm text-gray-700 mb-1">Start Date:</label>
             <input
               type="date"
               id="startDate"
               [(ngModel)]="selectedStartDate"
               (change)="loadAvailableSlots()"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div class="date-input-group">
-            <label for="endDate" class="block text-sm text-gray-300 mb-1">End Date:</label>
+            <label for="endDate" class="block text-sm text-gray-700 mb-1">End Date:</label>
             <input
               type="date"
               id="endDate"
               [(ngModel)]="selectedEndDate"
               (change)="loadAvailableSlots()"
-              class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
+              class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
 
         <!-- Price Estimate -->
-        <div class="mt-3 pt-3 border-t border-white/10">
+        <div class="mt-3 pt-3 border-t border-gray-200">
           <div class="flex items-center justify-between">
-            <span class="text-gray-300">Estimated Total:</span>
-            <span class="text-xl font-bold text-indigo-400">{{ getTotalPrice() }}</span>
+            <span class="text-gray-700">Estimated Total:</span>
+            <span class="text-xl font-bold text-blue-600">{{ getTotalPrice() }}</span>
           </div>
           @if (getPricingInfo().multiplier !== 1.0) {
             <div class="flex items-center justify-between mt-2">
-              <span class="text-gray-400 text-sm">{{ getPricingInfo().description }}</span>
-              <span class="text-green-400 text-sm font-medium">
+              <span class="text-gray-600 text-sm">{{ getPricingInfo().description }}</span>
+              <span class="text-green-600 text-sm font-medium">
                 {{ ((1 - getPricingInfo().multiplier) * 100).toFixed(0) }}% OFF
               </span>
             </div>
@@ -262,9 +262,9 @@
 
   <!-- Available Slots Summary -->
   @if (availableSlots.length > 0 && !isLoading) {
-    <div class="available-slots-summary mt-6 p-4 bg-green-500/10 rounded-lg border border-green-500/20">
-      <h4 class="text-green-400 font-semibold mb-2">✅ Available for Booking</h4>
-      <p class="text-green-300 text-sm">
+    <div class="available-slots-summary mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+      <h4 class="text-green-700 font-semibold mb-2">✅ Available for Booking</h4>
+      <p class="text-green-600 text-sm">
         Your selected range from {{ formatDate(selectedStartDate) }} to {{ formatDate(selectedEndDate) }}
         ({{ getDurationLabel() }}) is available for booking.
       </p>

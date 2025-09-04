@@ -937,9 +937,16 @@ export class VehicleDetail implements OnInit, OnDestroy {
       return;
     }
 
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+      this.toastr.error('You must be logged in to submit a review');
+      return;
+    }
+
     this.isSubmittingTestimonial = true;
     
     const testimonialData = {
+      userId: currentUser.id,
       vehicleId: this.vehicle.id,
       title: this.testimonialForm.get('title')?.value,
       content: this.testimonialForm.get('content')?.value,

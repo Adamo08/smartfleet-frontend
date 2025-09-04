@@ -197,10 +197,10 @@
       [tableRows]="5">
     </app-skeleton-page>
   } @else if (vehiclesPage && vehiclesPage.content.length > 0) {
-    <div class="overflow-x-auto rounded-lg shadow-xl">
-      <table class="min-w-full text-sm text-gray-200 bg-slate-800">
+    <div class="overflow-x-auto rounded-lg shadow-sm">
+      <table class="min-w-full text-sm bg-white border border-gray-200">
         <thead>
-          <tr class="text-left border-b border-indigo-500/20 bg-white">
+          <tr class="text-left border-b border-gray-200 bg-gray-50">
             <th class="p-3 text-gray-900">ID</th>
             <th class="p-3 text-gray-900">Image</th>
             <th class="p-3 text-gray-900">Brand</th>
@@ -213,22 +213,22 @@
         </thead>
         <tbody>
           @for (v of vehiclesPage.content; track v.id) {
-            <tr class="border-b border-indigo-500/10 hover:bg-white/50 transition-colors duration-200">
+            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200 text-gray-900">
               <td class="p-3">{{ v.id }}</td>
               <td class="p-3">
                 @if (v.imageUrl) {
                   <img [src]="v.imageUrl" alt="Vehicle Image" class="w-12 h-auto rounded-md object-cover" />
                 } @else {
-                  <div class="w-12 h-8 bg-gray-700 rounded-md flex items-center justify-center text-xs text-gray-400">No Image</div>
+                  <div class="w-12 h-8 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-600">No Image</div>
                 }
               </td>
               <td class="p-3">{{ v.brand }}</td>
               <td class="p-3">{{ v.model }}</td>
               <td class="p-3">{{ v.year }}</td>
               <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
-                'bg-green-500/20 text-green-300': v.status === 'AVAILABLE',
-                'bg-yellow-500/20 text-yellow-300': v.status === 'RENTED',
-                'bg-red-500/20 text-red-300': v.status === 'IN_MAINTENANCE' || v.status === 'OUT_OF_SERVICE'
+                'bg-green-100 text-green-700': v.status === 'AVAILABLE',
+                'bg-yellow-100 text-yellow-700': v.status === 'RENTED',
+                'bg-red-100 text-red-700': v.status === 'IN_MAINTENANCE' || v.status === 'OUT_OF_SERVICE'
               }">{{ v.status }}</span></td>
               <td class="p-3">{{ v.pricePerDay | currency }}</td>
               <td class="p-3">
@@ -252,7 +252,7 @@
       </app-pagination>
     </div>
   } @else {
-    <div class="text-gray-700 text-center py-8 border border-gray-200 rounded-lg bg-slate-900/40">
+    <div class="text-gray-700 text-center py-8 border border-gray-200 rounded-lg bg-gray-50">
       No vehicles found.
     </div>
   }

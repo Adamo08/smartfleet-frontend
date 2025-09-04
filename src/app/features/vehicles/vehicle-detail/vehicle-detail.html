@@ -88,7 +88,7 @@
             @if (vehicle.imageUrl) {
               <img [src]="vehicle.imageUrl" [alt]="vehicle.brand + ' ' + vehicle.model" class="w-full h-full object-cover">
             } @else {
-              <svg class="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-32 h-32 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
               </svg>
             }
@@ -117,7 +117,7 @@
                     <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
                   </svg>
                 } @else {
-                  <svg class="w-6 h-6 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                   </svg>
                 }
@@ -215,7 +215,7 @@
                             type="button"
                             (click)="setRating(star)"
                             [class.text-yellow-500]="testimonialRating >= star"
-                            [class.text-gray-400]="testimonialRating < star"
+                            [class.text-gray-600]="testimonialRating < star"
                             class="text-2xl hover:text-yellow-400 transition-colors duration-200 focus:outline-none">
                             ★
                           </button>
@@ -333,7 +333,7 @@
             } @else {
               <div class="text-center py-12">
                 <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                  <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                   </svg>
                 </div>
@@ -367,7 +367,7 @@
                   @if (similarVehicle.imageUrl) {
                     <img [src]="similarVehicle.imageUrl" [alt]="similarVehicle.brand + ' ' + similarVehicle.model" class="w-full h-full object-cover">
                   } @else {
-                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                     </svg>
                   }
@@ -393,7 +393,7 @@
     } @else {
       <!-- Error State -->
       <div class="text-center py-12">
-        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
         </svg>
         <h3 class="text-lg font-medium text-gray-900 mb-2">Vehicle not found</h3>
@@ -412,49 +412,49 @@
 
     <!-- Step Header -->
     <div class="mb-6">
-      <p class="text-gray-300 text-center">{{ getStepDescription() }}</p>
+      <p class="text-gray-600 text-center">{{ getStepDescription() }}</p>
 
       <!-- Step Progress -->
       <div class="flex items-center justify-center mt-4">
         <div class="flex items-center space-x-2">
           <div class="flex items-center">
             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
-                        {{ currentBookingStep === 'type' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+                        {{ currentBookingStep === 'type' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
               1
             </div>
-            <span class="ml-2 text-sm {{ currentBookingStep === 'type' ? 'text-indigo-400' : 'text-gray-400' }}">Type</span>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'type' ? 'text-blue-600' : 'text-gray-600' }}">Type</span>
           </div>
 
-          <div class="w-8 h-1 {{ currentBookingStep === 'dates' || currentBookingStep === 'confirmation' ? 'bg-indigo-500' : 'bg-gray-600' }}"></div>
+          <div class="w-8 h-1 {{ currentBookingStep === 'dates' || currentBookingStep === 'confirmation' ? 'bg-blue-600' : 'bg-gray-300' }}"></div>
 
           <div class="flex items-center">
             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
-                        {{ currentBookingStep === 'dates' ? 'bg-indigo-500 text-white' :
-                           currentBookingStep === 'confirmation' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+                        {{ currentBookingStep === 'dates' ? 'bg-blue-600 text-white' :
+                           currentBookingStep === 'confirmation' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
               2
             </div>
-            <span class="ml-2 text-sm {{ currentBookingStep === 'dates' ? 'text-indigo-400' :
-                                        currentBookingStep === 'confirmation' ? 'text-indigo-400' : 'text-gray-400' }}">Dates</span>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'dates' ? 'text-blue-600' :
+                                        currentBookingStep === 'confirmation' ? 'text-blue-600' : 'text-gray-600' }}">Dates</span>
           </div>
 
-          <div class="w-8 h-1 {{ currentBookingStep === 'confirmation' ? 'bg-indigo-500' : 'bg-gray-600' }}"></div>
+          <div class="w-8 h-1 {{ currentBookingStep === 'confirmation' ? 'bg-blue-600' : 'bg-gray-300' }}"></div>
 
           <div class="flex items-center">
             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
-                        {{ currentBookingStep === 'confirmation' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+                        {{ currentBookingStep === 'confirmation' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
               3
             </div>
-            <span class="ml-2 text-sm {{ currentBookingStep === 'confirmation' ? 'text-indigo-400' : 'text-gray-400' }}">Confirm</span>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'confirmation' ? 'text-blue-600' : 'text-gray-600' }}">Confirm</span>
           </div>
 
-          <div class="w-8 h-1 {{ currentBookingStep === 'payment' ? 'bg-indigo-500' : 'bg-gray-600' }}"></div>
+          <div class="w-8 h-1 {{ currentBookingStep === 'payment' ? 'bg-blue-600' : 'bg-gray-300' }}"></div>
 
           <div class="flex items-center">
             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
-                        {{ currentBookingStep === 'payment' ? 'bg-indigo-500 text-white' : 'bg-gray-600 text-gray-300' }}">
+                        {{ currentBookingStep === 'payment' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
               4
             </div>
-            <span class="ml-2 text-sm {{ currentBookingStep === 'payment' ? 'text-indigo-400' : 'text-gray-400' }}">Payment</span>
+            <span class="ml-2 text-sm {{ currentBookingStep === 'payment' ? 'text-blue-600' : 'text-gray-600' }}">Payment</span>
           </div>
         </div>
       </div>
@@ -470,52 +470,52 @@
               class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
               [class.border-indigo-500]="selectedSlotType === 'HOURLY'"
               [class.border-white]="selectedSlotType !== 'HOURLY'"
-              [class.bg-indigo-500]="selectedSlotType === 'HOURLY'"
+              [class.bg-blue-600]="selectedSlotType === 'HOURLY'"
               [class.bg-white]="selectedSlotType !== 'HOURLY'"
               (click)="selectedSlotType = 'HOURLY'"
             >
               <div class="font-semibold text-white mb-2">🚗 Hourly Rental</div>
               <div class="text-sm text-gray-300">Rent by the hour (1-23 hours)</div>
-              <div class="text-xs text-gray-400 mt-2">Perfect for short trips and errands</div>
+              <div class="text-xs text-gray-600 mt-2">Perfect for short trips and errands</div>
             </div>
 
             <div
               class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
               [class.border-indigo-500]="selectedSlotType === 'DAILY'"
               [class.border-white]="selectedSlotType !== 'DAILY'"
-              [class.bg-indigo-500]="selectedSlotType === 'DAILY'"
+              [class.bg-blue-600]="selectedSlotType === 'DAILY'"
               [class.bg-white]="selectedSlotType !== 'DAILY'"
               (click)="selectedSlotType = 'DAILY'"
             >
               <div class="font-semibold text-white mb-2">📅 Daily Rental</div>
               <div class="text-sm text-gray-300">Rent by the day (1-7 days)</div>
-              <div class="text-xs text-gray-400 mt-2">Great for business trips and weekend getaways</div>
+              <div class="text-xs text-gray-600 mt-2">Great for business trips and weekend getaways</div>
             </div>
 
             <div
               class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
               [class.border-indigo-500]="selectedSlotType === 'WEEKLY'"
               [class.border-white]="selectedSlotType !== 'WEEKLY'"
-              [class.bg-indigo-500]="selectedSlotType === 'WEEKLY'"
+              [class.bg-blue-600]="selectedSlotType === 'WEEKLY'"
               [class.bg-white]="selectedSlotType !== 'WEEKLY'"
               (click)="selectedSlotType = 'WEEKLY'"
             >
               <div class="font-semibold text-white mb-2">📆 Weekly Rental</div>
               <div class="text-sm text-gray-300">Rent by the week (7-30 days)</div>
-              <div class="text-xs text-gray-400 mt-2">Ideal for extended vacations and projects</div>
+              <div class="text-xs text-gray-600 mt-2">Ideal for extended vacations and projects</div>
             </div>
 
             <div
               class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
               [class.border-indigo-500]="selectedSlotType === 'CUSTOM'"
               [class.border-white]="selectedSlotType !== 'CUSTOM'"
-              [class.bg-indigo-500]="selectedSlotType === 'CUSTOM'"
+              [class.bg-blue-600]="selectedSlotType === 'CUSTOM'"
               [class.bg-white]="selectedSlotType !== 'CUSTOM'"
               (click)="selectedSlotType = 'CUSTOM'"
             >
               <div class="font-semibold text-white mb-2">⚙️ Custom Duration</div>
               <div class="text-sm text-gray-300">Any time range you need</div>
-              <div class="text-xs text-gray-400 mt-2">Flexible booking for special requirements</div>
+              <div class="text-xs text-gray-600 mt-2">Flexible booking for special requirements</div>
             </div>
           </div>
         </div>
@@ -525,7 +525,7 @@
       @if (currentBookingStep === 'dates') {
         <div class="space-y-4">
           <div class="text-center mb-4">
-            <p class="text-gray-300">You've selected: <span class="text-indigo-400 font-semibold">{{ selectedSlotType }}</span> rental</p>
+            <p class="text-gray-300">You've selected: <span class="text-blue-600 font-semibold">{{ selectedSlotType }}</span> rental</p>
           </div>
 
           <app-slot-selector
@@ -607,9 +607,9 @@
             <div class="mt-4 pt-4 border-t border-white/10">
               <div class="flex items-center justify-between">
                 <span class="text-gray-300">Estimated Total:</span>
-                <span class="text-2xl font-bold text-indigo-400">{{ formatCurrency(getTotalPaymentAmount()) }}</span>
+                <span class="text-2xl font-bold text-blue-600">{{ formatCurrency(getTotalPaymentAmount()) }}</span>
               </div>
-              <p class="text-xs text-gray-400 mt-1">*Final price may vary based on actual duration and any additional fees</p>
+              <p class="text-xs text-gray-600 mt-1">*Final price may vary based on actual duration and any additional fees</p>
             </div>
           </div>
 
@@ -644,7 +644,7 @@
               </div>
               <div>
                 <p class="text-gray-300 text-sm">Total Amount</p>
-                <p class="text-2xl font-bold text-indigo-400">{{ formatCurrency(getTotalPaymentAmount()) }}</p>
+                <p class="text-2xl font-bold text-blue-600">{{ formatCurrency(getTotalPaymentAmount()) }}</p>
               </div>
               <div>
                 <p class="text-gray-300 text-sm">Duration</p>
@@ -667,7 +667,7 @@
                   class="payment-method-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
                   [class.border-indigo-500]="selectedPaymentMethod === method.id"
                   [class.border-white]="selectedPaymentMethod !== method.id"
-                  [class.bg-indigo-500]="selectedPaymentMethod === method.id"
+                  [class.bg-blue-600]="selectedPaymentMethod === method.id"
                   [class.bg-white]="selectedPaymentMethod !== method.id"
                   [class.opacity-50]="!method.isActive"
                   [class.cursor-not-allowed]="!method.isActive"
@@ -676,7 +676,7 @@
                   <div class="text-center">
                     <div class="text-2xl mb-2">{{ method.icon }}</div>
                     <div class="font-semibold text-white">{{ method.name }}</div>
-                    <div class="text-xs text-gray-400">{{ method.description }}</div>
+                    <div class="text-xs text-gray-600">{{ method.description }}</div>
                     @if (!method.isActive) {
                       <div class="text-xs text-red-400 mt-1">Unavailable</div>
                     }
@@ -707,7 +707,7 @@
     <div modal-actions class="flex items-center justify-between gap-3">
       <button
         (click)="closeBooking()"
-        class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
+        class="px-4 py-2 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
       >
         Cancel
       </button>
@@ -716,7 +716,7 @@
         @if (currentBookingStep !== 'type') {
           <button
             (click)="previousBookingStep()"
-            class="px-4 py-2 rounded-xl border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10 transition-colors"
+            class="px-4 py-2 rounded-xl border border-blue-300 text-blue-600 hover:bg-blue-50 transition-colors"
           >
             ← Previous
           </button>
@@ -726,7 +726,7 @@
           <button
             [disabled]="!canProceedToNextStep()"
             (click)="nextBookingStep()"
-            class="px-6 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            class="px-6 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             Next →
           </button>

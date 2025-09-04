@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { VehicleService } from '../../../core/services/vehicle';
+import { VehicleDataService } from '../../../core/services/vehicle-data.service';
 import { FavoriteService, Favorite } from '../../../core/services/favorite';
 import { AuthService } from '../../../core/services/auth';
 import { Vehicle, VehicleStatus, FuelType } from '../../../core/models/vehicle.interface';
@@ -16,11 +17,8 @@ import { ApiService } from '../../../core/services/api';
 import { VehicleFilter } from '../../../core/models/vehicle-filter.interface';
 import { VehicleBrand } from '../../../core/models/vehicle-brand.interface';
 import { VehicleModel } from '../../../core/models/vehicle-model.interface';
+import { VehicleCategory } from '../../../core/models/vehicle-category.interface';
 
-interface VehicleCategory {
-  id: number;
-  name: string;
-}
 
 @Component({
   selector: 'app-vehicle-list',
@@ -67,6 +65,7 @@ export class VehicleList implements OnInit {
 
   constructor(
     private vehicleService: VehicleService,
+    private vehicleDataService: VehicleDataService,
     private favoriteService: FavoriteService,
     private authService: AuthService,
     private toastr: ToastrService,
@@ -84,16 +83,16 @@ export class VehicleList implements OnInit {
   }
 
   private loadFilterOptions(): void {
-    this.vehicleService.getAllVehicleCategories().subscribe({
-      next: (page) => this.categories = page.content,
+    this.vehicleDataService.getActiveCategories().subscribe({
+      next: (categories) => this.categories = categories,
       error: (error) => console.error('Error loading categories:', error)
     });
-    this.vehicleService.getAllVehicleBrands().subscribe({
-      next: (page) => this.brands = page.content,
+    this.vehicleDataService.getActiveBrands().subscribe({
+      next: (brands) => this.brands = brands,
       error: (error) => console.error('Error loading brands:', error)
     });
-    this.vehicleService.getAllVehicleModels().subscribe({
-      next: (page) => this.models = page.content,
+    this.vehicleDataService.getActiveModels().subscribe({
+      next: (models) => this.models = models,
       error: (error) => console.error('Error loading models:', error)
     });
   }

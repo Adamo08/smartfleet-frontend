@@ -13,7 +13,7 @@
     <input type="text" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search..." formControlName="searchTerm" (change)="onFilterChange()">
     <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Start Date" formControlName="startDate" (change)="onFilterChange()">
     <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="End Date" formControlName="endDate" (change)="onFilterChange()">
-    <button type="button" class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
+    <button type="button" class="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
     <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Apply Filters</button>
   </form>
 
@@ -52,18 +52,18 @@
             <td class="p-3">{{ r.user.firstName }} {{ r.user.lastName }}</td>
             <td class="p-3">{{ r.vehicle.brand }} {{ r.vehicle.model }}</td>
             <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
-              'bg-yellow-500/20 text-yellow-300': r.status === ReservationStatus.PENDING,
-              'bg-green-500/20 text-green-300': r.status === ReservationStatus.CONFIRMED,
-              'bg-blue-500/20 text-blue-300': r.status === ReservationStatus.COMPLETED,
-              'bg-red-500/20 text-red-300': r.status === ReservationStatus.CANCELLED
+              'bg-yellow-500 text-white': r.status === ReservationStatus.PENDING,
+              'bg-green-500 text-white': r.status === ReservationStatus.CONFIRMED,
+              'bg-blue-500 text-white': r.status === ReservationStatus.COMPLETED,
+              'bg-red-500 text-white': r.status === ReservationStatus.CANCELLED
             }">{{ r.status }}</span></td>
             <td class="p-3">{{ r.startDate | date:'short' }}</td>
             <td class="p-3">{{ r.endDate | date:'short' }}</td>
             <td class="p-3">
               @if (r.bookingContext) {
                 <div class="text-xs">
-                  <div class="font-medium text-blue-300">{{ r.bookingContext.slotType }}</div>
-                  <div class="text-gray-400">{{ r.bookingContext.duration }}h</div>
+                  <div class="font-medium text-blue-600">{{ r.bookingContext.slotType }}</div>
+                  <div class="text-gray-600">{{ r.bookingContext.duration }}h</div>
                 </div>
               } @else {
                 <span class="text-gray-500 text-xs">N/A</span>

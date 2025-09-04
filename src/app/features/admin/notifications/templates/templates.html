@@ -1,31 +1,31 @@
-<div class="min-h-screen backdrop-blur-2xl bg-opacity-5 border border-white border-opacity-10 rounded-3xl p-6">
+<div class="min-h-screen bg-gray-50 p-6">
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="mb-8 animate-fade-in-down">
-      <h1 class="text-3xl font-bold text-white mb-2">Email Templates</h1>
-      <p class="text-gray-300">Manage email notification templates and their metadata</p>
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Email Templates</h1>
+      <p class="text-gray-600">Manage email notification templates and their metadata</p>
     </div>
 
     <!-- Search and Filters -->
-    <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl p-6 mb-6 animate-fade-in-up">
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Search Templates</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Search Templates</label>
           <input
             type="text"
             [(ngModel)]="searchTerm"
             (ngModelChange)="onFilterChange()"
             placeholder="Search by name, description, or category..."
-            class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+            class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
           >
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
           <select
             [(ngModel)]="selectedCategory"
             (ngModelChange)="onFilterChange()"
-            class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30"
+            class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30"
           >
             <option value="">All Categories</option>
             @for (category of categories; track category.id) {
@@ -39,7 +39,7 @@
         <div class="flex items-end">
           <button
             (click)="openCreateModal()"
-            class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl hover:from-blue-500 hover:to-blue-600 flex items-center justify-center gap-2 transition-all duration-200 transform hover:scale-105 hover:shadow-lg active:scale-95"
+            class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-gray-900 rounded-lg hover:from-blue-500 hover:to-blue-600 flex items-center justify-center gap-2 transition-all duration-200 transform hover:scale-105 hover:shadow-lg active:scale-95"
           >
             <span class="animate-bounce">➕</span>
             Create Template
@@ -49,10 +49,10 @@
     </div>
 
     <!-- Template Selector Bar -->
-    <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl mb-6 animate-fade-in-up">
-      <div class="p-4 border-b border-white/10">
-        <h3 class="text-lg font-semibold text-white mb-2">Select Template</h3>
-        <p class="text-sm text-gray-300">{{ filteredTemplates.length }} templates available</p>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-2xl mb-6 animate-fade-in-up">
+      <div class="p-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Select Template</h3>
+        <p class="text-sm text-gray-700">{{ filteredTemplates.length }} templates available</p>
       </div>
 
       <div class="p-4">
@@ -71,7 +71,7 @@
             @for (template of filteredTemplates; track template.id; let i = $index) {
               <div
                 (click)="selectTemplate(template)"
-                class="p-2 border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-all duration-200"
+                class="p-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-white/5 transition-all duration-200"
                 [class.bg-blue-500]="selectedTemplate?.id === template.id"
                 [class.border-blue-400]="selectedTemplate?.id === template.id"
                 [class.shadow-blue-500]="selectedTemplate?.id === template.id"
@@ -80,8 +80,8 @@
 
                 <div class="text-center">
                   <span class="text-3xl block mb-2 animate-pulse">{{ template.icon }}</span>
-                  <div class="font-medium text-white text-sm truncate">{{ template.name }}</div>
-                  <div class="text-xs text-gray-300 truncate">{{ template.category }}</div>
+                  <div class="font-medium text-gray-900 text-sm truncate">{{ template.name }}</div>
+                  <div class="text-xs text-gray-700 truncate">{{ template.category }}</div>
 
                   <div class="flex items-center justify-between mt-3 text-xs">
                     <span [class]="getStatusBadgeClass(template)" class="px-2 py-1 rounded-full transition-all duration-200 hover:scale-110">
@@ -102,20 +102,20 @@
     <!-- Template Details -->
     @if (selectedTemplate) {
       <div class="animate-fade-in-right">
-        <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl hover:shadow-2xl transition-all duration-300">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-2xl hover:shadow-2xl transition-all duration-300">
             <!-- Template Header -->
-            <div class="p-6 border-b border-white/10">
+            <div class="p-6 border-b border-gray-200">
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-4">
                   <span class="text-4xl animate-bounce">{{ selectedTemplate.icon }}</span>
                   <div>
-                    <h2 class="text-2xl font-bold text-white">{{ selectedTemplate.name }}</h2>
-                    <p class="text-gray-300">{{ selectedTemplate.description }}</p>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ selectedTemplate.name }}</h2>
+                    <p class="text-gray-700">{{ selectedTemplate.description }}</p>
                     <div class="flex items-center gap-2 mt-2">
                       <span [class]="getColorClass(selectedTemplate.color)" class="px-2 py-1 rounded-full text-xs animate-pulse">
                         {{ selectedTemplate.category }}
                       </span>
-                      <span class="text-sm text-gray-300">{{ selectedTemplate.type }}</span>
+                      <span class="text-sm text-gray-700">{{ selectedTemplate.type }}</span>
                     </div>
                   </div>
                 </div>
@@ -131,7 +131,7 @@
 
                   <button
                     (click)="duplicateTemplate(selectedTemplate)"
-                    class="px-3 py-1 bg-white/10 text-gray-300 rounded-xl hover:bg-white/20 hover:text-white text-sm transition-all duration-200 hover:scale-110 hover:shadow-md active:scale-95 border border-white/20"
+                    class="px-3 py-1 bg-white/10 text-gray-700 rounded-xl hover:bg-white/20 hover:text-gray-900 text-sm transition-all duration-200 hover:scale-110 hover:shadow-md active:scale-95 border border-gray-300"
                   >
                     Duplicate
                   </button>
@@ -155,12 +155,12 @@
 
             <!-- Template Tabs -->
             <div class="p-6">
-              <div class="border-b border-white/10 mb-6">
+              <div class="border-b border-gray-200 mb-6">
                 <nav class="flex flex-wrap gap-2 md:gap-4 lg:space-x-8 lg:gap-0">
                   @for (tab of ['overview', 'preview', 'variables', 'editor']; track tab) {
                     <button
                       (click)="setActiveTab(tab)"
-                      [class]="activeTab === tab ? 'bg-blue-500/20 text-blue-300 border-blue-400/50' : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:bg-white/10 hover:border-white/20'"
+                      [class]="activeTab === tab ? 'bg-blue-500/20 text-blue-300 border-blue-400/50' : 'bg-white/5 text-gray-700 border-gray-200 hover:text-gray-900 hover:bg-white/10 hover:border-gray-300'"
                       class="flex-1 lg:flex-none whitespace-nowrap py-3 px-4 lg:py-2 lg:px-1 border lg:border-b-2 lg:border-x-0 lg:border-t-0 rounded-xl lg:rounded-none font-medium text-sm transition-all duration-200 hover:scale-105 lg:hover:scale-100"
                     >
                       {{ tab | titlecase }}
@@ -174,41 +174,41 @@
                 <div class="space-y-6 animate-fade-in">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="animate-slide-in-left">
-                      <h4 class="font-medium text-white mb-3">Template Information</h4>
+                      <h4 class="font-medium text-gray-900 mb-3">Template Information</h4>
                       <dl class="space-y-2">
                         <div class="flex justify-between">
-                          <dt class="text-sm text-gray-300">Subject:</dt>
-                          <dd class="text-sm text-white">{{ selectedTemplate.subject }}</dd>
+                          <dt class="text-sm text-gray-700">Subject:</dt>
+                          <dd class="text-sm text-gray-900">{{ selectedTemplate.subject }}</dd>
                         </div>
                         <div class="flex justify-between">
-                          <dt class="text-sm text-gray-300">Type:</dt>
-                          <dd class="text-sm text-white">{{ getTypeDisplayName(selectedTemplate.type) }}</dd>
+                          <dt class="text-sm text-gray-700">Type:</dt>
+                          <dd class="text-sm text-gray-900">{{ getTypeDisplayName(selectedTemplate.type) }}</dd>
                         </div>
                         <div class="flex justify-between">
-                          <dt class="text-sm text-gray-300">Category:</dt>
-                          <dd class="text-sm text-white">{{ selectedTemplate.category }}</dd>
+                          <dt class="text-sm text-gray-700">Category:</dt>
+                          <dd class="text-sm text-gray-900">{{ selectedTemplate.category }}</dd>
                         </div>
                         <div class="flex justify-between">
-                          <dt class="text-sm text-gray-300">Template File:</dt>
-                          <dd class="text-sm text-white">{{ selectedTemplate.templateFile }}</dd>
+                          <dt class="text-sm text-gray-700">Template File:</dt>
+                          <dd class="text-sm text-gray-900">{{ selectedTemplate.templateFile }}</dd>
                         </div>
                       </dl>
                     </div>
 
                     <div class="animate-slide-in-right">
-                      <h4 class="font-medium text-white mb-3">Usage Statistics</h4>
+                      <h4 class="font-medium text-gray-900 mb-3">Usage Statistics</h4>
                       <dl class="space-y-2">
                         <div class="flex justify-between">
-                          <dt class="text-sm text-gray-300">Usage Count:</dt>
-                          <dd class="text-sm text-white">{{ selectedTemplate.usageCount }}</dd>
+                          <dt class="text-sm text-gray-700">Usage Count:</dt>
+                          <dd class="text-sm text-gray-900">{{ selectedTemplate.usageCount }}</dd>
                         </div>
                         <div class="flex justify-between">
-                          <dt class="text-sm text-gray-300">Last Modified:</dt>
-                          <dd class="text-sm text-white">{{ selectedTemplate.lastModified | date:'short' }}</dd>
+                          <dt class="text-sm text-gray-700">Last Modified:</dt>
+                          <dd class="text-sm text-gray-900">{{ selectedTemplate.lastModified | date:'short' }}</dd>
                         </div>
                         <div class="flex justify-between">
-                          <dt class="text-sm text-gray-300">Created:</dt>
-                          <dd class="text-sm text-white">{{ selectedTemplate.createdAt | date:'short' }}</dd>
+                          <dt class="text-sm text-gray-700">Created:</dt>
+                          <dd class="text-sm text-gray-900">{{ selectedTemplate.createdAt | date:'short' }}</dd>
                         </div>
                       </dl>
                     </div>
@@ -219,14 +219,14 @@
               <!-- Preview Tab -->
               @if (activeTab === 'preview') {
                 <div class="space-y-4 animate-fade-in">
-                  <h4 class="font-medium text-white">Template Preview</h4>
-                  <div class="bg-white/5 p-4 rounded-xl border border-white/10 animate-pulse">
-                    <div class="bg-white/10 p-4 rounded-xl border border-white/20">
-                      <h5 class="font-medium text-white mb-2">Subject: {{ selectedTemplate.subject }}</h5>
-                      <div class="text-sm text-gray-300 mb-4">
+                  <h4 class="font-medium text-gray-900">Template Preview</h4>
+                  <div class="bg-white/5 p-4 rounded-xl border border-gray-200 animate-pulse">
+                    <div class="bg-white/10 p-4 rounded-xl border border-gray-300">
+                      <h5 class="font-medium text-gray-900 mb-2">Subject: {{ selectedTemplate.subject }}</h5>
+                      <div class="text-sm text-gray-700 mb-4">
                         <strong>Template:</strong> {{ selectedTemplate.templateFile }}
                       </div>
-                      <div class="text-sm text-gray-300">
+                      <div class="text-sm text-gray-700">
                         <strong>Variables:</strong> {{ selectedTemplate.variables.join(', ') }}
                       </div>
                     </div>
@@ -237,12 +237,12 @@
               <!-- Variables Tab -->
               @if (activeTab === 'variables') {
                 <div class="space-y-4 animate-fade-in">
-                  <h4 class="font-medium text-white">Template Variables</h4>
+                  <h4 class="font-medium text-gray-900">Template Variables</h4>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @for (variable of selectedTemplate.variables; track variable; let i = $index) {
-                      <div class="bg-white/5 p-4 rounded-xl border border-white/10 animate-slide-in-up" [style.animation-delay]="(i * 100) + 'ms'">
-                        <div class="font-medium text-white mb-1">{{ variable }}</div>
-                        <div class="text-sm text-gray-300">{{ getVariableDescription(variable) }}</div>
+                      <div class="bg-white/5 p-4 rounded-xl border border-gray-200 animate-slide-in-up" [style.animation-delay]="(i * 100) + 'ms'">
+                        <div class="font-medium text-gray-900 mb-1">{{ variable }}</div>
+                        <div class="text-sm text-gray-700">{{ getVariableDescription(variable) }}</div>
                       </div>
                     }
                   </div>
@@ -252,25 +252,25 @@
               <!-- Editor Tab -->
               @if (activeTab === 'editor') {
                 <div class="space-y-4 animate-fade-in">
-                  <h4 class="font-medium text-white">Template File</h4>
-                  <div class="border border-white/20 rounded-xl">
+                  <h4 class="font-medium text-gray-900">Template File</h4>
+                  <div class="border border-gray-300 rounded-xl">
                     <input
                       type="text"
                       [(ngModel)]="selectedTemplate.templateFile"
-                      class="w-full p-4 font-mono text-sm border-0 focus:ring-0 resize-none transition-all duration-200 bg-white/10 text-white placeholder-gray-400 rounded-xl focus:bg-white/20"
+                      class="w-full p-4 font-mono text-sm border-0 focus:ring-0 resize-none transition-all duration-200 bg-white/10 text-gray-900 placeholder-gray-500 rounded-xl focus:bg-white/20"
                       placeholder="Enter template file name (e.g., payment-success-email)"
                     >
                   </div>
                   <div class="flex justify-end gap-3">
                     <button
                       (click)="selectedTemplate.templateFile = getDefaultTemplateFileName(selectedTemplate.name)"
-                      class="px-4 py-2 text-gray-300 border border-white/20 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 hover:scale-105 active:scale-95"
+                      class="px-4 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-white/10 hover:text-gray-900 transition-all duration-200 hover:scale-105 active:scale-95"
                     >
                       Generate File Name
                     </button>
                     <button
                       (click)="openEditModal(selectedTemplate)"
-                      class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-500 hover:to-blue-600 transition-all duration-200 hover:scale-105 active:scale-95"
+                      class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-gray-900 rounded-xl hover:from-blue-500 hover:to-blue-600 transition-all duration-200 hover:scale-105 active:scale-95"
                     >
                       Save Changes
                     </button>
@@ -286,25 +286,25 @@
   <!-- Create Template Modal -->
   @if (showCreateModal) {
     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-      <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-modal-slide-in">
-        <h3 class="text-xl font-semibold text-white mb-6">Create New Template</h3>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-modal-slide-in">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6">Create New Template</h3>
 
         <form [formGroup]="templateForm" (ngSubmit)="saveTemplate()" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="animate-slide-in-left">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Template Name *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Template Name *</label>
               <input
                 type="text"
                 formControlName="name"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
             </div>
 
             <div class="animate-slide-in-right">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Notification Type *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Notification Type *</label>
               <select
                 formControlName="type"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
                 @for (type of adminNotificationService.types; track type) {
                   <option [value]="type">
@@ -316,29 +316,29 @@
           </div>
 
           <div class="animate-slide-in-up">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Subject *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
             <input
               type="text"
               formControlName="subject"
-              class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+              class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
             >
           </div>
 
           <div class="animate-slide-in-up">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Description *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
             <textarea
               formControlName="description"
               rows="3"
-              class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400 resize-none"
+              class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500 resize-none"
             ></textarea>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="animate-slide-in-left">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Category *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
               <select
                 formControlName="category"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
                 <option value="">Select Category</option>
                 <option value="Payment">Payment</option>
@@ -351,19 +351,19 @@
             </div>
 
             <div class="animate-slide-in-up">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Icon</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Icon</label>
               <input
                 type="text"
                 formControlName="icon"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
             </div>
 
             <div class="animate-slide-in-right">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Color</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Color</label>
               <select
                 formControlName="color"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
                 <option value="blue">Blue</option>
                 <option value="green">Green</option>
@@ -377,22 +377,22 @@
           </div>
 
           <div class="animate-slide-in-up">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Template File *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Template File *</label>
             <input
               type="text"
               formControlName="templateFile"
-              class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+              class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               placeholder="Enter template file name (e.g., payment-success-email)"
             >
           </div>
 
           <div class="animate-slide-in-up">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Variables (comma-separated) *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Variables (comma-separated) *</label>
             <input
               type="text"
               formControlName="variables"
               placeholder="username, reservationId, vehicle, amount"
-              class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+              class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
             >
           </div>
 
@@ -400,14 +400,14 @@
             <button
               type="button"
               (click)="showCreateModal = false"
-              class="px-4 py-2 text-gray-300 border border-white/20 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 hover:scale-105 active:scale-95"
+              class="px-4 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-white/10 hover:text-gray-900 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               Cancel
             </button>
             <button
               type="submit"
               [disabled]="templateForm.invalid || isSaving"
-              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-500 hover:to-blue-600 disabled:opacity-50 transition-all duration-200 hover:scale-105 active:scale-95"
+              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-gray-900 rounded-xl hover:from-blue-500 hover:to-blue-600 disabled:opacity-50 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               {{ isSaving ? 'Creating...' : 'Create Template' }}
             </button>
@@ -420,26 +420,26 @@
   <!-- Edit Template Modal -->
   @if (showEditModal) {
     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-      <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-modal-slide-in">
-        <h3 class="text-xl font-semibold text-white mb-6">Edit Template</h3>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-modal-slide-in">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6">Edit Template</h3>
 
         <form [formGroup]="templateForm" (ngSubmit)="saveTemplate()" class="space-y-4">
           <!-- Same form fields as create modal -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="animate-slide-in-left">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Template Name *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Template Name *</label>
               <input
                 type="text"
                 formControlName="name"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
             </div>
 
             <div class="animate-slide-in-right">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Notification Type *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Notification Type *</label>
               <select
                 formControlName="type"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
                 @for (type of adminNotificationService.types; track type) {
                   <option [value]="type">
@@ -451,29 +451,29 @@
           </div>
 
           <div class="animate-slide-in-up">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Subject *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
             <input
               type="text"
               formControlName="subject"
-              class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+              class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
             >
           </div>
 
           <div class="animate-slide-in-up">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Description *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
             <textarea
               formControlName="description"
               rows="3"
-              class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400 resize-none"
+              class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500 resize-none"
             ></textarea>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="animate-slide-in-left">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Category *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
               <select
                 formControlName="category"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
                 <option value="">Select Category</option>
                 <option value="Payment">Payment</option>
@@ -486,19 +486,19 @@
             </div>
 
             <div class="animate-slide-in-up">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Icon</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Icon</label>
               <input
                 type="text"
                 formControlName="icon"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
             </div>
 
             <div class="animate-slide-in-right">
-              <label class="block text-sm font-medium text-gray-300 mb-2">Color</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Color</label>
               <select
                 formControlName="color"
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
               >
                 <option value="blue">Blue</option>
                 <option value="green">Green</option>
@@ -512,12 +512,12 @@
           </div>
 
           <div class="animate-slide-in-up">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Variables (comma-separated) *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Variables (comma-separated) *</label>
             <input
               type="text"
               formControlName="variables"
               placeholder="username, reservationId, vehicle, amount"
-              class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-400"
+              class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-white/30 placeholder-gray-500"
             >
           </div>
 
@@ -525,14 +525,14 @@
             <button
               type="button"
               (click)="showEditModal = false"
-              class="px-4 py-2 text-gray-300 border border-white/20 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 hover:scale-105 active:scale-95"
+              class="px-4 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-white/10 hover:text-gray-900 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               Cancel
             </button>
             <button
               type="submit"
               [disabled]="templateForm.invalid || isSaving"
-              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-500 hover:to-blue-600 disabled:opacity-50 transition-all duration-200 hover:scale-105 active:scale-95"
+              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-gray-900 rounded-xl hover:from-blue-500 hover:to-blue-600 disabled:opacity-50 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               {{ isSaving ? 'Saving...' : 'Save Changes' }}
             </button>
@@ -560,13 +560,13 @@
           <div class="flex justify-end gap-3">
             <button
               (click)="showDeleteModal = false"
-              class="px-4 py-2 text-gray-300 border border-white/20 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 hover:scale-105 active:scale-95"
+              class="px-4 py-2 text-gray-700 border border-gray-300 rounded-xl hover:bg-white/10 hover:text-gray-900 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               Cancel
             </button>
             <button
               (click)="deleteTemplate()"
-              class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all duration-200 hover:scale-105 active:scale-95"
+              class="px-4 py-2 bg-red-600 text-gray-900 rounded-md hover:bg-red-700 transition-all duration-200 hover:scale-105 active:scale-95"
             >
               Delete Template
             </button>

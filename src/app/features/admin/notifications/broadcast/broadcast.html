@@ -1,26 +1,26 @@
-<div class="min-h-screen backdrop-blur-2xl bg-opacity-5 border border-white border-opacity-10 rounded-3xl p-6">
+<div class="min-h-screen bg-gray-50 p-6">
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-white mb-2">Broadcast Notifications</h1>
-      <p class="text-gray-300">Send notifications to users across the platform</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Broadcast Notifications</h1>
+      <p class="text-gray-600">Send notifications to users across the platform</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Main Broadcast Form -->
       <div class="lg:col-span-2">
-        <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl p-6">
-          <h2 class="text-xl font-semibold text-white mb-6">Create Broadcast</h2>
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Create Broadcast</h2>
 
           <!-- Broadcast Form -->
           <form [formGroup]="broadcastForm" (ngSubmit)="submit()" class="space-y-6">
             <!-- Basic Information -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">Notification Type</label>
-                <select formControlName="type" class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Notification Type</label>
+                <select formControlName="type" class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   @for (type of types; track type) {
-                    <option [value]="type" class="bg-slate-800 text-white">
+                    <option [value]="type" class="bg-white text-gray-900">
                       {{ getNotificationTypeDisplayName(type) }}
                     </option>
                   }
@@ -28,30 +28,30 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">Title (Optional)</label>
-                <input type="text" formControlName="title" placeholder="Enter title..." class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title (Optional)</label>
+                <input type="text" formControlName="title" placeholder="Enter title..." class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500">
               </div>
             </div>
 
             <!-- Message -->
             <div>
-              <label class="block text-sm font-medium text-gray-300 mb-2">
-                Message <span class="text-red-400">*</span>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Message <span class="text-red-600">*</span>
               </label>
               <textarea
                 formControlName="message"
                 rows="4"
                 placeholder="Enter your message..."
-                class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none placeholder-gray-400"
+                class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none placeholder-gray-500"
               ></textarea>
             </div>
 
             <!-- Advanced Options Toggle -->
-            <div class="border-t border-white/10 pt-4">
+            <div class="border-t border-gray-200 pt-4">
               <button
                 type="button"
                 (click)="toggleAdvancedOptions()"
-                class="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
+                class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <span>{{ showAdvancedOptions ? 'Hide' : 'Show' }} Advanced Options</span>
                 <svg class="w-4 h-4 transition-transform" [class.rotate-180]="showAdvancedOptions" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,67 +62,67 @@
 
             <!-- Advanced Options -->
             @if (showAdvancedOptions) {
-              <div class="space-y-6 border-t border-white/10 pt-4">
+              <div class="space-y-6 border-t border-gray-200 pt-4">
                 <!-- Targeting Options -->
                 <div>
-                  <h3 class="text-sm font-medium text-white mb-3">Targeting</h3>
+                  <h3 class="text-sm font-medium text-gray-900 mb-3">Targeting</h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-300 mb-2">Target Type</label>
-                      <select formControlName="target.type" class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="all" class="bg-slate-800 text-white">All Users</option>
-                        <option value="role" class="bg-slate-800 text-white">By Role</option>
-                        <option value="specific" class="bg-slate-800 text-white">Specific Users</option>
-                        <option value="group" class="bg-slate-800 text-white">By Group</option>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Target Type</label>
+                      <select formControlName="target.type" class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="all" class="bg-white text-gray-900">All Users</option>
+                        <option value="role" class="bg-white text-gray-900">By Role</option>
+                        <option value="specific" class="bg-white text-gray-900">Specific Users</option>
+                        <option value="group" class="bg-white text-gray-900">By Group</option>
                       </select>
                     </div>
 
                     @if (broadcastForm.get('target.type')?.value !== 'all') {
                       <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Target Value</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Target Value</label>
                         <input
                           type="text"
                           formControlName="target.value"
                           [placeholder]="broadcastForm.get('target.type')?.value === 'role' ? 'ADMIN, USER' : broadcastForm.get('target.type')?.value === 'specific' ? 'User IDs (comma-separated)' : 'Group name'"
-                          class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                          class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
                         >
                       </div>
                     }
                   </div>
 
-                  <div class="mt-2 text-sm text-gray-300">
+                  <div class="mt-2 text-sm text-gray-700">
                     <span class="font-medium">Targeted Users:</span> {{ getTargetedUserCount() }}
                   </div>
                 </div>
 
                 <!-- Scheduling Options -->
                 <div>
-                  <h3 class="text-sm font-medium text-white mb-3">Scheduling</h3>
+                  <h3 class="text-sm font-medium text-gray-900 mb-3">Scheduling</h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="flex items-center">
-                        <input type="checkbox" formControlName="schedule.immediate" class="mr-2 rounded border-white/20 bg-white/10 text-blue-500 focus:ring-blue-500">
-                        <span class="text-sm text-gray-300">Send immediately</span>
+                        <input type="checkbox" formControlName="schedule.immediate" class="mr-2 rounded border-gray-300 bg-white/10 text-blue-500 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700">Send immediately</span>
                       </label>
                     </div>
 
                     @if (!broadcastForm.get('schedule.immediate')?.value) {
                       <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Scheduled Date</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Scheduled Date</label>
                         <input
                           type="datetime-local"
                           formControlName="schedule.scheduledDate"
-                          class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                       </div>
                     }
                   </div>
 
                   <div class="mt-2">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Timezone</label>
-                    <select formControlName="schedule.timezone" class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
+                    <select formControlName="schedule.timezone" class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                       @for (tz of timezones; track tz) {
-                        <option [value]="tz" class="bg-slate-800 text-white">{{ tz }}</option>
+                        <option [value]="tz" class="bg-white text-gray-900">{{ tz }}</option>
                       }
                     </select>
                   </div>
@@ -131,23 +131,23 @@
                 <!-- Additional Options -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Priority</label>
-                    <select formControlName="priority" class="w-full px-3 py-2 backdrop-blur-sm bg-white/10 border border-white/20 text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                    <select formControlName="priority" class="w-full px-3 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                       @for (priority of priorities; track priority) {
-                        <option [value]="priority" class="bg-slate-800 text-white">{{ priority | titlecase }}</option>
+                        <option [value]="priority" class="bg-white text-gray-900">{{ priority | titlecase }}</option>
                       }
                     </select>
                   </div>
 
                   <div class="space-y-3">
                     <label class="flex items-center">
-                      <input type="checkbox" formControlName="requiresConfirmation" class="mr-2 rounded border-white/20 bg-white/10 text-blue-500 focus:ring-blue-500">
-                      <span class="text-sm text-gray-300">Require confirmation</span>
+                      <input type="checkbox" formControlName="requiresConfirmation" class="mr-2 rounded border-gray-300 bg-white/10 text-blue-500 focus:ring-blue-500">
+                      <span class="text-sm text-gray-700">Require confirmation</span>
                     </label>
 
                     <label class="flex items-center">
-                      <input type="checkbox" formControlName="trackAnalytics" class="mr-2 rounded border-white/20 bg-white/10 text-blue-500 focus:ring-blue-500">
-                      <span class="text-sm text-gray-300">Track analytics</span>
+                      <input type="checkbox" formControlName="trackAnalytics" class="mr-2 rounded border-gray-300 bg-white/10 text-blue-500 focus:ring-blue-500">
+                      <span class="text-sm text-gray-700">Track analytics</span>
                     </label>
                   </div>
                 </div>
@@ -155,11 +155,11 @@
             }
 
               <!-- Submit Button -->
-              <div class="border-t border-white/10 pt-6">
+              <div class="border-t border-gray-200 pt-6">
                 <button
                   type="submit"
                   [disabled]="broadcastForm.invalid || isSubmitting"
-                  class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-2xl hover:from-blue-500 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 active:scale-95"
+                  class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-gray-900 font-medium rounded-lg hover:from-blue-500 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                 @if (isSubmitting) {
                   <span class="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block mr-2"></span>
@@ -173,9 +173,9 @@
 
       <!-- Analytics Sidebar -->
       <div class="lg:col-span-1">
-        <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl p-6">
+        <div class="backdrop-blur-xl bg-slate-900/95 border border-gray-200 rounded-3xl shadow-2xl p-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-white">Analytics</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Analytics</h3>
             <button
               (click)="toggleAnalytics()"
               class="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200"
@@ -187,37 +187,37 @@
           @if (showAnalytics && analytics) {
             <div class="space-y-4">
               <!-- Total Users -->
-              <div class="text-center p-4 backdrop-blur-sm bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+              <div class="text-center p-4 backdrop-blur-sm bg-blue-500/10 border border-blue-500/20 rounded-lg">
                 <div class="text-2xl font-bold text-blue-400">{{ analytics.totalUsers.toLocaleString() }}</div>
                 <div class="text-sm text-blue-300">Total Users</div>
               </div>
 
               <!-- Delivery Rate -->
-              <div class="text-center p-4 backdrop-blur-sm bg-green-500/10 border border-green-500/20 rounded-2xl">
+              <div class="text-center p-4 backdrop-blur-sm bg-green-500/10 border border-green-500/20 rounded-lg">
                 <div class="text-2xl font-bold text-green-400">{{ analytics.deliveryRate }}%</div>
                 <div class="text-sm text-green-300">Delivery Rate</div>
               </div>
 
               <!-- Metrics Grid -->
               <div class="grid grid-cols-2 gap-3">
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl">
+                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-green-400">{{ analytics.sentCount.toLocaleString() }}</div>
-                  <div class="text-xs text-gray-300">Sent</div>
+                  <div class="text-xs text-gray-700">Sent</div>
                 </div>
 
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl">
+                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-red-400">{{ analytics.failedCount.toLocaleString() }}</div>
-                  <div class="text-xs text-gray-300">Failed</div>
+                  <div class="text-xs text-gray-700">Failed</div>
                 </div>
 
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl">
+                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-blue-400">{{ analytics.readCount.toLocaleString() }}</div>
-                  <div class="text-xs text-gray-300">Read</div>
+                  <div class="text-xs text-gray-700">Read</div>
                 </div>
 
-                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl">
+                <div class="text-center p-3 backdrop-blur-sm bg-white/5 border border-gray-200 rounded-lg">
                   <div class="text-lg font-semibold text-purple-400">{{ analytics.clickCount.toLocaleString() }}</div>
-                  <div class="text-xs text-gray-300">Clicked</div>
+                  <div class="text-xs text-gray-700">Clicked</div>
                 </div>
               </div>
             </div>
@@ -225,8 +225,8 @@
         </div>
 
         <!-- Recent Broadcasts -->
-        <div class="backdrop-blur-xl bg-slate-900/95 border border-white/10 rounded-3xl shadow-2xl p-6 mt-6">
-          <h3 class="text-lg font-semibold text-white mb-4">Recent Broadcasts</h3>
+        <div class="backdrop-blur-xl bg-slate-900/95 border border-gray-200 rounded-3xl shadow-2xl p-6 mt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Broadcasts</h3>
 
           @if (recentBroadcasts.length === 0) {
             <div class="text-center text-gray-400 py-8">
@@ -235,12 +235,12 @@
             </div>
           } @else {
             @for (broadcast of recentBroadcasts; track broadcast.id) {
-              <div class="border-b border-white/10 pb-3 mb-3 last:border-b-0 last:pb-0 last:mb-0">
+              <div class="border-b border-gray-200 pb-3 mb-3 last:border-b-0 last:pb-0 last:mb-0">
                 <div class="flex items-start gap-3">
                   <div class="text-lg">{{ getStatusBadgeClass(broadcast.status) }}</div>
                   <div class="flex-1 min-w-0">
-                    <div class="font-medium text-white truncate">{{ broadcast.title || 'No Title' }}</div>
-                    <div class="text-sm text-gray-300 truncate">{{ broadcast.message }}</div>
+                    <div class="font-medium text-gray-900 truncate">{{ broadcast.title || 'No Title' }}</div>
+                    <div class="text-sm text-gray-700 truncate">{{ broadcast.message }}</div>
                     <div class="flex items-center gap-2 mt-1">
                       <span [class]="getStatusBadgeClass(broadcast.status)" class="px-2 py-1 text-xs rounded-full">
                         {{ broadcast.status }}

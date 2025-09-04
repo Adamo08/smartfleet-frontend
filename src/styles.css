@@ -350,13 +350,22 @@ select option:hover {
   background-color: #334155; /* slate-700 */
 }
 
-select option:checked {
-  background-color: #3b82f6; /* blue-500 */
-  color: white;
+/* Comprehensive select dropdown styling for visibility */
+select option {
+  background-color: white !important;
+  color: #374151 !important; /* gray-700 */
+  padding: 8px 12px !important;
+  border: none !important;
 }
 
-/* Ensure select dropdown is visible */
+select option:checked,
 select:focus option:checked {
-  background-color: #3b82f6;
-  color: white;
+  background-color: #2563eb !important; /* blue-600 */
+  color: white !important;
+}
+
+select option:hover,
+select option:focus {
+  background-color: #f3f4f6 !important; /* gray-100 */
+  color: #111827 !important; /* gray-900 */
 }

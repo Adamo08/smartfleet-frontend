@@ -3,22 +3,22 @@
   cursor: pointer;
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #d1d5db;
   transition: all 0.2s ease;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #ffffff;
 }
 
 .booking-type-option:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #f9fafb;
+  border-color: #9ca3af;
   transform: translateY(-2px);
 }
 
-.booking-type-option.border-indigo-500 {
-  border-color: #6366f1;
-  background-color: rgba(99, 102, 241, 0.2);
+.booking-type-option.border-blue-600 {
+  border-color: #2563eb;
+  background-color: #eff6ff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 /* Step Progress */
@@ -42,18 +42,18 @@
 }
 
 .step-indicator.active {
-  background-color: #6366f1;
+  background-color: #2563eb;
   color: white;
 }
 
 .step-indicator.completed {
-  background-color: #6366f1;
+  background-color: #2563eb;
   color: white;
 }
 
 .step-indicator.pending {
-  background-color: #4b5563;
-  color: #d1d5db;
+  background-color: #d1d5db;
+  color: #6b7280;
 }
 
 .step-connector {
@@ -63,11 +63,11 @@
 }
 
 .step-connector.active {
-  background-color: #6366f1;
+  background-color: #2563eb;
 }
 
 .step-connector.pending {
-  background-color: #4b5563;
+  background-color: #d1d5db;
 }
 
 /* Modal Content */
@@ -82,7 +82,7 @@
   justify-content: space-between;
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #e5e7eb;
 }
 
 /* Responsive Design */
