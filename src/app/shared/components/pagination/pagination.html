@@ -1,23 +1,29 @@
 <nav class="flex justify-center items-center space-x-1" aria-label="Pagination">
+  <!-- Previous Button -->
   <button
     (click)="prevPage()"
     [disabled]="currentPage === 0"
-    class="px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border"
+    class="p-2 rounded-lg transition-colors duration-200 border"
     [ngClass]="{
       'bg-blue-600 text-white hover:bg-blue-700 border-blue-600': currentPage > 0,
       'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200': currentPage === 0
     }"
+    title="Previous page"
   >
-    Previous
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
   </button>
+
+  <!-- Page Numbers -->
   @for (page of pages; track page) {
     @if (page === '...') {
-      <span class="px-3 py-2 text-gray-500">...</span>
+      <span class="px-2 py-2 text-gray-500 text-sm">...</span>
     } @else {
       <button
         (click)="goToPage(page)"
         [class.current]="page === currentPage"
-        class="px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border"
+        class="px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border min-w-[40px]"
         [ngClass]="{
           'bg-blue-600 text-white border-blue-600': page === currentPage,
           'bg-white text-gray-700 hover:bg-gray-50 border-gray-200': page !== currentPage
@@ -27,15 +33,20 @@
       </button>
     }
   }
+
+  <!-- Next Button -->
   <button
     (click)="nextPage()"
     [disabled]="currentPage === totalPages - 1"
-    class="px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border"
+    class="p-2 rounded-lg transition-colors duration-200 border"
     [ngClass]="{
       'bg-blue-600 text-white hover:bg-blue-700 border-blue-600': currentPage < totalPages - 1,
       'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200': currentPage === totalPages - 1
     }"
+    title="Next page"
   >
-    Next
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
   </button>
 </nav>
