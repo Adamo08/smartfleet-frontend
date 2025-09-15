@@ -528,12 +528,14 @@
             <p class="text-gray-600">You've selected: <span class="text-blue-600 font-semibold">{{ selectedSlotType }}</span> rental</p>
           </div>
 
-          <app-slot-selector
+          <app-booking-calendar
             [vehicleId]="vehicle.id"
-            [vehicle]="vehicle"
-            [selectedSlotType]="selectedSlotType"
-            (dateRangeSelected)="onDateRangeSelected($event)"
-          ></app-slot-selector>
+            [selectedBookingType]="selectedSlotType"
+            [availableSlots]="availableSlots"
+            [isLoading]="isLoadingSlots"
+            (dateSelectionChange)="onDateSelectionChange($event)"
+            (bookingTypeChange)="onBookingTypeChange($event)"
+          ></app-booking-calendar>
 
           @if (hasAvailableSlotsInDateRange) {
             <div class="mt-4 p-4 bg-green-500/10 rounded-lg border border-green-500/20">

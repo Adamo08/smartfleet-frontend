@@ -153,8 +153,13 @@ export class ReservationService {
   /**
    * Get available slots for a specific vehicle
    */
-  getAvailableSlots(vehicleId: number): Observable<SlotDto[]> {
-    return this.http.get<SlotDto[]>(`${this.baseUrl}/vehicles/${vehicleId}/available-slots`);
+  getAvailableSlots(vehicleId: number, startDate: Date, endDate: Date, bookingType: string = 'DAILY'): Observable<SlotDto[]> {
+    const params = new HttpParams()
+      .set('startDate', startDate.toISOString())
+      .set('endDate', endDate.toISOString())
+      .set('bookingType', bookingType);
+    
+    return this.http.get<SlotDto[]>(`${this.baseUrl}/vehicles/${vehicleId}/available-slots`, { params });
   }
 
   /**

@@ -1,0 +1,174 @@
+.booking-calendar-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.booking-type-section {
+  margin-bottom: 1.5rem;
+}
+
+.booking-type-card {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.booking-type-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.booking-type-card.selected {
+  border-color: currentColor;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.booking-type-card.selected .mat-icon {
+  color: currentColor !important;
+}
+
+/* Color variants for booking types */
+.border-orange-500 {
+  border-color: #f97316 !important;
+}
+
+.border-blue-500 {
+  border-color: #3b82f6 !important;
+}
+
+.border-purple-500 {
+  border-color: #8b5cf6 !important;
+}
+
+.border-green-500 {
+  border-color: #10b981 !important;
+}
+
+.text-orange-600 {
+  color: #ea580c !important;
+}
+
+.text-blue-600 {
+  color: #2563eb !important;
+}
+
+.text-purple-600 {
+  color: #7c3aed !important;
+}
+
+.text-green-600 {
+  color: #059669 !important;
+}
+
+/* Hourly selection styles */
+.hourly-selection {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #f59e0b;
+}
+
+/* Date range selection */
+.date-range-selection {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #3b82f6;
+}
+
+/* Selection summary */
+.selection-summary {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #0ea5e9;
+}
+
+/* Loading state */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loading-state .mat-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Available slots indicator */
+.available-slots-indicator {
+  margin-top: 1rem;
+}
+
+.available-slots-indicator .mat-card {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border: 1px solid #22c55e;
+}
+
+/* Mat chips styling */
+.mat-chip {
+  transition: all 0.2s ease-in-out;
+}
+
+.mat-chip:hover {
+  transform: scale(1.05);
+}
+
+.mat-chip.selected {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Form field styling */
+.mat-form-field {
+  width: 100%;
+}
+
+.mat-form-field .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .booking-type-section .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hourly-selection,
+  .date-range-selection {
+    padding: 1rem;
+  }
+  
+  .grid.grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animation for smooth transitions */
+.booking-calendar-container * {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom scrollbar for better UX */
+.booking-calendar-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.booking-calendar-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.booking-calendar-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.booking-calendar-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

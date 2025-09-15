@@ -21,13 +21,13 @@ import { CreateReservationRequest, ReservationBookingContext } from '../../../co
 import { BookingContextService } from '../../../core/services/booking-context.service';
 import { PaymentCalculationService } from '../../../core/services/payment-calculation.service';
 import { Modal } from '../../../shared/components/modal/modal';
-import { SlotSelector } from '../../reservations/slot-selector/slot-selector';
+import { BookingCalendarComponent, DateSelection } from '../../../shared/components/booking-calendar/booking-calendar.component';
 import { Skeleton } from '../../../shared/components/skeleton/skeleton';
 
 @Component({
   selector: 'app-vehicle-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, Modal, SlotSelector, Skeleton],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, Modal, BookingCalendarComponent, Skeleton],
   templateUrl: './vehicle-detail.html',
   styleUrl: './vehicle-detail.css'
 })
@@ -61,6 +61,8 @@ export class VehicleDetail implements OnInit, OnDestroy {
   selectedSlotType: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM' = 'DAILY';
   selectedDuration: number = 24; // in hours
   bookNowEnabled: boolean = false; // Controls 'Book Now' button
+  availableSlots: any[] = [];
+  isLoadingSlots: boolean = false;
 
   // Multi-step booking flow
   currentBookingStep: 'type' | 'dates' | 'confirmation' | 'payment' = 'type';
@@ -415,6 +417,70 @@ export class VehicleDetail implements OnInit, OnDestroy {
     this.selectedDuration = event.duration;
     this.hasAvailableSlotsInDateRange = event.hasSlots;
     this.updateBookNowButtonState();
+  }
+
+  onDateSelectionChange(event: DateSelection): void {
+    this.selectedAvailabilityStartDate = event.startDate;
+    this.selectedAvailabilityEndDate = event.endDate;
+    this.selectedSlotType = event.bookingType;
+    this.selectedDuration = event.duration;
+    
+    // Check if we have valid dates and duration
+    this.hasAvailableSlotsInDateRange = !!(event.startDate && event.endDate && event.duration > 0);
+    
+    this.updateBookNowButtonState();
+    
+    // Load available slots if we have valid selection
+    if (this.hasAvailableSlotsInDateRange && this.vehicle) {
+      this.loadAvailableSlots();
+    }
+  }
+
+  onBookingTypeChange(bookingType: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM'): void {
+    this.selectedSlotType = bookingType;
+    this.updateBookNowButtonState();
+  }
+
+  private loadAvailableSlots(): void {
+    if (!this.vehicle || !this.selectedAvailabilityStartDate || !this.selectedAvailabilityEndDate) {
+      return;
+    }
+
+    this.isLoadingSlots = true;
+    
+    // Convert dates to the format expected by the backend
+    const startDateTime = new Date(this.selectedAvailabilityStartDate);
+    const endDateTime = new Date(this.selectedAvailabilityEndDate);
+    
+    // For hourly bookings, set specific times
+    if (this.selectedSlotType === 'HOURLY') {
+      startDateTime.setHours(9, 0, 0, 0); // Default to 9 AM
+      endDateTime.setHours(17, 0, 0, 0); // Default to 5 PM
+    } else {
+      startDateTime.setHours(0, 0, 0, 0);
+      endDateTime.setHours(23, 59, 59, 999);
+    }
+
+    this.reservationService.getAvailableSlots(
+      this.vehicle.id,
+      startDateTime,
+      endDateTime,
+      this.selectedSlotType
+    ).subscribe({
+      next: (slots) => {
+        this.availableSlots = slots;
+        this.hasAvailableSlotsInDateRange = slots.length > 0;
+        this.isLoadingSlots = false;
+        this.updateBookNowButtonState();
+      },
+      error: (error) => {
+        console.error('Error loading available slots:', error);
+        this.availableSlots = [];
+        this.hasAvailableSlotsInDateRange = false;
+        this.isLoadingSlots = false;
+        this.updateBookNowButtonState();
+      }
+    });
   }
 
   private updateBookNowButtonState(): void {
