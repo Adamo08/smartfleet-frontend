@@ -55,6 +55,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   logout(): void {
     // Disconnect WebSocket before logout
     this.webSocketService.disconnect();
+    // Reset notifications cache to avoid cross-user leakage after logout
+    this.notificationService.resetCache();
     this.authService.logout();
     this.router.navigate(['/auth/login']);
   }

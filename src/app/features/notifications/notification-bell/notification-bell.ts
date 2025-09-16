@@ -64,17 +64,24 @@ export class NotificationBell implements OnInit, OnDestroy {
           console.warn('⚠️ Message object:', message);
         }
       }),
-      // ✅ NEW: Subscribe to currentUser$ to handle asynchronous user data
+      // Subscribe to currentUser$ to handle user changes (login/logout)
       this.authService.currentUser$.subscribe(user => {
         this.currentUser = user;
         console.log('🔧 Current user updated from auth service:', this.currentUser);
 
+        // Reset notifications cache so previous user's notifications are not shown
+        this.notificationService.resetCache();
+
         if (this.currentUser?.email) {
           console.log('✅ User authenticated with email:', this.currentUser.email);
-          console.log('🔧 Initializing WebSocket connection...');
+          // Load unread for the new user
+          this.notificationService.loadInitialData();
+          // Ensure websocket re-subscribes for the new user
+          this.webSocketService.disconnect();
           this.initializeWebSocket(this.currentUser.email);
         } else {
-          console.warn('⚠️ No authenticated user found, cannot initialize WebSocket');
+          console.warn('⚠️ No authenticated user found, disconnecting WebSocket');
+          this.webSocketService.disconnect();
         }
       })
     );

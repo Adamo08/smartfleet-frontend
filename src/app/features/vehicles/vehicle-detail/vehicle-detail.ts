@@ -212,43 +212,6 @@ export class VehicleDetail implements OnInit, OnDestroy {
     });
   }
 
-  private loadMockVehicleTestimonials(): void {
-    if (this.vehicle) {
-      this.vehicleTestimonials = [
-        {
-          id: 1,
-          userId: 1,
-          vehicleId: this.vehicle.id,
-          title: "Excellent Vehicle Experience",
-          content: "This {{ vehicle.brand }} {{ vehicle.model }} exceeded my expectations. Smooth ride, great fuel efficiency, and perfect for my business trips. Highly recommend!",
-          rating: 5,
-          approved: true,
-          createdAt: "2024-01-15T10:00:00Z",
-          updatedAt: "2024-01-15T10:00:00Z",
-          userName: "John Smith",
-          vehicleBrand: this.vehicle.brand,
-          vehicleModel: this.vehicle.model
-        },
-        {
-          id: 2,
-          userId: 2,
-          vehicleId: this.vehicle.id,
-          title: "Great Performance",
-          content: "Rented this {{ vehicle.brand }} {{ vehicle.model }} for a weekend trip. Comfortable, reliable, and the perfect size for our family. Will definitely rent again!",
-          rating: 4,
-          approved: true,
-          createdAt: "2024-01-10T14:30:00Z",
-          updatedAt: "2024-01-10T14:30:00Z",
-          userName: "Maria Garcia",
-          vehicleBrand: this.vehicle.brand,
-          vehicleModel: this.vehicle.model
-        }
-      ];
-      
-      // Set that more testimonials are available for the "Load More" functionality
-      this.hasMoreTestimonials = true;
-    }
-  }
 
   private loadSimilarVehicles(currentVehicle: Vehicle): void {
     const pageable: Pageable = {

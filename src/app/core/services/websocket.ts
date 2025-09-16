@@ -21,6 +21,8 @@ export interface WebSocketState {
 })
 export class WebSocketService {
   private stompClient: Client | null = null;
+  private currentSubscription: any | null = null;
+  private currentDestination: string | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
@@ -126,7 +128,20 @@ export class WebSocketService {
       console.log('📡 Subscribing to destination:', destination);
       console.log('🔧 STOMP client connected state:', this.stompClient.connected);
 
-      this.stompClient.subscribe(destination, (message: any) => {
+      // Unsubscribe previous subscription if destination changed or exists
+      if (this.currentSubscription && this.currentDestination !== destination) {
+        try {
+          this.currentSubscription.unsubscribe();
+          console.log('🔌 Unsubscribed from previous destination:', this.currentDestination);
+        } catch (e) {
+          console.warn('⚠️ Failed to unsubscribe previous subscription:', e);
+        }
+        this.currentSubscription = null;
+        this.currentDestination = null;
+      }
+
+      this.currentDestination = destination;
+      this.currentSubscription = this.stompClient.subscribe(destination, (message: any) => {
         console.log('📨 === WebSocket Message Received ===');
         console.log('📨 Raw message:', message);
         console.log('📨 Message body:', message.body);
@@ -183,6 +198,18 @@ export class WebSocketService {
 
   disconnect(): void {
     console.log('🔌 WebSocketService.disconnect() called');
+
+    // Unsubscribe from current destination to avoid ghost messages on user switch
+    if (this.currentSubscription) {
+      try {
+        this.currentSubscription.unsubscribe();
+        console.log('🔌 Unsubscribed from destination:', this.currentDestination);
+      } catch (e) {
+        console.warn('⚠️ Failed to unsubscribe current subscription:', e);
+      }
+      this.currentSubscription = null;
+      this.currentDestination = null;
+    }
 
     if (this.stompClient && this.stompClient.connected) {
       console.log('🔄 Disconnecting STOMP client...');

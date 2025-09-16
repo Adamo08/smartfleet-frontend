@@ -94,6 +94,40 @@ export class NotificationService {
       );
   }
 
+  // Unread notifications (new backend endpoints)
+  getUnreadNotifications(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/notifications/unread?page=${page}&size=${size}`)
+      .pipe(
+        tap(response => {
+          console.log('📋 Unread Notifications API response:', response);
+          const notifications = response.content || [];
+          // Only unread
+          this.notificationsSubject.next(notifications);
+          this.updateUnreadCount();
+        }),
+        catchError(error => {
+          console.error('❌ Error loading unread notifications:', error);
+          this.notificationsSubject.next([]);
+          this.updateUnreadCount();
+          return of({ content: [], totalElements: 0 });
+        })
+      );
+  }
+
+  getUnreadCount(): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>(`${environment.apiUrl}/notifications/unread/count`)
+      .pipe(
+        tap(res => {
+          this.unreadCountSubject.next(res?.count ?? 0);
+        }),
+        catchError(error => {
+          console.error('❌ Error loading unread count:', error);
+          this.unreadCountSubject.next(0);
+          return of({ count: 0 });
+        })
+      );
+  }
+
   markAsRead(id: number): Observable<Notification> {
     return this.http.patch<Notification>(`${environment.apiUrl}/notifications/${id}/read`, {})
       .pipe(
@@ -144,15 +178,27 @@ export class NotificationService {
 
   // Load initial data
   loadInitialData(): void {
-    this.getNotifications();
+    // Use unread list for bell/list to avoid mixing read content
+    this.getUnreadNotifications().subscribe();
+    this.getUnreadCount().subscribe();
   }
 
   // Add a new notification to the cache (for real-time updates)
   addNotificationToCache(notification: Notification): void {
     const currentNotifications = this.notificationsSubject.value;
-    const updatedNotifications = [notification, ...currentNotifications];
+    // De-dup by id
+    const exists = currentNotifications.some(n => n.id === notification.id);
+    const updatedNotifications = exists
+      ? currentNotifications.map(n => n.id === notification.id ? notification : n)
+      : [notification, ...currentNotifications];
     this.notificationsSubject.next(updatedNotifications);
     this.updateUnreadCount();
+  }
+
+  // Clear notifications cache (use on logout or user switch)
+  resetCache(): void {
+    this.notificationsSubject.next([]);
+    this.unreadCountSubject.next(0);
   }
 
   // Get notification type display name
