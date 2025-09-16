@@ -144,12 +144,9 @@ export class VehicleDetail implements OnInit, OnDestroy {
         },
         error: (err: any) => {
           console.error('Failed to load payment methods:', err);
-          // Fallback to default payment methods if backend fails
-          this.availablePaymentMethods = [
-            { id: 'paypal', name: 'PayPal', description: 'Pay with your PayPal account', icon: '💳', isActive: true, provider: 'paypalPaymentProvider' },
-
-            { id: 'onsite', name: 'On-site Payment', description: 'Pay in person at our location', icon: '🏪', isActive: true, provider: 'onSitePaymentProvider' }
-          ];
+          // No fallbacks in production; surface error only
+          this.availablePaymentMethods = [];
+          this.toastr.error('Failed to load payment methods. Please try again later.', 'Error');
         }
       });
   }
@@ -209,8 +206,8 @@ export class VehicleDetail implements OnInit, OnDestroy {
       },
       error: (error: any) => { // Explicitly type 'error'
         console.error('Error loading vehicle testimonials:', error);
-        // Load some mock testimonials for demonstration
-        this.loadMockVehicleTestimonials();
+        // No mock fallbacks; keep empty and surface error
+        this.vehicleTestimonials = [];
       }
     });
   }
@@ -452,14 +449,7 @@ export class VehicleDetail implements OnInit, OnDestroy {
     const startDateTime = new Date(this.selectedAvailabilityStartDate);
     const endDateTime = new Date(this.selectedAvailabilityEndDate);
     
-    // For hourly bookings, set specific times
-    if (this.selectedSlotType === 'HOURLY') {
-      startDateTime.setHours(9, 0, 0, 0); // Default to 9 AM
-      endDateTime.setHours(17, 0, 0, 0); // Default to 5 PM
-    } else {
-      startDateTime.setHours(0, 0, 0, 0);
-      endDateTime.setHours(23, 59, 59, 999);
-    }
+    // Do not set arbitrary defaults; rely on exact selection coming from calendar
 
     this.reservationService.getAvailableSlots(
       this.vehicle.id,

@@ -84,6 +84,13 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
   calendarDays: Date[] = [];
   isSelectingRange: boolean = false;
   tempStartDate: Date | null = null;
+  // Multi-select support (weeks/days)
+  selectedWeeks: Set<string> = new Set(); // keys: yyyy-ww
+  selectedDiscreteDays: Set<string> = new Set(); // keys: yyyy-mm-dd
+
+  // Availability cache (per month/day)
+  private disabledDaysByMonth: Map<string, Set<string>> = new Map(); // key: yyyy-mm, values: set of yyyy-mm-dd
+  private disabledHoursByDate: Map<string, Set<number>> = new Map(); // key: yyyy-mm-dd, values: hours
   
   // Booking types configuration
   bookingTypes: BookingType[] = [
@@ -159,6 +166,8 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     this.calendarMonth = new Date();
     this.calendarMonth.setDate(1);
     this.generateCalendarDays();
+    // Preload disabled dates for current month
+    this.preloadDisabledForMonth(this.calendarMonth);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -183,6 +192,9 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
         this.currentView = 'month';
         break;
     }
+    // Reset auxiliary selections when type changes
+    this.selectedWeeks.clear();
+    this.selectedDiscreteDays.clear();
   }
 
   onBookingTypeChange(bookingType: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM') {
@@ -279,11 +291,13 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
   prevMonth(): void {
     this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() - 1, 1);
     this.generateCalendarDays();
+    this.preloadDisabledForMonth(this.calendarMonth);
   }
 
   nextMonth(): void {
     this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1, 1);
     this.generateCalendarDays();
+    this.preloadDisabledForMonth(this.calendarMonth);
   }
 
   isSameDay(a: Date, b: Date): boolean {
@@ -304,6 +318,13 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
       end.setDate(start.getDate() + 6);
       this.selectedStartDate = start;
       this.selectedEndDate = end;
+      // Toggle the week in selection set
+      const weekKey = this.getWeekKey(start);
+      if (this.selectedWeeks.has(weekKey)) {
+        this.selectedWeeks.delete(weekKey);
+      } else {
+        this.selectedWeeks.add(weekKey);
+      }
       this.isSelectingRange = false;
       this.tempStartDate = null;
       this.emitDateSelection();
@@ -328,6 +349,8 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
       }
       this.isSelectingRange = false;
       this.tempStartDate = null;
+      // Mark all discrete days in range as selected (visual aid for DAILY/CUSTOM)
+      this.markDiscreteDaysInRange(this.selectedStartDate!, this.selectedEndDate!);
       // Emit selection after range is set
       this.emitDateSelection();
     }
@@ -347,6 +370,107 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     const diff = d.getDate() - day; // start on Sunday
     return new Date(d.getFullYear(), d.getMonth(), diff);
   }
+
+  private getMonthKey(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}`;
+  }
+
+  private getDateKeySimple(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  private getWeekKey(startOfWeek: Date): string {
+    // yyyy-ww (ISO week approx based on Sunday start)
+    const onejan = new Date(startOfWeek.getFullYear(), 0, 1);
+    const days = Math.floor((startOfWeek.getTime() - onejan.getTime()) / 86400000);
+    const week = Math.floor((days + onejan.getDay()) / 7);
+    return `${startOfWeek.getFullYear()}-${String(week).padStart(2, '0')}`;
+  }
+
+  private markDiscreteDaysInRange(start: Date, end: Date): void {
+    this.selectedDiscreteDays.clear();
+    const cur = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    while (cur <= endDay) {
+      this.selectedDiscreteDays.add(this.getDateKeySimple(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+  }
+
+  private preloadDisabledForMonth(monthDate: Date): void {
+    if (!this.vehicleId) return;
+    const key = this.getMonthKey(monthDate);
+    if (this.disabledDaysByMonth.has(key)) return;
+
+    const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+    const end = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+    // Expand range slightly to include edge overlaps
+    const startRange = new Date(start);
+    startRange.setDate(startRange.getDate() - 7);
+    const endRange = new Date(end);
+    endRange.setDate(endRange.getDate() + 7);
+
+    this.availabilityService.getUnavailableSlots(this.vehicleId, startRange, endRange, 'DAILY').subscribe({
+      next: (slots) => {
+        const set = new Set<string>();
+        slots.forEach(slot => {
+          if (slot.slotType === 'DAILY' || slot.slotType === 'WEEKLY') {
+            const s = new Date(slot.startTime);
+            const e = new Date(slot.endTime);
+            for (let d = new Date(s.getFullYear(), s.getMonth(), s.getDate()); d <= e; d.setDate(d.getDate() + 1)) {
+              set.add(this.getDateKeySimple(d));
+            }
+          }
+        });
+        this.disabledDaysByMonth.set(key, set);
+      },
+      error: () => {
+        this.disabledDaysByMonth.set(key, new Set());
+      }
+    });
+  }
+
+  private ensureHourlyDisabledForDate(date: Date): void {
+    const dateKey = this.getDateKeySimple(date);
+    if (this.disabledHoursByDate.has(dateKey) || !this.vehicleId) return;
+    this.availabilityService.getDisabledHours(this.vehicleId, date).subscribe({
+      next: (hours) => {
+        this.disabledHoursByDate.set(dateKey, new Set(hours));
+      },
+      error: () => {
+        this.disabledHoursByDate.set(dateKey, new Set());
+      }
+    });
+  }
+
+  getDisabledHoursForSelectedDay(): Set<number> {
+    if (!this.selectedStartDate) return new Set();
+    const key = this.getDateKeySimple(this.selectedStartDate);
+    return this.disabledHoursByDate.get(key) || new Set();
+  }
+
+  isHourBlocked(hour: number): boolean {
+    return this.getDisabledHoursForSelectedDay().has(hour);
+  }
+
+  // cache-aware date disabled check
+  isDateDisabled = (date: Date | null): boolean => {
+    if (!date) return true;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date < today) return true;
+    const monthKey = this.getMonthKey(this.calendarMonth);
+    const set = this.disabledDaysByMonth.get(monthKey);
+    if (set) {
+      return set.has(this.getDateKeySimple(date));
+    }
+    return this.disabledDates.some(disabledDate => date.toDateString() === disabledDate.toDateString());
+  };
 
 
   getDurationLabel(): string {
@@ -524,19 +648,6 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     });
   }
 
-  isDateDisabled = (date: Date | null): boolean => {
-    if (!date) return true;
-    
-    // Check if date is in the past
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (date < today) return true;
-
-    // Check if date is in disabled dates
-    return this.disabledDates.some(disabledDate => 
-      date.toDateString() === disabledDate.toDateString()
-    );
-  };
 
   isHourDisabled(hour: number): boolean {
     if (!this.selectedStartDate || this.selectedBookingType !== 'HOURLY') {

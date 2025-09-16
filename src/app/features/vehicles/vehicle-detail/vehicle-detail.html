@@ -467,18 +467,22 @@
         <div class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
-              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
               [class.border-indigo-500]="selectedSlotType === 'HOURLY'"
-              [class.border-white]="selectedSlotType !== 'HOURLY'"
+              [class.border-gray-200]="selectedSlotType !== 'HOURLY'"
               [class.bg-blue-600]="selectedSlotType === 'HOURLY'"
               [class.bg-white]="selectedSlotType !== 'HOURLY'"
+              [class.shadow-lg]="selectedSlotType === 'HOURLY'"
               (click)="selectedSlotType = 'HOURLY'"
+              role="button"
+              tabindex="0"
+              [attr.aria-selected]="selectedSlotType === 'HOURLY'"
             >
               <div class="font-semibold mb-2"
                    [class.text-white]="selectedSlotType === 'HOURLY'"
                    [class.text-gray-900]="selectedSlotType !== 'HOURLY'">🚗 Hourly Rental</div>
               <div class="text-sm"
-                   [class.text-gray-200]="selectedSlotType === 'HOURLY'"
+                   [class.text-blue-100]="selectedSlotType === 'HOURLY'"
                    [class.text-gray-600]="selectedSlotType !== 'HOURLY'">Rent by the hour (1-23 hours)</div>
               <div class="text-xs mt-2"
                    [class.text-blue-100]="selectedSlotType === 'HOURLY'"
@@ -486,18 +490,22 @@
             </div>
 
             <div
-              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
               [class.border-indigo-500]="selectedSlotType === 'DAILY'"
-              [class.border-white]="selectedSlotType !== 'DAILY'"
+              [class.border-gray-200]="selectedSlotType !== 'DAILY'"
               [class.bg-blue-600]="selectedSlotType === 'DAILY'"
               [class.bg-white]="selectedSlotType !== 'DAILY'"
+              [class.shadow-lg]="selectedSlotType === 'DAILY'"
               (click)="selectedSlotType = 'DAILY'"
+              role="button"
+              tabindex="0"
+              [attr.aria-selected]="selectedSlotType === 'DAILY'"
             >
               <div class="font-semibold mb-2"
                    [class.text-white]="selectedSlotType === 'DAILY'"
                    [class.text-gray-900]="selectedSlotType !== 'DAILY'">📅 Daily Rental</div>
               <div class="text-sm"
-                   [class.text-gray-200]="selectedSlotType === 'DAILY'"
+                   [class.text-blue-100]="selectedSlotType === 'DAILY'"
                    [class.text-gray-600]="selectedSlotType !== 'DAILY'">Rent by the day (1-7 days)</div>
               <div class="text-xs mt-2"
                    [class.text-blue-100]="selectedSlotType === 'DAILY'"
@@ -505,18 +513,22 @@
             </div>
 
             <div
-              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
               [class.border-indigo-500]="selectedSlotType === 'WEEKLY'"
-              [class.border-white]="selectedSlotType !== 'WEEKLY'"
+              [class.border-gray-200]="selectedSlotType !== 'WEEKLY'"
               [class.bg-blue-600]="selectedSlotType === 'WEEKLY'"
               [class.bg-white]="selectedSlotType !== 'WEEKLY'"
+              [class.shadow-lg]="selectedSlotType === 'WEEKLY'"
               (click)="selectedSlotType = 'WEEKLY'"
+              role="button"
+              tabindex="0"
+              [attr.aria-selected]="selectedSlotType === 'WEEKLY'"
             >
               <div class="font-semibold mb-2"
                    [class.text-white]="selectedSlotType === 'WEEKLY'"
                    [class.text-gray-900]="selectedSlotType !== 'WEEKLY'">📆 Weekly Rental</div>
               <div class="text-sm"
-                   [class.text-gray-200]="selectedSlotType === 'WEEKLY'"
+                   [class.text-blue-100]="selectedSlotType === 'WEEKLY'"
                    [class.text-gray-600]="selectedSlotType !== 'WEEKLY'">Rent by the week (7-30 days)</div>
               <div class="text-xs mt-2"
                    [class.text-blue-100]="selectedSlotType === 'WEEKLY'"
@@ -524,18 +536,22 @@
             </div>
 
             <div
-              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200"
+              class="booking-type-option cursor-pointer p-4 rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2"
               [class.border-indigo-500]="selectedSlotType === 'CUSTOM'"
-              [class.border-white]="selectedSlotType !== 'CUSTOM'"
+              [class.border-gray-200]="selectedSlotType !== 'CUSTOM'"
               [class.bg-blue-600]="selectedSlotType === 'CUSTOM'"
               [class.bg-white]="selectedSlotType !== 'CUSTOM'"
+              [class.shadow-lg]="selectedSlotType === 'CUSTOM'"
               (click)="selectedSlotType = 'CUSTOM'"
+              role="button"
+              tabindex="0"
+              [attr.aria-selected]="selectedSlotType === 'CUSTOM'"
             >
               <div class="font-semibold mb-2"
                    [class.text-white]="selectedSlotType === 'CUSTOM'"
                    [class.text-gray-900]="selectedSlotType !== 'CUSTOM'">⚙️ Custom Duration</div>
               <div class="text-sm"
-                   [class.text-gray-200]="selectedSlotType === 'CUSTOM'"
+                   [class.text-blue-100]="selectedSlotType === 'CUSTOM'"
                    [class.text-gray-600]="selectedSlotType !== 'CUSTOM'">Any time range you need</div>
               <div class="text-xs mt-2"
                    [class.text-blue-100]="selectedSlotType === 'CUSTOM'"
