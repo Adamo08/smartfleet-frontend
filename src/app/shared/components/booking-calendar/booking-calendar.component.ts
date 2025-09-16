@@ -15,6 +15,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { TimezoneService, TimeZoneInfo } from '../../../core/services/timezone.service';
 import { RecurringBookingService, RecurringPattern } from '../../../core/services/recurring-booking.service';
+import { BookingContextService } from '../../../core/services/booking-context.service';
 import { AvailabilityService } from '../../../core/services/availability.service';
 import { Observable } from 'rxjs';
 
@@ -145,10 +146,19 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
   constructor(
     private timezoneService: TimezoneService,
     private recurringBookingService: RecurringBookingService,
-    private availabilityService: AvailabilityService
+    private availabilityService: AvailabilityService,
+    private bookingContext: BookingContextService
   ) {}
 
   ngOnInit() {
+    // Restore from booking context if available
+    const ctx = this.bookingContext.currentContext;
+    if (ctx) {
+      if (ctx.slotType) this.selectedBookingType = ctx.slotType as any;
+      if (ctx.startDate) this.selectedStartDate = new Date(ctx.startDate);
+      if (ctx.endDate) this.selectedEndDate = new Date(ctx.endDate);
+      if (ctx.duration) this.customDuration = ctx.duration;
+    }
     // Set max date to 1 year from now
     this.maxDate.setFullYear(this.maxDate.getFullYear() + 1);
     this.updateCalendarView();
@@ -265,6 +275,22 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
   }
 
   emitDateSelection() {
+    // Recompute duration based on selection and booking type
+    if (this.selectedBookingType !== 'HOURLY' && this.selectedStartDate && this.selectedEndDate) {
+      const start = new Date(this.selectedStartDate.getFullYear(), this.selectedStartDate.getMonth(), this.selectedStartDate.getDate());
+      const end = new Date(this.selectedEndDate.getFullYear(), this.selectedEndDate.getMonth(), this.selectedEndDate.getDate());
+      const diffDays = Math.max(1, Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1); // inclusive days
+      if (this.selectedBookingType === 'WEEKLY') {
+        const weeks = Math.max(1, Math.ceil(diffDays / 7));
+        this.customDuration = weeks * 24 * 7;
+      } else {
+        this.customDuration = diffDays * 24;
+      }
+    } else if (this.selectedBookingType === 'HOURLY' && this.selectedStartTime && this.selectedEndTime) {
+      const diffMs = this.selectedEndTime.getTime() - this.selectedStartTime.getTime();
+      this.customDuration = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60)));
+    }
+
     const selection: DateSelection = {
       startDate: this.selectedStartDate,
       endDate: this.selectedEndDate,
@@ -273,6 +299,11 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
       duration: this.customDuration,
       bookingType: this.selectedBookingType
     };
+    // Persist to booking context for cross-step continuity
+    this.bookingContext.setSlotType(this.selectedBookingType, this.customDuration);
+    if (this.selectedStartDate && this.selectedEndDate) {
+      this.bookingContext.setBookingDates(this.selectedStartDate, this.selectedEndDate);
+    }
     this.dateSelectionChange.emit(selection);
   }
 
