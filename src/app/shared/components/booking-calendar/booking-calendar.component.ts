@@ -453,14 +453,7 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
       if (d >= start && d <= end) return true;
     }
     return false;
-  }
-
-  private getStartOfWeek(date: Date): Date {
-    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const day = d.getDay(); // 0 = Sun
-    const diff = d.getDate() - day; // start on Sunday
-    return new Date(d.getFullYear(), d.getMonth(), diff);
-  }
+  }  // getStartOfWeek removed (rolling-week selection starts from clicked day)
 
   private getMonthKey(date: Date): string {
     const y = date.getFullYear();
@@ -475,13 +468,6 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     return `${y}-${m}-${d}`;
   }
 
-  private getWeekKey(startOfWeek: Date): string {
-    // yyyy-ww (ISO week approx based on Sunday start)
-    const onejan = new Date(startOfWeek.getFullYear(), 0, 1);
-    const days = Math.floor((startOfWeek.getTime() - onejan.getTime()) / 86400000);
-    const week = Math.floor((days + onejan.getDay()) / 7);
-    return `${startOfWeek.getFullYear()}-${String(week).padStart(2, '0')}`;
-  }
 
   private markDiscreteDaysInRange(start: Date, end: Date): void {
     this.selectedDiscreteDays.clear();

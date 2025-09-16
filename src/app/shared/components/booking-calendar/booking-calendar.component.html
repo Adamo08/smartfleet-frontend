@@ -57,7 +57,7 @@
                 class="bg-white p-3 text-sm text-gray-800 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
                 [class.opacity-40]="isOutsideCurrentMonth(day)"
                 [class.cursor-not-allowed]="isDateDisabled(day)"
-                [class.bg-blue-50]="isSameDay(day, selectedStartDate || new Date(0))"
+                [class.bg-blue-50]="selectedStartDate && isSameDay(day, selectedStartDate)"
                 [disabled]="isDateDisabled(day)"
                 (click)="onDayClick($event, day)"
               >

@@ -12,9 +12,9 @@
   transform: translateY(-2px);
 }
 
+/* Selected state: don't force light bg; card bg is controlled in template */
 .booking-type-option.border-blue-600 {
   border-color: #2563eb;
-  background-color: #eff6ff;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
