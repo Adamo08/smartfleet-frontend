@@ -80,6 +80,10 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
   currentView: 'month' | 'week' | 'day' = 'month';
   minDate = new Date();
   maxDate = new Date();
+  calendarMonth: Date = new Date();
+  calendarDays: Date[] = [];
+  isSelectingRange: boolean = false;
+  tempStartDate: Date | null = null;
   
   // Booking types configuration
   bookingTypes: BookingType[] = [
@@ -150,6 +154,11 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     if (this.vehicleId) {
       this.loadDisabledDates();
     }
+
+    // Initialize month grid
+    this.calendarMonth = new Date();
+    this.calendarMonth.setDate(1);
+    this.generateCalendarDays();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -232,6 +241,111 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
 
   getSelectedBookingType(): BookingType {
     return this.bookingTypes.find(bt => bt.value === this.selectedBookingType) || this.bookingTypes[1];
+  }
+
+  // Month grid helpers for DAILY/CUSTOM views
+  private generateCalendarDays(): void {
+    const year = this.calendarMonth.getFullYear();
+    const month = this.calendarMonth.getMonth();
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    const firstDayOfWeek = firstDay.getDay(); // 0-6
+    const lastDate = lastDay.getDate();
+
+    const days: Date[] = [];
+
+    // Leading days from previous month
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      const d = new Date(year, month, i - firstDayOfWeek + 1);
+      days.push(d);
+    }
+
+    // Current month days
+    for (let d = 1; d <= lastDate; d++) {
+      days.push(new Date(year, month, d));
+    }
+
+    // Trailing days to fill 6 rows (42 cells)
+    while (days.length % 7 !== 0 || days.length < 42) {
+      const last = days[days.length - 1];
+      days.push(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1));
+    }
+
+    this.calendarDays = days;
+  }
+
+  prevMonth(): void {
+    this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() - 1, 1);
+    this.generateCalendarDays();
+  }
+
+  nextMonth(): void {
+    this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1, 1);
+    this.generateCalendarDays();
+  }
+
+  isSameDay(a: Date, b: Date): boolean {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  isOutsideCurrentMonth(date: Date): boolean {
+    return date.getMonth() !== this.calendarMonth.getMonth();
+  }
+
+  onDayClick(date: Date): void {
+    if (this.isDateDisabled(date)) return;
+
+    // Weekly snapping: select entire week at once
+    if (this.selectedBookingType === 'WEEKLY') {
+      const start = this.getStartOfWeek(date);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      this.selectedStartDate = start;
+      this.selectedEndDate = end;
+      this.isSelectingRange = false;
+      this.tempStartDate = null;
+      this.emitDateSelection();
+      return;
+    }
+
+    if (!this.isSelectingRange) {
+      this.isSelectingRange = true;
+      this.tempStartDate = new Date(date);
+      this.selectedStartDate = new Date(date);
+      this.selectedEndDate = new Date(date);
+    } else {
+      // complete range
+      if (this.tempStartDate) {
+        if (date >= this.tempStartDate) {
+          this.selectedStartDate = new Date(this.tempStartDate);
+          this.selectedEndDate = new Date(date);
+        } else {
+          this.selectedStartDate = new Date(date);
+          this.selectedEndDate = new Date(this.tempStartDate);
+        }
+      }
+      this.isSelectingRange = false;
+      this.tempStartDate = null;
+      // Emit selection after range is set
+      this.emitDateSelection();
+    }
+  }
+
+  isInSelectedRange(date: Date): boolean {
+    if (!this.selectedStartDate || !this.selectedEndDate) return false;
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const s = new Date(this.selectedStartDate.getFullYear(), this.selectedStartDate.getMonth(), this.selectedStartDate.getDate());
+    const e = new Date(this.selectedEndDate.getFullYear(), this.selectedEndDate.getMonth(), this.selectedEndDate.getDate());
+    return d >= s && d <= e;
+  }
+
+  private getStartOfWeek(date: Date): Date {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const day = d.getDay(); // 0 = Sun
+    const diff = d.getDate() - day; // start on Sunday
+    return new Date(d.getFullYear(), d.getMonth(), diff);
   }
 
 

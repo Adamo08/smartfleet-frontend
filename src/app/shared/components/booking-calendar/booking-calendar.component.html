@@ -28,47 +28,34 @@
 
   <!-- Calendar Section -->
   <div class="calendar-section">
-    <!-- Hourly Time Selection -->
+    <!-- Hourly Time Selection (simple day timeline placeholder using inputs for now) -->
     @if (selectedBookingType === 'HOURLY') {
       <div class="hourly-selection mb-6">
         <h4 class="text-md font-semibold text-gray-900 mb-4">Select Date & Time</h4>
-        
-        <!-- Date Selection -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Start Date</mat-label>
-            <input matInput [matDatepicker]="startPicker" 
-                   [(ngModel)]="selectedStartDate" 
+
+        <!-- Date Selection (single day) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <mat-form-field appearance="outline" class="w-full md:col-span-1">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="dayPicker"
+                   [(ngModel)]="selectedStartDate"
                    (dateChange)="onDateChange()"
                    [matDatepickerFilter]="isDateDisabled">
-            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-datepicker-toggle matSuffix [for]="dayPicker"></mat-datepicker-toggle>
+            <mat-datepicker #dayPicker></mat-datepicker>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>End Date</mat-label>
-            <input matInput [matDatepicker]="endPicker" 
-                   [(ngModel)]="selectedEndDate" 
-                   (dateChange)="onDateChange()"
-                   [matDatepickerFilter]="isDateDisabled">
-            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-            <mat-datepicker #endPicker></mat-datepicker>
-          </mat-form-field>
-        </div>
-
-        <!-- Time Selection -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Start Time</mat-label>
-            <input matInput type="time" 
-                   [(ngModel)]="selectedStartTime" 
+            <input matInput type="time"
+                   [(ngModel)]="selectedStartTime"
                    (ngModelChange)="onTimeChange()">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>End Time</mat-label>
-            <input matInput type="time" 
-                   [(ngModel)]="selectedEndTime" 
+            <input matInput type="time"
+                   [(ngModel)]="selectedEndTime"
                    (ngModelChange)="onTimeChange()">
           </mat-form-field>
         </div>
@@ -78,7 +65,7 @@
           <h5 class="text-sm font-medium text-gray-700 mb-2">Quick Select Duration</h5>
           <div class="flex flex-wrap gap-2">
             @for (duration of getQuickDurationOptions(); track duration) {
-              <mat-chip 
+              <mat-chip
                 [class.selected]="customDuration === duration"
                 (click)="selectQuickDuration(duration)"
                 class="cursor-pointer"
@@ -91,46 +78,61 @@
       </div>
     }
 
-    <!-- Daily/Weekly/Custom Date Selection -->
+    <!-- Daily/Weekly/Custom Calendar Views -->
     @if (selectedBookingType !== 'HOURLY') {
       <div class="date-range-selection mb-6">
         <h4 class="text-md font-semibold text-gray-900 mb-4">Select Date Range</h4>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Start Date</mat-label>
-            <input matInput [matDatepicker]="startPicker" 
-                   [(ngModel)]="selectedStartDate" 
-                   (dateChange)="onDateChange()"
-                   [matDatepickerFilter]="isDateDisabled">
-            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-            <mat-datepicker #startPicker></mat-datepicker>
-          </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>End Date</mat-label>
-            <input matInput [matDatepicker]="endPicker" 
-                   [(ngModel)]="selectedEndDate" 
-                   (dateChange)="onDateChange()"
-                   [matDatepickerFilter]="isDateDisabled">
-            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-            <mat-datepicker #endPicker></mat-datepicker>
-          </mat-form-field>
+        <!-- Month grid for DAILY/CUSTOM; for WEEKLY we still show month grid but selection will snap to week in future enhancement -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div class="flex items-center justify-between px-4 py-2 border-b border-gray-100">
+            <button class="px-2 py-1 text-gray-600 hover:text-blue-600" (click)="prevMonth()">«</button>
+            <div class="text-sm font-semibold text-gray-800">
+              {{ calendarMonth | date:'MMMM yyyy' }}
+            </div>
+            <button class="px-2 py-1 text-gray-600 hover:text-blue-600" (click)="nextMonth()">»</button>
+          </div>
+
+          <div class="grid grid-cols-7 gap-px bg-gray-200 text-xs text-gray-600">
+            <div class="bg-gray-50 p-2 text-center">Sun</div>
+            <div class="bg-gray-50 p-2 text-center">Mon</div>
+            <div class="bg-gray-50 p-2 text-center">Tue</div>
+            <div class="bg-gray-50 p-2 text-center">Wed</div>
+            <div class="bg-gray-50 p-2 text-center">Thu</div>
+            <div class="bg-gray-50 p-2 text-center">Fri</div>
+            <div class="bg-gray-50 p-2 text-center">Sat</div>
+          </div>
+          <div class="grid grid-cols-7 gap-px bg-gray-200">
+            @for (day of calendarDays; track day) {
+              <button
+                class="bg-white p-3 text-sm text-gray-800 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                [class.opacity-40]="isOutsideCurrentMonth(day)"
+                [class.cursor-not-allowed]="isDateDisabled(day)"
+                [class.bg-blue-50]="isInSelectedRange(day)"
+                [disabled]="isDateDisabled(day)"
+                (click)="onDayClick(day)"
+              >
+                <div class="flex items-center justify-between">
+                  <span class="font-medium">{{ day.getDate() }}</span>
+                  <span *ngIf="isDateDisabled(day)" class="w-1.5 h-1.5 bg-red-400 rounded-full"></span>
+                </div>
+              </button>
+            }
+          </div>
         </div>
 
         <!-- Custom Duration Input for CUSTOM booking type -->
         @if (selectedBookingType === 'CUSTOM') {
-          <div class="mb-4">
+          <div class="mt-4">
             <mat-form-field appearance="outline" class="w-full">
               <mat-label>Custom Duration (hours)</mat-label>
-              <input matInput type="number" 
-                     [(ngModel)]="customDuration" 
+              <input matInput type="number"
+                     [(ngModel)]="customDuration"
                      (ngModelChange)="onCustomDurationChange()"
                      [min]="getSelectedBookingType().minDuration"
                      [max]="getSelectedBookingType().maxDuration">
             </mat-form-field>
-            
-            <!-- Quick Duration Selection -->
+
             <div class="mt-2">
               <h5 class="text-sm font-medium text-gray-700 mb-2">Quick Select</h5>
               <div class="flex flex-wrap gap-2">

@@ -242,7 +242,8 @@ export class ReservationService {
       .set('startDate', startDate.toISOString())
       .set('endDate', endDate.toISOString());
     
-    return this.http.get<boolean>(`${environment.apiUrl}/vehicles/${vehicleId}/availability`, { params });
+    return this.http.get<{ isAvailable: boolean }>(`${environment.apiUrl}/vehicles/${vehicleId}/availability`, { params })
+      .pipe(map(res => !!res?.isAvailable));
   }
 
   /**

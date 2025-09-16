@@ -3,17 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export interface UnavailableSlot {
-  startDate: string;
-  endDate: string;
-  reason: 'RESERVED' | 'MAINTENANCE' | 'UNAVAILABLE';
+// Backend returns SlotDto[] for availability endpoints
+export interface SlotDtoLike {
+  startTime: string;
+  endTime: string;
   slotType: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'CUSTOM';
-}
-
-export interface AvailabilityCheck {
-  isAvailable: boolean;
-  unavailableSlots: UnavailableSlot[];
-  availableSlots: string[];
 }
 
 @Injectable({
@@ -32,29 +26,19 @@ export class AvailabilityService {
     startDate: Date, 
     endDate: Date, 
     bookingType: string = 'DAILY'
-  ): Observable<UnavailableSlot[]> {
+  ): Observable<SlotDtoLike[]> {
     const params = new HttpParams()
       .set('startDate', startDate.toISOString())
       .set('endDate', endDate.toISOString())
       .set('bookingType', bookingType);
 
-    return this.http.get<UnavailableSlot[]>(`${this.baseUrl}/vehicles/${vehicleId}/unavailable-slots`, { params });
+    return this.http.get<SlotDtoLike[]>(`${this.baseUrl}/vehicles/${vehicleId}/unavailable-slots`, { params });
   }
 
   /**
    * Check availability for specific dates
    */
-  checkAvailability(
-    vehicleId: number,
-    dates: Date[],
-    bookingType: string = 'DAILY'
-  ): Observable<AvailabilityCheck> {
-    const params = new HttpParams()
-      .set('dates', dates.map(d => d.toISOString()).join(','))
-      .set('bookingType', bookingType);
-
-    return this.http.get<AvailabilityCheck>(`${this.baseUrl}/vehicles/${vehicleId}/availability-check`, { params });
-  }
+  // Removed non-existent /availability-check endpoint
 
   /**
    * Get disabled dates for calendar (for daily/weekly bookings)
@@ -65,8 +49,8 @@ export class AvailabilityService {
         const disabledDates: Date[] = [];
         slots.forEach(slot => {
           if (slot.slotType === 'DAILY' || slot.slotType === 'WEEKLY') {
-            const start = new Date(slot.startDate);
-            const end = new Date(slot.endDate);
+            const start = new Date(slot.startTime);
+            const end = new Date(slot.endTime);
             
             // Add all dates in the range
             for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
@@ -93,8 +77,8 @@ export class AvailabilityService {
         const disabledHours: number[] = [];
         slots.forEach(slot => {
           if (slot.slotType === 'HOURLY') {
-            const start = new Date(slot.startDate);
-            const end = new Date(slot.endDate);
+            const start = new Date(slot.startTime);
+            const end = new Date(slot.endTime);
             
             // Add all hours in the range
             for (let h = start.getHours(); h < end.getHours(); h++) {
