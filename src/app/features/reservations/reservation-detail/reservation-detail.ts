@@ -250,8 +250,7 @@ export class ReservationDetail implements OnInit, OnDestroy {
   }
 
   canCancel(): boolean {
-    return this.reservation?.status === ReservationStatus.PENDING || 
-           this.reservation?.status === ReservationStatus.CONFIRMED;
+    return this.reservation?.status === ReservationStatus.PENDING;
   }
 
   canEdit(): boolean {

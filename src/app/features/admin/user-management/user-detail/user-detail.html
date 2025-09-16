@@ -82,7 +82,24 @@
     </div>
   </div>
 
-  <!-- User Statistics (if available) -->
+  <!-- Account Statistics -->
+  <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <h4 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">Account Statistics</h4>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="p-4 rounded-lg border border-gray-200">
+        <div class="text-sm text-gray-600">Total Reservations</div>
+        <div class="text-2xl font-bold text-gray-900">{{ statistics?.totalReservations || 0 }}</div>
+      </div>
+      <div class="p-4 rounded-lg border border-gray-200">
+        <div class="text-sm text-gray-600">Completed Reservations</div>
+        <div class="text-2xl font-bold text-gray-900">{{ statistics?.completedReservations || 0 }}</div>
+      </div>
+      <div class="p-4 rounded-lg border border-gray-200">
+        <div class="text-sm text-gray-600">Total Spent</div>
+        <div class="text-2xl font-bold text-gray-900">{{ (statistics?.totalSpent || 0) | currency:'USD' }}</div>
+      </div>
+    </div>
+  </div>
   <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
     <h4 class="text-lg font-semibold text-gray-900 mb-4">Account Statistics</h4>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

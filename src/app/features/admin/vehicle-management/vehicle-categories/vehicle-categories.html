@@ -114,36 +114,36 @@
     <app-modal [title]="'Add New Category'" (close)="closeAddModal()">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
           <input 
             type="text" 
             [(ngModel)]="currentCategory.name"
             placeholder="Enter category name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
           <textarea 
             [(ngModel)]="currentCategory.description"
             placeholder="Enter category description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Icon URL</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Icon URL</label>
           <input 
             type="url" 
             [(ngModel)]="currentCategory.iconUrl"
             placeholder="Enter icon URL (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
         </div>
         <div class="flex items-center space-x-2">
           <input 
             type="checkbox" 
             [(ngModel)]="currentCategory.isActive"
             id="isActive"
-            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white/20 rounded focus:ring-indigo-500 focus:ring-2">
-          <label for="isActive" class="text-sm text-gray-300">Active</label>
+            class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+          <label for="isActive" class="text-sm text-gray-700">Active</label>
         </div>
       </div>
       <div modal-actions class="flex justify-end space-x-2 mt-4">
@@ -167,36 +167,36 @@
     <app-modal [title]="'Edit Category'" (close)="closeEditModal()">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
           <input 
             type="text" 
             [(ngModel)]="currentCategory.name"
             placeholder="Enter category name"
-            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
           <textarea 
             [(ngModel)]="currentCategory.description"
             placeholder="Enter category description"
             rows="3"
-            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"></textarea>
+            class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">Icon URL</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Icon URL</label>
           <input 
             type="url" 
             [(ngModel)]="currentCategory.iconUrl"
             placeholder="Enter icon URL (optional)"
-            class="w-full p-2 rounded-lg bg-slate-700 text-gray-900 border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            class="w-full p-2 rounded-lg bg-white text-gray-900 border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
         </div>
         <div class="flex items-center space-x-2">
           <input 
             type="checkbox" 
             [(ngModel)]="currentCategory.isActive"
             id="editIsActive"
-            class="w-4 h-4 text-indigo-600 bg-slate-700 border-white/20 rounded focus:ring-indigo-500 focus:ring-2">
-          <label for="editIsActive" class="text-sm text-gray-300">Active</label>
+            class="w-4 h-4 text-indigo-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+          <label for="editIsActive" class="text-sm text-gray-700">Active</label>
         </div>
       </div>
       <div modal-actions class="flex justify-end space-x-2 mt-4">

@@ -17,7 +17,6 @@
     <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Start Date" formControlName="startDate" (change)="onFilterChange()">
     <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="End Date" formControlName="endDate" (change)="onFilterChange()">
     <button type="button" class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
-    <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Apply Filters</button>
   </form>
 
   @if (isLoading) {

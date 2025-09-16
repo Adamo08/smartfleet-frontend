@@ -12,6 +12,7 @@ import { Pagination } from '../../../shared/components/pagination/pagination';
 import { PaymentDto } from '../../../core/models/payment.interface';
 import { PaymentStatus } from '../../../core/enums/payment-status.enum';
 import { PaymentProcessingService } from '../../../core/services/payment-processing.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import { PaymentStateService } from '../../../core/services/payment-state.service';
 import { BookmarkService } from '../../../core/services/bookmark.service';
 import { ToastrService } from 'ngx-toastr';
@@ -51,6 +52,7 @@ export class ReservationList implements OnInit, OnDestroy {
   constructor(
     private reservationService: ReservationService,
     private paymentProcessingService: PaymentProcessingService,
+    private paymentService: PaymentService,
     private paymentStateService: PaymentStateService,
     private bookmarkService: BookmarkService,
     private router: Router,
@@ -281,12 +283,10 @@ export class ReservationList implements OnInit, OnDestroy {
   }
 
   canCancelReservation(reservation: ReservationSummaryDto): boolean {
-    // Only show cancel button for pending and confirmed reservations that haven't started yet
+    // Allow cancel only for PENDING reservations that haven't started yet
     const now = new Date();
     const startDate = new Date(reservation.startDate);
-    return (reservation.status === ReservationStatus.PENDING || 
-           reservation.status === ReservationStatus.CONFIRMED) &&
-           startDate > now;
+    return reservation.status === ReservationStatus.PENDING && startDate > now;
   }
 
   isReservationBookmarked(reservationId: number): boolean {
@@ -297,30 +297,19 @@ export class ReservationList implements OnInit, OnDestroy {
 
   // Payment information methods
   loadReservationPayment(reservationId: number): void {
-    this.paymentProcessingService.getPaymentStatus(reservationId)
+    this.paymentService.getPaymentByReservationId(reservationId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (result) => {
-          if (result.success) {
-            // Convert PaymentResult to PaymentDto format for compatibility
-            const payment: PaymentDto = {
-              id: 0, // Will be set from backend
-              reservationId: reservationId,
-              amount: 0, // Will be set from backend
-              currency: 'USD',
-              status: result.transactionId ? PaymentStatus.COMPLETED : PaymentStatus.PENDING,
-              transactionId: result.transactionId,
-              provider: 'Unknown',
-              createdAt: new Date(),
-              updatedAt: new Date()
-            };
+        next: (payment) => {
+          if (payment) {
             this.reservationPayments.set(reservationId, payment);
             this.selectedReservationPayment = payment;
+          } else {
+            this.selectedReservationPayment = null;
           }
         },
         error: (error: any) => {
           console.error('Error loading payment info:', error);
-          // Set default payment info
           this.selectedReservationPayment = null;
         }
       });

@@ -172,8 +172,61 @@ export class VehicleList implements OnInit {
   }
 
   exportToCSV(): void {
-    // TODO: Implement CSV export functionality
-    console.log('Exporting to CSV...');
+    // Fetch all filtered vehicles for export (no pagination)
+    const exportPageable: Pageable = { page: 0, size: this.vehiclesPage?.totalElements || 10000, sortBy: this.sortBy, sortDirection: this.sortDirection };
+    const filters: VehicleFilter = {
+      search: this.filters.search || undefined,
+      categoryId: this.filters.categoryId ? Number(this.filters.categoryId) : undefined,
+      fuelType: this.filters.fuelType || undefined,
+      status: this.filters.status || undefined,
+      brandId: this.filters.brandId ? Number(this.filters.brandId) : undefined,
+      modelId: this.filters.modelId ? Number(this.filters.modelId) : undefined,
+      minPrice: this.filters.minPrice || undefined,
+      maxPrice: this.filters.maxPrice || undefined,
+      minYear: this.filters.minYear || undefined,
+      maxYear: this.filters.maxYear || undefined,
+      minMileage: this.filters.minMileage || undefined,
+      maxMileage: this.filters.maxMileage || undefined
+    };
+
+    this.vehicleService.getVehicles(exportPageable, filters).subscribe({
+      next: (page) => {
+        const csv = this.convertVehiclesToCsv(page.content);
+        this.downloadCsv(csv, 'vehicles.csv');
+      }
+    });
+  }
+
+  private convertVehiclesToCsv(vehicles: Vehicle[]): string {
+    const headers = ['ID','Brand','Model','License Plate','Year','Fuel Type','Status','Mileage','Price Per Day','Created At','Updated At'];
+    const rows = vehicles.map(v => [
+      v.id,
+      v.brand,
+      v.model,
+      v.licensePlate,
+      v.year,
+      v.fuelType,
+      v.status,
+      v.mileage,
+      v.pricePerDay,
+      v.createdAt,
+      v.updatedAt
+    ].map(x => `"${x ?? ''}"`).join(','));
+    return [headers.join(','), ...rows].join('\n');
+  }
+
+  private downloadCsv(content: string, filename: string): void {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 
   viewVehicle(vehicle: Vehicle): void {
