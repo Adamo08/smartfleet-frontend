@@ -5,11 +5,9 @@
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;
   transition: all 0.2s ease;
-  background-color: #ffffff;
 }
 
 .booking-type-option:hover {
-  background-color: #f9fafb;
   border-color: #9ca3af;
   transform: translateY(-2px);
 }

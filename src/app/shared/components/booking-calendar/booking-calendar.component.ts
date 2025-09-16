@@ -364,18 +364,17 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     return date.getMonth() !== this.calendarMonth.getMonth();
   }
 
-  onDayClick(date: Date): void {
+  onDayClick(event: MouseEvent | null, date: Date): void {
     if (this.isDateDisabled(date)) return;
 
-    // Weekly snapping: select entire week at once
+    // Rolling-week selection starting from clicked date
     if (this.selectedBookingType === 'WEEKLY') {
-      const start = this.getStartOfWeek(date);
+      const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
       const end = new Date(start);
       end.setDate(start.getDate() + 6);
       this.selectedStartDate = start;
       this.selectedEndDate = end;
-      // Toggle the week in selection set
-      const weekKey = this.getWeekKey(start);
+      const weekKey = this.getDateKeySimple(start);
       if (this.selectedWeeks.has(weekKey)) {
         this.selectedWeeks.delete(weekKey);
       } else {
@@ -383,6 +382,29 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
       }
       this.isSelectingRange = false;
       this.tempStartDate = null;
+      this.emitDateSelection();
+      return;
+    }
+
+    // Hourly: single day select, load disabled hours
+    if (this.selectedBookingType === 'HOURLY') {
+      this.selectedStartDate = new Date(date);
+      this.selectedEndDate = new Date(date);
+      this.ensureHourlyDisabledForDate(date);
+      this.emitDateSelection();
+      return;
+    }
+
+    const isCtrl = !!event && (event.ctrlKey || event.metaKey);
+    if (isCtrl) {
+      // Toggle discrete day selection
+      const key = this.getDateKeySimple(date);
+      if (this.selectedDiscreteDays.has(key)) {
+        this.selectedDiscreteDays.delete(key);
+      } else {
+        this.selectedDiscreteDays.add(key);
+      }
+      // Keep range as-is; emit selection
       this.emitDateSelection();
       return;
     }
@@ -418,6 +440,19 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     const s = new Date(this.selectedStartDate.getFullYear(), this.selectedStartDate.getMonth(), this.selectedStartDate.getDate());
     const e = new Date(this.selectedEndDate.getFullYear(), this.selectedEndDate.getMonth(), this.selectedEndDate.getDate());
     return d >= s && d <= e;
+  }
+
+  isInSelectedWeeks(date: Date): boolean {
+    if (this.selectedWeeks.size === 0) return false;
+    for (const weekStartKey of this.selectedWeeks) {
+      const parts = weekStartKey.split('-');
+      const start = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      if (d >= start && d <= end) return true;
+    }
+    return false;
   }
 
   private getStartOfWeek(date: Date): Date {
@@ -563,6 +598,33 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
       hours.push(i);
     }
     return hours;
+  }
+
+  // Hour selection via timeline blocks
+  onHourClick(hour: number): void {
+    if (this.isHourBlocked(hour)) return;
+    const date = this.selectedStartDate ? new Date(this.selectedStartDate) : new Date();
+    const clicked = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0, 0);
+    if (!this.selectedStartTime || (this.selectedStartTime && this.selectedEndTime)) {
+      this.selectedStartTime = clicked;
+      this.selectedEndTime = null;
+    } else {
+      if (clicked <= this.selectedStartTime) {
+        // swap
+        this.selectedEndTime = this.selectedStartTime;
+        this.selectedStartTime = clicked;
+      } else {
+        this.selectedEndTime = clicked;
+      }
+    }
+    this.onTimeChange();
+  }
+
+  isHourInSelection(hour: number): boolean {
+    if (!this.selectedStartTime || !this.selectedEndTime) return false;
+    const sh = this.selectedStartTime.getHours();
+    const eh = this.selectedEndTime.getHours();
+    return hour >= sh && hour < eh;
   }
 
   setTimeFromHour(hour: number, isStart: boolean) {
