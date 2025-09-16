@@ -202,13 +202,38 @@ export class BookingCalendarComponent implements OnInit, OnChanges {
     this.updateCalendarView();
     this.resetSelection();
     this.bookingTypeChange.emit(bookingType);
+    // When switching to HOURLY, ensure we load disabled hours for the selected day
+    if (this.selectedBookingType === 'HOURLY' && this.selectedStartDate) {
+      this.ensureHourlyDisabledForDate(this.selectedStartDate);
+    }
   }
 
   onDateChange() {
+    // For HOURLY, fetch disabled hours for the chosen day
+    if (this.selectedBookingType === 'HOURLY' && this.selectedStartDate) {
+      this.ensureHourlyDisabledForDate(this.selectedStartDate);
+      // Reset previously chosen times so user can't carry invalid ones
+      this.selectedStartTime = null;
+      this.selectedEndTime = null;
+    }
     this.emitDateSelection();
   }
 
   onTimeChange() {
+    // Validate against disabled hours when HOURLY
+    if (this.selectedBookingType === 'HOURLY' && this.selectedStartDate) {
+      const blocked = this.getDisabledHoursForSelectedDay();
+      if (this.selectedStartTime && blocked.has(this.selectedStartTime.getHours())) {
+        this.selectedStartTime = null;
+      }
+      if (this.selectedEndTime && blocked.has(this.selectedEndTime.getHours())) {
+        this.selectedEndTime = null;
+      }
+    }
+    // Ensure end time is after start time
+    if (this.selectedStartTime && this.selectedEndTime && this.selectedEndTime <= this.selectedStartTime) {
+      this.selectedEndTime = null;
+    }
     if (this.selectedStartTime && this.selectedEndTime) {
       this.calculateDuration();
     }
