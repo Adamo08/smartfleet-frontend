@@ -283,4 +283,23 @@ export class VehicleBrands implements OnInit {
 
   protected readonly Math = Math;
 
+  exportToCSV(): void {
+    const pageable: Pageable = { page: 0, size: this.brandsPage?.totalElements || 10000, sortBy: this.sortBy, sortDirection: this.sortDirection };
+    this.apiService.get<Page<VehicleBrand>>('/admin/vehicle-brands', pageable).subscribe({
+      next: (page) => {
+        const headers = ['ID','Name','Description','Country','Active','Created','Updated'];
+        const rows = page.content.map(b => [b.id,b.name,b.description || '',b.countryOfOrigin || '',b.isActive, b.createdAt, b.updatedAt].map(x => `"${x ?? ''}"`).join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'vehicle-brands.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    });
+  }
 }

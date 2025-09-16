@@ -270,4 +270,23 @@ export class VehicleCategories implements OnInit {
   }
 
   protected readonly Math = Math;
+  exportToCSV(): void {
+    const pageable: Pageable = { page: 0, size: this.categoriesPage?.totalElements || 10000, sortBy: this.sortBy, sortDirection: this.sortDirection };
+    this.apiService.get<Page<VehicleCategory>>('/admin/vehicle-categories', pageable).subscribe({
+      next: (page) => {
+        const headers = ['ID','Name','Description','Active','Created','Updated'];
+        const rows = page.content.map(c => [c.id,c.name,c.description || '',c.isActive, c.createdAt, c.updatedAt].map(x => `"${x ?? ''}"`).join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'vehicle-categories.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    });
+  }
 }

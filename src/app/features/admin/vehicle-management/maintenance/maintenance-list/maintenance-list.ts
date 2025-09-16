@@ -72,7 +72,7 @@ export class MaintenanceList implements OnInit {
       status: this.selectedStatus || undefined
     };
 
-    this.vehicleService.getVehicles(pageable, filters).subscribe({
+    this.vehicleService.getAdminVehicles(pageable, filters).subscribe({
       next: (response) => {
         this.vehiclesPage = response;
         this.isLoading = false;
@@ -92,7 +92,7 @@ export class MaintenanceList implements OnInit {
     statuses.forEach(status => {
       const pageable: Pageable = { page: 0, size: 1, sortBy: 'id', sortDirection: 'ASC' };
       const filters: VehicleFilter = { status };
-      this.vehicleService.getVehicles(pageable, filters).subscribe({
+      this.vehicleService.getAdminVehicles(pageable, filters).subscribe({
         next: (response) => {
           this.statusCounts[status] = response.totalElements;
         },
@@ -162,7 +162,7 @@ export class MaintenanceList implements OnInit {
     if (!vehicle.id) return;
 
     const updateData: Partial<Vehicle> = { status: VehicleStatus.IN_MAINTENANCE };
-    this.vehicleService.updateVehicle(vehicle.id, updateData).subscribe({
+    this.vehicleService.updateAdminVehicle(vehicle.id, updateData).subscribe({
       next: () => {
         this.successModalService.show({
           title: 'Vehicle Marked for Maintenance',
@@ -185,7 +185,7 @@ export class MaintenanceList implements OnInit {
     if (!vehicle.id) return;
 
     const updateData: Partial<Vehicle> = { status: VehicleStatus.AVAILABLE };
-    this.vehicleService.updateVehicle(vehicle.id, updateData).subscribe({
+    this.vehicleService.updateAdminVehicle(vehicle.id, updateData).subscribe({
       next: () => {
         this.successModalService.show({
           title: 'Vehicle Marked as Available',
