@@ -192,17 +192,17 @@ export class RefundRequests implements OnInit {
   getStatusColor(status: RefundStatus): string {
     switch (status) {
       case RefundStatus.REQUESTED:
-        return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+        return 'bg-yellow-500 text-yellow-300 border-yellow-500/30';
       case RefundStatus.PENDING:
-        return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        return 'bg-blue-500 text-blue-300 border-blue-500/30';
       case RefundStatus.PROCESSED:
-        return 'bg-green-500/20 text-green-300 border-green-500/30';
+        return 'bg-green-500 text-green-300 border-green-500/30';
       case RefundStatus.FAILED:
-        return 'bg-red-500/20 text-red-300 border-red-500/30';
+        return 'bg-red-500 text-red-300 border-red-500/30';
       case RefundStatus.DECLINED:
-        return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        return 'bg-gray-500 text-gray-300 border-gray-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        return 'bg-gray-500 text-gray-300 border-gray-500/30';
     }
   }
 }

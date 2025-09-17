@@ -18,6 +18,81 @@
   <div class="relative max-w-4xl mx-auto px-2 sm:px-4 lg:px-8 pb-24">
     <div class="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 lg:p-8 shadow-sm">
 
+      <!-- Your Dashboard -->
+      @if (stats) {
+      <div class="mb-10">
+        <h3 class="text-xl font-semibold text-gray-900 mb-4">Your Dashboard</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <p class="text-sm text-gray-500">Total Reservations</p>
+            <p class="text-2xl font-bold text-gray-900">{{ stats.totalReservations }}</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="px-2 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800">Pending {{ stats.pendingReservations }}</span>
+              <span class="px-2 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800">Confirmed {{ stats.confirmedReservations }}</span>
+              <span class="px-2 py-1 rounded-full bg-green-50 border border-green-200 text-green-800">Completed {{ stats.completedReservations }}</span>
+              <span class="px-2 py-1 rounded-full bg-gray-50 border border-gray-200 text-gray-800">Cancelled {{ stats.cancelledReservations }}</span>
+            </div>
+            <a routerLink="/reservations" class="inline-flex items-center mt-3 text-sm text-blue-600 hover:text-blue-700">View reservations
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <p class="text-sm text-gray-500">Total Spent</p>
+            <p class="text-2xl font-bold text-gray-900">{{ stats.totalSpent | currency:'USD':'symbol':'1.2-2' }}</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="px-2 py-1 rounded-full bg-green-50 border border-green-200 text-green-800">Completed {{ stats.completedPayments }}</span>
+              <span class="px-2 py-1 rounded-full bg-red-50 border border-red-200 text-red-800">Failed {{ stats.failedPayments }}</span>
+              <span class="px-2 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-800">Payments {{ stats.totalPayments }}</span>
+            </div>
+            <a routerLink="/payments/history" class="inline-flex items-center mt-3 text-sm text-blue-600 hover:text-blue-700">View payments
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <p class="text-sm text-gray-500">Refunds</p>
+            <p class="text-2xl font-bold text-gray-900">{{ stats.totalRefunded | currency:'USD':'symbol':'1.2-2' }}</p>
+            <p class="text-xs text-gray-600 mt-1">Count: {{ stats.refundsCount }}</p>
+            <a routerLink="/payments/refunds" class="inline-flex items-center mt-3 text-sm text-blue-600 hover:text-blue-700">View refunds
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+            <p class="text-sm text-gray-500">Engagement</p>
+            <div class="mt-1 grid grid-cols-3 gap-2 text-xs">
+              <a routerLink="/favorites" class="bg-pink-50 border border-pink-200 rounded p-2 text-pink-800 hover:bg-pink-100 transition-colors">Favorites {{ stats.favoritesCount }}</a>
+              <a routerLink="/bookmarks" class="bg-amber-50 border border-amber-200 rounded p-2 text-amber-800 hover:bg-amber-100 transition-colors">Bookmarks {{ stats.bookmarksCount }}</a>
+              <a routerLink="/notifications" class="bg-blue-50 border border-blue-200 rounded p-2 text-blue-800 hover:bg-blue-100 transition-colors">Unread {{ stats.unreadNotifications }}</a>
+            </div>
+          </div>
+        </div>
+        @if (chartData) {
+        <div class="mt-6 bg-white border border-gray-200 rounded-xl p-6">
+          <h4 class="text-base font-semibold text-gray-900 mb-4">Your Activity (Last 6 Months)</h4>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-600">Reservations</span>
+                <a routerLink="/reservations" class="text-xs text-blue-600 hover:text-blue-700">Manage</a>
+              </div>
+              <div class="h-40">
+                <canvas #userReservationsChart></canvas>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-600">Spending</span>
+                <a routerLink="/payments/history" class="text-xs text-blue-600 hover:text-blue-700">History</a>
+              </div>
+              <div class="h-40">
+                <canvas #userSpendingChart></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+
       <!-- Profile Header -->
       <div class="bg-blue-50 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 border-b border-gray-200 rounded-t-xl">
         <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">

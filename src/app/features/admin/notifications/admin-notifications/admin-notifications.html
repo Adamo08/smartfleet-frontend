@@ -16,7 +16,7 @@
     </select>
     <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Start Date" formControlName="startDate" (change)="onFilterChange()">
     <input type="date" class="bg-white border border-gray-300 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="End Date" formControlName="endDate" (change)="onFilterChange()">
-    <button type="button" class="px-4 py-2 rounded-lg bg-gray-600 text-gray-900 hover:bg-gray-700 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
+    <button type="button" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300 transition-colors duration-200" (click)="clearFilters()">Clear Filters</button>
   </form>
 
   @if (isLoading) {
@@ -59,7 +59,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="getTypeColor(notification.type)" class="px-3 py-1 rounded-full text-xs font-medium">
+                <span [class]="getTypeColor(notification.type)" class="px-3 py-1 rounded-full text-xs font-medium border">
                   {{ notification.type }}
                 </span>
               </td>
@@ -70,7 +70,7 @@
                 <span class="text-gray-600">{{ notification.message | slice:0:50 }}{{ notification.message.length > 50 ? '...' : '' }}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="notification.read ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'" 
+                <span [class]="notification.read ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-800 border border-amber-200'" 
                       class="px-3 py-1 rounded-full text-xs font-medium">
                   {{ notification.read ? 'Read' : 'Unread' }}
                 </span>

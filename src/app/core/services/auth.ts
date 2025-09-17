@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, throwError, catchError, switchMap, of, delay, retry, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import {
   User,
   LoginRequest,
@@ -34,6 +34,33 @@ export class AuthService {
   constructor(private http: HttpClient) {
     this.loadUserFromStorage();
     this.loadModeFromStorage();
+  }
+
+  // Generic GET for convenience in profile (scoped use)
+  get<T>(url: string) {
+    return this.http.get<T>(url);
+  }
+  getMyStats(): Observable<{
+    userId: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    totalReservations: number;
+    pendingReservations: number;
+    confirmedReservations: number;
+    completedReservations: number;
+    cancelledReservations: number;
+    totalPayments: number;
+    completedPayments: number;
+    failedPayments: number;
+    totalSpent: number;
+    refundsCount: number;
+    totalRefunded: number;
+    favoritesCount: number;
+    bookmarksCount: number;
+    unreadNotifications: number;
+  }> {
+    return this.http.get<any>(`${environment.apiUrl}/users/me/stats`);
   }
 
   login(credentials: LoginRequest): Observable<JwtResponse> {

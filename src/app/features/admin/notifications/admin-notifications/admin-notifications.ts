@@ -167,24 +167,24 @@ export class AdminNotifications implements OnInit {
     switch (type) {
       case NotificationType.BOOKING_CONFIRMATION:
       case NotificationType.RESERVATION_CONFIRMED:
-        return 'bg-green-500/20 text-green-400';
+        return 'bg-green-100 text-green-800 border border-green-200';
       case NotificationType.BOOKING_CANCELLATION:
       case NotificationType.RESERVATION_CANCELLED:
-        return 'bg-red-500/20 text-red-400';
+        return 'bg-red-100 text-red-800 border border-red-200';
       case NotificationType.PAYMENT_SUCCESS:
       case NotificationType.REFUND_ISSUED:
-        return 'bg-blue-500/20 text-blue-400';
+        return 'bg-blue-100 text-blue-800 border border-blue-200';
       case NotificationType.PAYMENT_FAILURE:
       case NotificationType.SECURITY_ALERT:
-        return 'bg-red-500/20 text-red-400';
+        return 'bg-red-100 text-red-800 border border-red-200';
       case NotificationType.SYSTEM_ALERT:
       case NotificationType.MAINTENANCE_NOTIFICATION:
-        return 'bg-yellow-500/20 text-yellow-400';
+        return 'bg-amber-100 text-amber-800 border border-amber-200';
       case NotificationType.GENERAL_UPDATE:
       case NotificationType.FEATURE_UPDATE:
-        return 'bg-purple-500/20 text-purple-400';
+        return 'bg-purple-100 text-purple-800 border border-purple-200';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   }
 }

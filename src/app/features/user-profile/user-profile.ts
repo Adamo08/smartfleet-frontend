@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,6 +7,10 @@ import { User, ChangePasswordRequest } from '../../core/models/user.interface';
 import { ToastrService } from 'ngx-toastr';
 import { ConfigrmDialog, DialogActionType } from '../../shared/components/configrm-dialog/configrm-dialog';
 import { ChangePasswordModal } from '../../shared/components/change-password-modal/change-password-modal';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { environment } from '../../../environments/environment';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-user-profile',
@@ -15,11 +19,20 @@ import { ChangePasswordModal } from '../../shared/components/change-password-mod
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css'
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   user: User | null = null;
   isEditing = false;
   loading = false;
   saving = false;
+
+  // Stats
+  stats: any | null = null;
+  chartData: { months: string[]; reservations: number[]; spending: number[] } | null = null;
+  private reservationsChart?: Chart;
+  private spendingChart?: Chart;
+
+  @ViewChild('userReservationsChart') userReservationsChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('userSpendingChart') userSpendingChartRef!: ElementRef<HTMLCanvasElement>;
 
   // Form data
   editForm = {
@@ -44,11 +57,133 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.loadStats();
+  }
+
+  ngAfterViewInit(): void {
+    // Charts will be initialized after data arrives
   }
 
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  private loadStats(): void {
+    this.authService.getMyStats().subscribe({
+      next: (stats) => {
+        this.stats = stats;
+        this.tryRenderCharts();
+      },
+      error: () => {
+        // fail silently to avoid breaking profile
+        this.stats = null;
+      }
+    });
+
+    // Load series for charts
+    this.authService
+      .get<any>(`${environment.apiUrl}/users/me/activity-series` as any)
+      ?.subscribe?.({
+        next: (series: any) => {
+          this.chartData = {
+            months: series.months,
+            reservations: series.monthlyReservationCounts,
+            spending: series.monthlySpending
+          };
+        },
+        error: () => {
+          this.chartData = null;
+        }
+      } as any);
+  }
+
+  private tryRenderCharts(): void {
+    if (!this.chartData) return;
+    setTimeout(() => {
+      this.renderReservationsChart();
+      this.renderSpendingChart();
+    }, 50);
+  }
+
+  private renderReservationsChart(): void {
+    const el = this.userReservationsChartRef?.nativeElement;
+    if (!el || !this.chartData) return;
+    const ctx = el.getContext('2d');
+    if (!ctx) return;
+    if (this.reservationsChart) this.reservationsChart.destroy();
+
+    const config: ChartConfiguration = {
+      type: 'bar',
+      data: {
+        labels: this.chartData.months,
+        datasets: [{
+          label: 'Reservations',
+          data: this.chartData.reservations,
+          backgroundColor: '#93C5FD',
+          borderColor: '#3B82F6',
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' } }
+        }
+      }
+    };
+
+    this.reservationsChart = new Chart(ctx, config);
+  }
+
+  private renderSpendingChart(): void {
+    const el = this.userSpendingChartRef?.nativeElement;
+    if (!el || !this.chartData) return;
+    const ctx = el.getContext('2d');
+    if (!ctx) return;
+    if (this.spendingChart) this.spendingChart.destroy();
+
+    const config: ChartConfiguration = {
+      type: 'line',
+      data: {
+        labels: this.chartData.months,
+        datasets: [{
+          label: 'Spending',
+          data: this.chartData.spending,
+          borderColor: '#06B6D4',
+          backgroundColor: 'rgba(6, 182, 212, 0.12)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#06B6D4',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' } }
+        }
+      }
+    };
+
+    this.spendingChart = new Chart(ctx, config);
+  }
+
+  ngOnDestroy(): void {
+    if (this.reservationsChart) this.reservationsChart.destroy();
+    if (this.spendingChart) this.spendingChart.destroy();
   }
 
   private loadUserProfile(): void {
