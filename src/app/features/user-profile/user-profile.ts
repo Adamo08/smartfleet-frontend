@@ -89,7 +89,9 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
           this.chartData = {
             months: series.months,
             reservations: series.monthlyReservationCounts,
-            spending: series.monthlySpending
+            spending: series.monthlySpending.map((amount: any) => 
+              typeof amount === 'string' ? parseFloat(amount) : amount
+            )
           };
         },
         error: () => {
