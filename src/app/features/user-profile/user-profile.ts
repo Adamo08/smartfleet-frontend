@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { User, ChangePasswordRequest } from '../../core/models/user.interface';
 import { ToastrService } from 'ngx-toastr';
@@ -15,7 +15,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfigrmDialog, ChangePasswordModal],
+  imports: [CommonModule, FormsModule, ConfigrmDialog, ChangePasswordModal, RouterModule],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css'
 })
@@ -89,7 +89,7 @@ export class UserProfileComponent implements OnInit, AfterViewInit, OnDestroy {
           this.chartData = {
             months: series.months,
             reservations: series.monthlyReservationCounts,
-            spending: series.monthlySpending.map((amount: any) => 
+            spending: series.monthlySpending.map((amount: any) =>
               typeof amount === 'string' ? parseFloat(amount) : amount
             )
           };
