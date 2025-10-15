@@ -1,10 +1,10 @@
 [build]
   # Build command for Angular frontend
   command = "npm ci && npm run build:netlify"
-  
+
   # Publish directory (Angular 18+ output location)
   publish = "dist/vrspfaf/browser"
-  
+
   # Environment variables for build
   [build.environment]
     NODE_VERSION = "20"
@@ -44,10 +44,3 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-# API proxy (optional - for development)
-# [[redirects]]
-#   from = "/api/*"
-#   to = "https://your-render-app.onrender.com/api/:splat"
-#   status = 200
-#   force = true
